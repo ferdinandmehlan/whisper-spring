@@ -1,0 +1,16 @@
+services:
+  whisper-spring-server:
+    image: ghcr.io/ferdinandmehlan/whisper-spring-server:${TAG:-dev}
+    container_name: whisper-spring-server
+    build:
+      context: ./whisper-spring-server
+      dockerfile: Containerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/app/models
+    # Or when using custom native libraries:
+    # - ./libs:/app/libs
+    # environment:
+    #   WHISPER_LIBRARIES_MODE: Custom
+    #   WHISPER_LIBRARIES_PATH: /app/libs

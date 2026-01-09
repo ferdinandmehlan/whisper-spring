@@ -1,0 +1,44 @@
+# Eclipse
+.project
+.classpath
+.factorypath
+.settings/
+bin/
+
+# IntelliJ IDEA
+/.idea/*
+!/.idea/icon.png
+!/.idea/externalDependencies.xml
+*.iml
+*.ipr
+*.iws
+
+# Gradle
+.gradle/
+build/
+
+# Temporary files
+*.tmp
+*.swp
+*.bak
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Models
+models/*.bin
+**/test-models/*.bin
+
+### Validation ###
+**/data/test/tmp
+**/data/test/output
+
+# Project Files
+/audio/*
+!/audio/sample_*

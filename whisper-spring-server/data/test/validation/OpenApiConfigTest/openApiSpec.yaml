@@ -1,0 +1,147 @@
+openapi: 3.1.0
+info:
+  title: Whisper Spring REST API
+  version: "1.0"
+servers:
+- url: http://localhost:8080
+paths:
+  /inference:
+    post:
+      tags:
+      - inference-controller
+      operationId: inference
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/InferenceRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+components:
+  schemas:
+    InferenceRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: Audio file to transcribe
+        language:
+          type: string
+          default: auto
+          description: Spoken language ('auto' for auto-detect)
+        translate:
+          type: boolean
+          default: false
+          description: Translate from source language to English
+        prompt:
+          type: string
+          description: Initial prompt
+          maxLength: 500
+          minLength: 0
+        temperature:
+          type: number
+          format: float
+          default: "0.0"
+          description: Sampling temperature between 0.0 and 1.0
+          maximum: 1.0
+          minimum: 0.0
+        temperatureInc:
+          type: number
+          format: float
+          default: "0.2"
+          description: Temperature increment between 0.0 and 1.0
+          maximum: 1.0
+          minimum: 0.0
+        responseFormat:
+          type: string
+          default: json
+          description: Response format
+          enum:
+          - JSON
+          - TEXT
+          - SRT
+        offsetTMs:
+          type: integer
+          format: int32
+          default: 0
+          description: Time offset in milliseconds
+          minimum: 0
+        offsetN:
+          type: integer
+          format: int32
+          default: 0
+          description: Segment index offset
+          minimum: 0
+        durationMs:
+          type: integer
+          format: int32
+          default: 0
+          description: Duration of audio to process in milliseconds (0 = all)
+          minimum: 0
+        maxContext:
+          type: integer
+          format: int32
+          default: -1
+          description: Maximum number of text context tokens to store (-1 = unlimited)
+          minimum: -1
+        maxLen:
+          type: integer
+          format: int32
+          default: 0
+          description: Maximum segment length in characters
+          maximum: 100
+          minimum: 0
+        splitOnWord:
+          type: boolean
+          default: false
+          description: Split on word rather than on token
+        bestOf:
+          type: integer
+          format: int32
+          default: 2
+          description: Number of best candidates to keep
+          maximum: 8
+          minimum: 1
+        beamSize:
+          type: integer
+          format: int32
+          default: -1
+          description: Beam size for beam search (-1 = greedy)
+          maximum: 8
+          minimum: -1
+        audioContext:
+          type: integer
+          format: int32
+          default: 0
+          description: Audio context size (0 = all)
+          minimum: 0
+        wordThreshold:
+          type: number
+          format: float
+          default: "0.01"
+          description: Word timestamp probability threshold
+          maximum: 1.0
+          minimum: 0.0
+        entropyThreshold:
+          type: number
+          format: float
+          default: "2.4"
+          description: Entropy threshold for decoder fail
+          minimum: 0.0
+        logprobThreshold:
+          type: number
+          format: float
+          default: "-1.0"
+          description: Log probability threshold for decoder fail
+        noTimestamps:
+          type: boolean
+          default: false
+          description: Do not include timestamps in output
+        fileNotEmpty:
+          type: boolean

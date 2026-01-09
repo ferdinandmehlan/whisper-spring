@@ -1,0 +1,12 @@
+<project version="4">
+  <component name="ExternalDependencies">
+    <!-- Docker plugin -->
+    <plugin id="Docker" />
+
+    <!-- Mermaid Markdown plugin -->
+    <plugin id="com.intellij.mermaid" />
+
+    <!-- Cronn Validation file plugin -->
+    <plugin id="de.cronn.validation-files-diff" />
+  </component>
+</project>

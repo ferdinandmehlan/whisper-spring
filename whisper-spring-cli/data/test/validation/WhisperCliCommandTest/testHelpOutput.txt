@@ -1,0 +1,104 @@
+Usage: whisper [-hV] [--carry-initial-prompt] [-debug] [-di] [-fa] [-ls] [-nf]
+               [-ng] [-np] [-nt] [-ocsv] [-oj] [-ojf] [-olrc] [-osrt] [-otxt]
+               [-ovtt] [-owts] [-pc] [-pp] [-ps] [-sns] [-sow] [-tdrz] [-tr]
+               [--vad] [-ac=<audioCtx>] [-bo=<bestOf>] [-bs=<beamSize>]
+               [-d=<duration>] [-dtw=<dtw>] [-et=<entropyThreshold>]
+               [-f=<file>] [--grammar=<grammar>]
+               [--grammar-penalty=<grammarPenalty>]
+               [--grammar-rule=<grammarRule>] [-l=<language>]
+               [-lpt=<logprobThreshold>] [-m=<model>] [-mc=<maxContext>]
+               [-ml=<maxLen>] [-nth=<noSpeechThold>] [-of=<outputFile>]
+               [-on=<offsetN>] [-ot=<offsetT>] [-oved=<ovEDevice>]
+               [--prompt=<prompt>] [--suppress-regex=<suppressRegex>]
+               [-t=<threads>] [-tp=<temperature>] [-tpi=<temperatureInc>]
+               [-vm=<vadModel>] [-vmsd=<vadMaxSpeechDurationS>]
+               [-vo=<vadSamplesOverlap>] [-vp=<vadSpeechPadMs>]
+               [-vsd=<vadMinSilenceDurationMs>]
+               [-vspd=<vadMinSpeechDurationMs>] [-vt=<vadThreshold>]
+               [-wt=<wordThreshold>]
+      -ac, --audio-ctx=<audioCtx>
+                             audio context size (0 - all)
+      -bo, --best-of=<bestOf>
+                             number of best candidates to keep
+      -bs, --beam-size=<beamSize>
+                             beam size for beam search
+      --carry-initial-prompt always prepend initial prompt
+  -d, --duration=<duration>  duration of audio to process in milliseconds
+      -debug, --debug-mode   enable debug mode (eg. dump log_mel)
+      -di, --diarize         stereo audio diarization
+      -dtw, --dtw=<dtw>      compute token-level timestamps
+      -et, --entropy-thold=<entropyThreshold>
+                             entropy threshold for decoder fail
+  -f, --file=<file>          input audio file path
+      -fa, --flash-attn      enable flash attention
+      --grammar=<grammar>    GBNF grammar to guide decoding
+      --grammar-penalty=<grammarPenalty>
+                             scales down logits of nongrammar tokens
+      --grammar-rule=<grammarRule>
+                             top-level GBNF grammar rule name
+  -h, --help                 Show this help message and exit.
+  -l, --language=<language>  spoken language ('auto' for auto-detect)
+      -lpt, --logprob-thold=<logprobThreshold>
+                             log probability threshold for decoder fail
+      -ls, --log-score       log best decoder scores of tokens
+  -m, --model=<model>        model path
+      -mc, --max-context=<maxContext>
+                             maximum number of text context tokens to store
+      -ml, --max-len=<maxLen>
+                             maximum segment length in characters
+      -nf, --no-fallback     do not use temperature fallback while decoding
+      -ng, --no-gpu          disable GPU
+      -np, --no-prints       do not print anything other than the results
+      -nt, --no-timestamps   do not print timestamps
+      -nth, --no-speech-thold=<noSpeechThold>
+                             no speech threshold
+      -ocsv, --output-csv    output result in a CSV file
+      -of, --output-file=<outputFile>
+                             output file path (without file extension)
+      -oj, --output-json     output result in a JSON file
+      -ojf, --output-json-full
+                             include more information in the JSON file
+      -olrc, --output-lrc    output result in a lrc file
+      -on, --offset-n=<offsetN>
+                             segment index offset
+      -osrt, --output-srt    output result in a srt file
+      -ot, --offset-t=<offsetT>
+                             time offset in milliseconds
+      -otxt, --output-txt    output result in a text file
+      -oved, --ov-e-device=<ovEDevice>
+                             the OpenVINO device used for encode inference
+      -ovtt, --output-vtt    output result in a vtt file
+      -owts, --output-words  output script for generating karaoke video
+      -pc, --print-colors    print colors
+      -pp, --print-progress  print progress
+      --prompt=<prompt>      initial prompt (max n_text_ctx/2 tokens)
+      -ps, --print-special   print special tokens
+      -sns, --suppress-nst   suppress non-speech tokens
+      -sow, --split-on-word  split on word rather than on token
+      --suppress-regex=<suppressRegex>
+                             regular expression matching tokens to suppress
+  -t, --threads=<threads>    number of threads to use during computation
+      -tdrz, --tinydiarize   enable tinydiarize (requires a tdrz model)
+      -tp, --temperature=<temperature>
+                             The sampling temperature, between 0 and 1
+      -tpi, --temperature-inc=<temperatureInc>
+                             The increment of temperature, between 0 and 1
+      -tr, --translate       translate from source language to english
+  -V, --version              Print version information and exit.
+      --vad                  enable Voice Activity Detection (VAD)
+      -vm, --vad-model=<vadModel>
+                             VAD model path
+      -vmsd, --vad-max-speech-duration-s=<vadMaxSpeechDurationS>
+                             VAD max speech duration (auto-split longer)
+      -vo, --vad-samples-overlap=<vadSamplesOverlap>
+                             VAD samples overlap (seconds between segments)
+      -vp, --vad-speech-pad-ms=<vadSpeechPadMs>
+                             VAD speech padding (extend segments)
+      -vsd, --vad-min-silence-duration-ms=<vadMinSilenceDurationMs>
+                             VAD min silence duration (to split segments)
+      -vspd, --vad-min-speech-duration-ms=<vadMinSpeechDurationMs>
+                             VAD min speech duration (0.0-1.0)
+      -vt, --vad-threshold=<vadThreshold>
+                             VAD threshold for speech recognition
+      -wt, --word-thold=<wordThreshold>
+                             word timestamp probability threshold

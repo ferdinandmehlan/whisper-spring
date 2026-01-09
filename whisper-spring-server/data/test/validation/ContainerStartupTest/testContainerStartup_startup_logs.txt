@@ -1,0 +1,64 @@
+_    _ _     _                       _____            _
+| |  | | |   (_)                     /  ___|          (_)
+| |  | | |__  _ ___ _ __   ___ _ __  \ `--. _ __  _ __ _ _ __   __ _
+| |/\| | '_ \| / __| '_ \ / _ \ '__|  `--. \ '_ \| '__| | '_ \ / _` |
+\  /\  / | | | \__ \ |_) |  __/ |    /\__/ / |_) | |  | | | | | (_| |
+ \/  \/|_| |_|_|___/ .__/ \___|_|    \____/| .__/|_|  |_|_| |_|\__, |
+                   | |                     | |                  __/ |
+                   |_|                     |_|                 |___/
+
+whisper-spring-server 0.1.0
+spring-boot 4.0.0
+
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Starting WhisperSpringServerApplication v0.1.0 using Java 21.0.9 with PID 1 (/app/whisper-spring-server.jar started by root in /app)
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : No active profile set, falling back to 1 default profile: "default"
+[TIMESTAMP]  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+[TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+[TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.14]
+[TIMESTAMP]  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in [TIME] ms
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Loading /native/linux-x86-64/libggml-base.so
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Loading /native/linux-x86-64/libggml-cpu.so
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Loading /native/linux-x86-64/libggml.so
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Loading /native/linux-x86-64/libwhisper.so
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Native libraries loaded successfully
+whisper_init_from_file_with_params_no_state: loading model from 'models/ggml-tiny.bin'
+whisper_init_with_params_no_state: use gpu    = 1
+whisper_init_with_params_no_state: flash attn = 0
+whisper_init_with_params_no_state: gpu_device = 0
+whisper_init_with_params_no_state: dtw        = 0
+whisper_init_with_params_no_state: devices    = 1
+whisper_init_with_params_no_state: backends   = 1
+whisper_model_load: loading model
+whisper_model_load: n_vocab       = 51865
+whisper_model_load: n_audio_ctx   = 1500
+whisper_model_load: n_audio_state = 384
+whisper_model_load: n_audio_head  = 6
+whisper_model_load: n_audio_layer = 4
+whisper_model_load: n_text_ctx    = 448
+whisper_model_load: n_text_state  = 384
+whisper_model_load: n_text_head   = 6
+whisper_model_load: n_text_layer  = 4
+whisper_model_load: n_mels        = 80
+whisper_model_load: ftype         = 1
+whisper_model_load: qntvr         = 0
+whisper_model_load: type          = 1 (tiny)
+whisper_model_load: adding 1608 extra tokens
+whisper_model_load: n_langs       = 99
+whisper_model_load:          CPU total size =    77.11 MB
+whisper_model_load: model size    =   77.11 MB
+whisper_backend_init_gpu: no GPU found
+whisper_init_state: kv self size  =    3.15 MB
+whisper_init_state: kv cross size =    9.44 MB
+whisper_init_state: kv pad  size  =    2.36 MB
+whisper_init_state: compute buffer (conv)   =   13.21 MB
+whisper_init_state: compute buffer (encode) =   64.81 MB
+whisper_init_state: compute buffer (cross)  =    3.89 MB
+whisper_init_state: compute buffer (decode) =   95.91 MB
+[TIMESTAMP]  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+[TIMESTAMP]  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Started WhisperSpringServerApplication in [TIME] seconds (process running for [TIME])
+[TIMESTAMP]  WARN 1 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+[TIMESTAMP]  WARN 1 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+[TIMESTAMP]  INFO 1 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+[TIMESTAMP]  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+[TIMESTAMP]  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in [TIME] ms
