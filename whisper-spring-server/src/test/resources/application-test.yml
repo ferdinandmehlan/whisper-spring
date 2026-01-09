@@ -1,0 +1,5 @@
+whisper:
+  model: src/test/resources/test-models/ggml-tiny.bin
+  threads: 1
+  no-gpu: true
+  flash-attn: false

@@ -1,0 +1,19 @@
+whisper:
+  libraries:
+    mode: CPU
+  model: models/ggml-tiny.bin
+  threads: 4
+  no-gpu: false
+  flash-attn: false
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

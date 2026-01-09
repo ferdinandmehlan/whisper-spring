@@ -1,0 +1,6 @@
+This product includes software developed by the following third parties:
+
+whisper.cpp
+https://github.com/ggerganov/whisper.cpp
+Copyright (c) 2023 Georgi Gerganov
+Licensed under the MIT License.
