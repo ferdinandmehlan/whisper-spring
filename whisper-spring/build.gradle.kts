@@ -1,11 +1,15 @@
 plugins {
     id("java-library")
+    id("maven-publish")
 }
 
 java {
     toolchain {
         languageVersion.set(rootProject.extra["javaVersion"] as JavaLanguageVersion)
     }
+
+    withSourcesJar()
+    withJavadocJar()
 }
 
 /*
