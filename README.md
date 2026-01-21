@@ -11,7 +11,7 @@ which is an independent project providing optimized C++ implementations of Whisp
 
 ## Requirements
 
-- Java 21
+- Java 25
 - Docker
 
 

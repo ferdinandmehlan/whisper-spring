@@ -7,7 +7,7 @@ tasks.wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-val javaVersion by extra(JavaLanguageVersion.of("21"))
+val javaVersion by extra(JavaLanguageVersion.of("25"))
 
 allprojects {
     group = "io.github.ferdinandmehlan"
