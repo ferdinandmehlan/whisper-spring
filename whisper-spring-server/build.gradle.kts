@@ -4,6 +4,10 @@ plugins {
     id("com.avast.gradle.docker-compose") version "0.17.20"
 }
 
+tasks.bootRun {
+    args("--spring.profiles.active=test")
+}
+
 java {
     toolchain {
         languageVersion.set(rootProject.extra["javaVersion"] as JavaLanguageVersion)
@@ -25,6 +29,26 @@ dependencies {
 }
 
 /*
+ * Build
+ */
+
+tasks.register<Copy>("copyUIFiles") {
+    group = "build"
+    description = "Copy static UI files from the UI build"
+
+    dependsOn(":whisper-spring-server-ui:compile")
+    doFirst {
+        delete("$projectDir/build/resources/main/static")
+    }
+    from("$rootDir/whisper-spring-server-ui/build")
+    into("$projectDir/build/resources/main/static")
+}
+
+listOf("compileTestJava", "resolveMainClassName", "jar").forEach {
+    tasks.named(it) { dependsOn("copyUIFiles") }
+}
+
+/*
  * Compile
  */
 
@@ -42,11 +66,12 @@ tasks.processTestResources {
     from("$rootDir/models") {
         include("ggml-tiny.bin")
     }
+    dependsOn(":downloadTinyModel")
 }
 
 tasks.test {
     useJUnitPlatform()
-    dependsOn(":downloadTinyModel", "composeBuild")
+    dependsOn("composeBuild")
 }
 
 /*

@@ -28,7 +28,7 @@ public class InferenceControllerTest extends BaseIntegrationTest {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         // Request
-        ResponseEntity<String> response = testRestTemplate.postForEntity("/inference", requestEntity, String.class);
+        ResponseEntity<String> response = testRestTemplate.postForEntity("/api/inference", requestEntity, String.class);
 
         // Verify response
         assertWithFileIncludingHttpStatus(response);
@@ -50,7 +50,7 @@ public class InferenceControllerTest extends BaseIntegrationTest {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         // Request
-        ResponseEntity<String> response = testRestTemplate.postForEntity("/inference", requestEntity, String.class);
+        ResponseEntity<String> response = testRestTemplate.postForEntity("/api/inference", requestEntity, String.class);
 
         // Verify response
         assertWithFileIncludingHttpStatus(response);
@@ -73,7 +73,7 @@ public class InferenceControllerTest extends BaseIntegrationTest {
 
         // Request
         ResponseEntity<InferenceResponse> response =
-                testRestTemplate.postForEntity("/inference", requestEntity, InferenceResponse.class);
+                testRestTemplate.postForEntity("/api/inference", requestEntity, InferenceResponse.class);
 
         // Verify response
         assertWithFileIncludingHttpStatus(response);
