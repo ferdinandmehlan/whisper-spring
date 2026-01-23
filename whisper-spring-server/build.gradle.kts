@@ -24,6 +24,27 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+
+/*
+ * Build
+ */
+
+tasks.register<Copy>("copyUIFiles") {
+    group = "build"
+    description = "Copy static UI files from the UI build"
+
+    dependsOn(":whisper-spring-server-ui:compile")
+    doFirst {
+        delete("${projectDir}/build/resources/main/static")
+    }
+    from("${rootDir}/whisper-spring-server-ui/build")
+    into("${projectDir}/build/resources/main/static")
+}
+
+listOf("resolveMainClassName", "jar").forEach {
+    tasks.named(it) { dependsOn("copyUIFiles") }
+}
+
 /*
  * Check
  */
