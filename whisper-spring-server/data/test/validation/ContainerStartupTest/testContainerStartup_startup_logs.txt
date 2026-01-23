@@ -50,8 +50,12 @@ whisper_init_state: compute buffer (conv)   =   13.21 MB
 whisper_init_state: compute buffer (encode) =   64.81 MB
 whisper_init_state: compute buffer (cross)  =    3.89 MB
 whisper_init_state: compute buffer (decode) =   95.91 MB
+[TIMESTAMP]  INFO 1 --- [           main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
 [TIMESTAMP]  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 [TIMESTAMP]  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
 [TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Started WhisperSpringServerApplication in [TIME] seconds (process running for [TIME])
 [TIMESTAMP]  WARN 1 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
 [TIMESTAMP]  WARN 1 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+[TIMESTAMP]  INFO 1 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+[TIMESTAMP]  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+[TIMESTAMP]  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in [TIME] ms
