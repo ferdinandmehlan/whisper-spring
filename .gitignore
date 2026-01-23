@@ -42,3 +42,13 @@ models/*.bin
 # Project Files
 /audio/*
 !/audio/sample_*
+
+# Svelte
+.output
+.vercel
+.netlify
+.wrangler
+**/.svelte-kit/
+**/build/
+**/node_modules/
+**/test-results/

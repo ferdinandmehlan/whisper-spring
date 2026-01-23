@@ -18,18 +18,21 @@ which is an independent project providing optimized C++ implementations of Whisp
 ## Quick Start
 
 1. Clone the repository including submodules:
+
    ```sh
    git clone --recursive https://github.com/ferdinandmehlan/whisper-spring.git
    ```
 
 2. Build the project and start as dockerized server:
+
    ```sh
    ./gradlew compopseUp
    ```
 
-3. Transcribe an audio file
+3. Use the Web-UI at http://localhost:8080 or transcribe an audio file directly:
+
    ```sh
-   curl -X POST http://localhost:8080/inference \
+   curl -X POST http://localhost:8080/api/inference \
      -F "file=@/audio/sample.wav" \
      -F "responseFormat=json"
    ```
@@ -116,10 +119,12 @@ Start the server with:
 Then transcribe via API:
 
 ```sh
-  curl -X POST http://localhost:8080/inference \
+  curl -X POST http://localhost:8080/api/inference \
     -F "file=@sample.wav" \
     -F "responseFormat=json"
 ```
+
+Or use the Web-UI at http://localhost:8080/
 
 ### Docker Image
 
@@ -129,7 +134,7 @@ Alternatively the published docker image can be used like this:
   docker run -p 8080:8080 -v ./models:/app/models ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0
 ```
 
-Then transcribe via API as above.
+Then use as above.
 
 ## License
 

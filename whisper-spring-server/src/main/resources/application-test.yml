@@ -1,0 +1,2 @@
+whisper:
+  model: ../models/ggml-tiny.bin

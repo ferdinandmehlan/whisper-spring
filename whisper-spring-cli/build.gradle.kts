@@ -38,9 +38,9 @@ tasks.processTestResources {
     from("$rootDir/models") {
         include("ggml-tiny.bin")
     }
+    dependsOn(":downloadTinyModel")
 }
 
 tasks.test {
     useJUnitPlatform()
-    dependsOn(":downloadTinyModel")
 }

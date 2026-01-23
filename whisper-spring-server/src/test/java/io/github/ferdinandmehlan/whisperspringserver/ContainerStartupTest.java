@@ -27,7 +27,7 @@ public class ContainerStartupTest extends BaseIntegrationTest {
             .withExposedPorts(8080)
             .withCreateContainerCmdModifier(cmd -> cmd.withName("whisper-spring-server-" + UUID.randomUUID()))
             .withFileSystemBind("build/resources/test/ggml-tiny.bin", "/app/models/ggml-tiny.bin", BindMode.READ_ONLY)
-            .waitingFor(Wait.forLogMessage(".*Tomcat started on port.*", 1));
+            .waitingFor(Wait.forLogMessage(".*Completed initialization in.*", 1));
 
     private static String getWhisperSpringServerHost() {
         return "http://%s:%d".formatted(whisperSpringServer.getHost(), whisperSpringServer.getMappedPort(8080));
@@ -59,7 +59,7 @@ public class ContainerStartupTest extends BaseIntegrationTest {
 
         // Make request to inference endpoint
         ResponseEntity<String> response = testRestTemplate.postForEntity(
-                getWhisperSpringServerHost() + "/inference", requestEntity, String.class);
+                getWhisperSpringServerHost() + "/api/inference", requestEntity, String.class);
 
         // Verify response
         assertWithFileIncludingHttpStatus(response);

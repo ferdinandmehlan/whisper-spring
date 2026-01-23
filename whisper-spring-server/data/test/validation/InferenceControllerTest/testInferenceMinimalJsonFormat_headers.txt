@@ -1,3 +1,4 @@
 content-type: [application/json]
 date: [MASKED]
 transfer-encoding: [chunked]
+vary: [Origin, Access-Control-Request-Method, Access-Control-Request-Headers]
