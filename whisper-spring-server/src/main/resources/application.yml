@@ -1,7 +1,7 @@
 whisper:
   libraries:
     mode: CPU
-  model: models/ggml-tiny.bin
+  model: src/main/resources/models/ggml-tiny.bin
   threads: 4
   no-gpu: false
   flash-attn: false
