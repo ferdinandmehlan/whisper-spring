@@ -1,10 +1,10 @@
 package io.github.ferdinandmehlan.whisperspringcli;
 
-import io.github.ferdinandmehlan.whisperspring.WhisperParams;
 import io.github.ferdinandmehlan.whisperspring.WhisperService;
-import io.github.ggerganov.whispercpp.WhisperCpp;
-import io.github.ggerganov.whispercpp.bean.WhisperSegment;
-import io.github.ggerganov.whispercpp.params.WhisperContextParams;
+import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperContextConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -373,20 +373,20 @@ public class WhisperCliCommand implements Runnable {
         }
 
         try {
-            WhisperCpp whisper = new WhisperCpp();
-            WhisperContextParams.ByValue contextParams = whisper.getContextDefaultParams();
-            contextParams.useGpu(!this.noGpu);
-            contextParams.useFlashAttn(this.flashAttn);
-            whisper.initContext(this.model, contextParams);
+            WhisperContextConfig config = new WhisperContextConfig();
+            config.useGpu = !this.noGpu;
+            config.flashAttn = this.flashAttn;
+            WhisperNative whisper = new WhisperNative(this.model, config);
 
             Resource resource = new FileSystemResource(file);
 
-            List<WhisperSegment> segments = whisperService.transcribe(whisper, toWhisperParams(), resource);
+            List<WhisperSegment> segments =
+                    whisperService.transcribe(whisper, toWhisperTranscribeConfig(whisper), resource);
             // If realtime output is enabled, segments are already printed via callback
             // Otherwise, print the final result
             if (this.noPrints) {
                 String result = segments.stream()
-                        .map(WhisperSegment::getSentence)
+                        .map(WhisperSegment::text)
                         .map(String::trim)
                         .collect(Collectors.joining("\n"));
                 out.println(result);
@@ -397,38 +397,49 @@ public class WhisperCliCommand implements Runnable {
     }
 
     /**
-     * Converts command-line options to WhisperParams object.
+     * Converts command-line options to WhisperTranscribeConfig object.
      *
-     * @return WhisperParams configured with current command options
+     * @return WhisperTranscribeConfig configured with current command options
      */
-    protected WhisperParams toWhisperParams() {
-        WhisperNewSegmentPrinter whisperNewSegmentPrinter = !this.noPrints
-                ? new WhisperNewSegmentPrinter(this.noTimestamps, this.printColors, this.printSpecial, err)
-                : null;
+    protected WhisperTranscribeConfig toWhisperTranscribeConfig(WhisperNative whisper) {
+        WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+        config.language = "auto".equals(this.language) ? null : this.language;
+        config.translate = this.translate;
+        config.initialPrompt = this.prompt;
+        config.carryInitialPrompt = this.carryInitialPrompt;
+        config.temperature = this.temperature;
+        config.temperatureInc = this.temperatureInc;
+        config.offsetMs = this.offsetT;
+        config.durationMs = this.duration;
+        config.nMaxTextCtx = this.maxContext;
+        config.maxLen = this.maxLen;
+        config.splitOnWord = this.splitOnWord;
+        config.greedyBestOf = this.bestOf;
+        config.beamSize = this.beamSize;
+        config.audioCtx = this.audioCtx;
+        config.tholdPt = this.wordThreshold;
+        config.entropyThold = this.entropyThreshold;
+        config.logprobThold = this.logprobThreshold;
+        config.noSpeechThold = this.noSpeechThold;
+        config.noTimestamps = this.noTimestamps;
+        config.nThreads = this.threads;
+        config.debugMode = this.debugMode;
+        config.suppressNst = this.suppressNst;
+        config.printProgress = this.printProgress;
+        config.printSpecial = this.printSpecial;
+        config.tdrzEnable = this.tinydiarize;
+        config.suppressBlank = !this.noFallback;
+        config.vad = this.vad;
+        config.vadModelPath = this.vadModel;
 
-        WhisperProgressPrinter whisperProgressPrinter = this.printProgress ? new WhisperProgressPrinter(err) : null;
+        if (!this.noPrints) {
+            config.newSegmentCallback =
+                    new WhisperNewSegmentPrinter(whisper, this.noTimestamps, this.printColors, this.printSpecial, err);
+        }
+        if (this.printProgress) {
+            config.progressCallback = new WhisperProgressPrinter(err);
+        }
 
-        return new WhisperParams(
-                this.language,
-                this.translate,
-                this.prompt,
-                this.temperature,
-                this.temperatureInc,
-                this.offsetT,
-                this.offsetN,
-                this.duration,
-                this.maxContext,
-                this.maxLen,
-                this.splitOnWord,
-                this.bestOf,
-                this.beamSize,
-                this.audioCtx,
-                this.wordThreshold,
-                this.entropyThreshold,
-                this.logprobThreshold,
-                this.noTimestamps,
-                this.threads,
-                whisperNewSegmentPrinter,
-                whisperProgressPrinter);
+        return config;
     }
 }

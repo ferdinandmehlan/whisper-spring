@@ -1,5 +1,5 @@
 plugins {
-    id("com.diffplug.spotless") version "7.0.4"
+    id("com.diffplug.spotless") version "8.2.1"
 }
 
 tasks.wrapper {
@@ -7,7 +7,7 @@ tasks.wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-val javaVersion by extra(JavaLanguageVersion.of("25"))
+val javaVersion: JavaLanguageVersion by extra(JavaLanguageVersion.of("25"))
 
 allprojects {
     group = "io.github.ferdinandmehlan"
