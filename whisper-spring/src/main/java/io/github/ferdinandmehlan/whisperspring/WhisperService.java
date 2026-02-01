@@ -1,9 +1,8 @@
 package io.github.ferdinandmehlan.whisperspring;
 
-import io.github.ggerganov.whispercpp.WhisperCpp;
-import io.github.ggerganov.whispercpp.bean.WhisperSegment;
-import io.github.ggerganov.whispercpp.params.WhisperFullParams;
-import java.io.FileNotFoundException;
+import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.core.io.Resource;
@@ -16,62 +15,41 @@ import org.springframework.stereotype.Service;
 @Service
 public class WhisperService {
 
-    private final WhisperParamsMapper mapper;
     private final WaveService waveService;
 
     /**
-     * Constructs a WhisperService with the required dependencies.
+     * Creates a new WhisperService.
      *
-     * @param mapper the WhisperParamsMapper for parameter conversion
-     * @param waveService the WaveService for audio processing
+     * @param waveService the wave service for audio processing
      */
-    public WhisperService(WhisperParamsMapper mapper, WaveService waveService) {
-        this.mapper = mapper;
+    public WhisperService(WaveService waveService) {
         this.waveService = waveService;
     }
 
     /**
-     * Transcribes an audio file using the Whisper engine with the specified parameters.
+     * Transcribes an audio file using default configuration.
      *
-     * @param whisper the initialized WhisperCpp instance
-     * @param audioFile the audio resource to transcribe (must be mono, 16kHz, 16-bit PCM WAV)
-     * @return a list of WhisperSegment objects containing the transcription results
-     * @throws IOException if reading the audio file fails
+     * @param whisper the WhisperNative instance
+     * @param audioFile the audio resource to transcribe
+     * @return list of transcription segments
+     * @throws IOException if transcription fails
      */
-    public List<WhisperSegment> transcribe(WhisperCpp whisper, Resource audioFile) throws IOException {
-        return transcribe(whisper, new WhisperParams(), audioFile);
+    public List<WhisperSegment> transcribe(WhisperNative whisper, Resource audioFile) throws IOException {
+        return transcribe(whisper, new WhisperTranscribeConfig(), audioFile);
     }
 
     /**
-     * Transcribes an audio file using the Whisper engine with the specified parameters.
+     * Transcribes an audio file with custom configuration.
      *
-     * @param whisper the initialized WhisperCpp instance
-     * @param params the transcription parameters
-     * @param audioFile the audio resource to transcribe (must be mono, 16kHz, 16-bit PCM WAV)
-     * @return a list of WhisperSegment objects containing the transcription results
-     * @throws IOException if reading the audio file fails
+     * @param whisper the WhisperNative instance
+     * @param config the transcription configuration
+     * @param audioFile the audio resource to transcribe
+     * @return list of transcription segments
+     * @throws IOException if transcription fails
      */
-    public List<WhisperSegment> transcribe(WhisperCpp whisper, WhisperParams params, Resource audioFile)
+    public List<WhisperSegment> transcribe(WhisperNative whisper, WhisperTranscribeConfig config, Resource audioFile)
             throws IOException {
-        WhisperFullParams.ByValue fullParams = mapper.toWhisperFullParams(params, whisper);
-        float[] samples = waveService.toWaveSamples(audioFile);
-        return whisper.fullTranscribeWithTime(fullParams, samples);
-    }
-
-    /**
-     * Loads a Whisper model from the specified path.
-     *
-     * @param model the path to the Whisper model file
-     * @return an initialized WhisperCpp instance
-     * @throws RuntimeException if the model cannot be loaded
-     */
-    public WhisperCpp loadModel(String model) {
-        try {
-            WhisperCpp whisper = new WhisperCpp();
-            whisper.initContext(model);
-            return whisper;
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Model could not be initialized: " + model, e);
-        }
+        float[] audioData = waveService.toWaveSamples(audioFile);
+        return whisper.transcribe(audioData, config);
     }
 }
