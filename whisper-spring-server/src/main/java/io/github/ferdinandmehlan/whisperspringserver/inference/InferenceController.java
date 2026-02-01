@@ -1,7 +1,7 @@
 package io.github.ferdinandmehlan.whisperspringserver.inference;
 
-import io.github.ferdinandmehlan.whisperspring.WhisperParams;
-import io.github.ggerganov.whispercpp.bean.WhisperSegment;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.MediaType;
@@ -43,10 +43,10 @@ public class InferenceController {
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> inference(@Valid @ModelAttribute InferenceRequest request) {
-        WhisperParams whisperParams = inferenceMapper.toWhisperParams(request);
+        WhisperTranscribeConfig config = inferenceMapper.toWhisperParams(request);
 
         List<WhisperSegment> segments =
-                inferenceService.transcribe(whisperParams, request.file().getResource());
+                inferenceService.transcribe(config, request.file().getResource());
 
         if (request.responseFormat() == ResponseFormat.TEXT) {
             String text = inferenceMapper.toText(segments);

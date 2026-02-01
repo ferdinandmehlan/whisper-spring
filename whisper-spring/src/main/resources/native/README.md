@@ -1,6 +1,6 @@
 # Redistributables
 
-These redistributables were built from [whisper.cpp](https://github.com/ggml-org/whisper.cpp.git) and tag v1.8.2.
+The linux redistributables were built from [whisper.cpp](https://github.com/ggml-org/whisper.cpp.git) and tag v1.8.2.
 
 ## Linux Native Library
 

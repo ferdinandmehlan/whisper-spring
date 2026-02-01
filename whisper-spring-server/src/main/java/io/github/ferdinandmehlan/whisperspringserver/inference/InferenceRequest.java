@@ -18,31 +18,53 @@ public record InferenceRequest(
         // File
         @Schema(description = "Audio file to transcribe") MultipartFile file,
         // Base Settings
-        @Schema(description = "Spoken language ('auto' for auto-detect)", defaultValue = "auto") String language,
-        @Schema(description = "Translate from source language to English", defaultValue = "false") Boolean translate,
+        @Schema(description = "Spoken language ('auto' for auto-detect)", defaultValue = "auto")
+        String language,
+
+        @Schema(description = "Translate from source language to English", defaultValue = "false")
+        Boolean translate,
+
         @Schema(description = "Initial prompt") @Size(max = 500) String prompt,
+
         @Schema(description = "Sampling temperature between 0.0 and 1.0", defaultValue = "0.0")
-                @DecimalMin("0.0") @DecimalMax("1.0") Float temperature,
+        @DecimalMin("0.0") @DecimalMax("1.0") Float temperature,
+
         @Schema(description = "Temperature increment between 0.0 and 1.0", defaultValue = "0.2")
-                @DecimalMin("0.0") @DecimalMax("1.0") Float temperatureInc,
-        @Schema(description = "Response format", defaultValue = "json") ResponseFormat responseFormat,
+        @DecimalMin("0.0") @DecimalMax("1.0") Float temperatureInc,
+
+        @Schema(description = "Response format", defaultValue = "json")
+        ResponseFormat responseFormat,
         // Additional Settings
         @Schema(description = "Time offset in milliseconds", defaultValue = "0") @Min(0) Integer offsetTMs,
+
         @Schema(description = "Segment index offset", defaultValue = "0") @Min(0) Integer offsetN,
+
         @Schema(description = "Duration of audio to process in milliseconds (0 = all)", defaultValue = "0") @Min(0) Integer durationMs,
+
         @Schema(description = "Maximum number of text context tokens to store (-1 = unlimited)", defaultValue = "-1")
-                @Min(-1) Integer maxContext,
+        @Min(-1) Integer maxContext,
+
         @Schema(description = "Maximum segment length in characters", defaultValue = "0") @Min(0) @Max(100) Integer maxLen,
-        @Schema(description = "Split on word rather than on token", defaultValue = "false") Boolean splitOnWord,
+
+        @Schema(description = "Split on word rather than on token", defaultValue = "false")
+        Boolean splitOnWord,
+
         @Schema(description = "Number of best candidates to keep", defaultValue = "2") @Min(1) @Max(8) Integer bestOf,
+
         @Schema(description = "Beam size for beam search (-1 = greedy)", defaultValue = "-1") @Min(-1) @Max(8) Integer beamSize,
+
         @Schema(description = "Audio context size (0 = all)", defaultValue = "0") @Min(0) Integer audioContext,
+
         @Schema(description = "Word timestamp probability threshold", defaultValue = "0.01")
-                @DecimalMin("0.0") @DecimalMax("1.0") Float wordThreshold,
+        @DecimalMin("0.0") @DecimalMax("1.0") Float wordThreshold,
+
         @Schema(description = "Entropy threshold for decoder fail", defaultValue = "2.4") @DecimalMin("0.0") Float entropyThreshold,
+
         @Schema(description = "Log probability threshold for decoder fail", defaultValue = "-1.0")
-                Float logprobThreshold,
-        @Schema(description = "Do not include timestamps in output", defaultValue = "false") Boolean noTimestamps) {
+        Float logprobThreshold,
+
+        @Schema(description = "Do not include timestamps in output", defaultValue = "false")
+        Boolean noTimestamps) {
 
     public InferenceRequest {
         language = Objects.requireNonNullElse(language, "auto");

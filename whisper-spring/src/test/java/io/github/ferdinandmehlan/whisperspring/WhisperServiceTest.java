@@ -3,8 +3,8 @@ package io.github.ferdinandmehlan.whisperspring;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.ggerganov.whispercpp.WhisperCpp;
-import io.github.ggerganov.whispercpp.bean.WhisperSegment;
+import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,22 +22,22 @@ public class WhisperServiceTest extends BaseIntegrationTest {
         FileSystemResource audioFile = new FileSystemResource("src/test/resources/audio/sample.wav");
         assertThat(audioFile.exists()).isTrue();
 
-        WhisperCpp whisper = whisperService.loadModel("src/test/resources/test-models/ggml-tiny.bin");
+        WhisperNative whisper = new WhisperNative("build/resources/test/ggml-tiny.bin");
         List<WhisperSegment> segments = whisperService.transcribe(whisper, audioFile);
-        String result = segments.stream().map(WhisperSegment::getSentence).collect(Collectors.joining("\n"));
+        String result = segments.stream().map(WhisperSegment::text).collect(Collectors.joining("\n"));
         assertWithFile(result);
     }
 
     @Test
-    public void testLoadModel() {
-        WhisperCpp whisper = whisperService.loadModel("src/test/resources/test-models/ggml-tiny.bin");
+    public void testLoadModel() throws IOException {
+        WhisperNative whisper = new WhisperNative("build/resources/test/ggml-tiny.bin");
         assertThat(whisper).isNotNull();
     }
 
     @Test
     public void testLoadModelNonExistentFile() {
-        assertThatThrownBy(() -> whisperService.loadModel("src/test/resources/test-models/nonexistent.bin"))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Model could not be initialized");
+        assertThatThrownBy(() -> new WhisperNative("src/test/resources/test-models/nonexistent.bin"))
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("Failed to initialize WhisperNative");
     }
 }

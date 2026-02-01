@@ -1,6 +1,6 @@
 package io.github.ferdinandmehlan.whisperspringserver.inference;
 
-import io.github.ggerganov.whispercpp.bean.WhisperSegment;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
@@ -9,6 +9,8 @@ import java.util.List;
  * Includes both the full transcribed text and detailed segment information.
  */
 public record InferenceResponse(
-        @Schema(description = "The full transcribed text from the audio") String text,
+        @Schema(description = "The full transcribed text from the audio")
+        String text,
+
         @Schema(description = "Detailed segments of the transcription with timestamps")
-                List<WhisperSegment> segments) {}
+        List<WhisperSegment> segments) {}
