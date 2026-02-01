@@ -1,7 +1,7 @@
-[00:00:00.000 --> 00:00:04.720]   Whisper Spring is a Java library that integrates the Whisper.CPP speech-text engine into
-[00:00:04.720 --> 00:00:06.240]   spring-based applications.
-[00:00:06.240 --> 00:00:11.000]   It packages pre-built Linux binaries and Java bindings from the Whisper.CPP project, making
-[00:00:11.000 --> 00:00:16.840]   an easy-to-use, open AI-dust Whisper model for audio transcription.
+[00:00:00.000 --> 00:00:04.640]   Whisper spring is a Java library that integrates the Whisper.CPPE speech-text engine in
+[00:00:04.640 --> 00:00:06.280]   to spring-based applications.
+[00:00:06.280 --> 00:00:11.000]   It packages prebuilt Linux binaries and Java binings from the Whisper.CPPE project, making
+[00:00:11.000 --> 00:00:16.840]   an easy to use, open AI-dust Whisper model for audio transcription.
 [00:00:16.840 --> 00:00:21.360]   The project is structured into three modules, a core library, a command line interface,
 [00:00:21.360 --> 00:00:24.640]   and a server component, supporting a range of deployment scenarios.
 [ Progress: 100% ]

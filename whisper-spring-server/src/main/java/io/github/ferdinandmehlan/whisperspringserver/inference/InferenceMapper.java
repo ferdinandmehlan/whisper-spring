@@ -1,8 +1,8 @@
 package io.github.ferdinandmehlan.whisperspringserver.inference;
 
-import io.github.ferdinandmehlan.whisperspring.WhisperParams;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
 import io.github.ferdinandmehlan.whisperspringserver.WhisperServerConfiguration;
-import io.github.ggerganov.whispercpp.bean.WhisperSegment;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -31,29 +31,27 @@ public class InferenceMapper {
      * @param request the inference request with transcription parameters
      * @return WhisperParams configured for transcription
      */
-    public WhisperParams toWhisperParams(InferenceRequest request) {
-        return new WhisperParams(
-                request.language(),
-                request.translate(),
-                request.prompt(),
-                request.temperature(),
-                request.temperatureInc(),
-                request.offsetTMs(),
-                request.offsetN(),
-                request.durationMs(),
-                request.maxContext(),
-                request.maxLen(),
-                request.splitOnWord(),
-                request.bestOf(),
-                request.beamSize(),
-                request.audioContext(),
-                request.wordThreshold(),
-                request.entropyThreshold(),
-                request.logprobThreshold(),
-                request.noTimestamps(),
-                configuration.getThreads(),
-                null,
-                null);
+    public WhisperTranscribeConfig toWhisperParams(InferenceRequest request) {
+        WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+        config.language = request.language();
+        config.translate = request.translate();
+        config.initialPrompt = request.prompt();
+        config.temperature = request.temperature();
+        config.temperatureInc = request.temperatureInc();
+        config.offsetMs = request.offsetTMs();
+        config.durationMs = request.durationMs();
+        config.nMaxTextCtx = request.maxContext() == -1 ? 16384 : request.maxContext();
+        config.maxLen = request.maxLen();
+        config.splitOnWord = request.splitOnWord();
+        config.greedyBestOf = request.bestOf();
+        config.beamSize = request.beamSize();
+        config.audioCtx = request.audioContext();
+        config.tholdPt = request.wordThreshold();
+        config.entropyThold = request.entropyThreshold();
+        config.logprobThold = request.logprobThreshold();
+        config.noTimestamps = request.noTimestamps();
+        config.nThreads = configuration.getThreads();
+        return config;
     }
 
     /**
@@ -65,7 +63,7 @@ public class InferenceMapper {
     public String toText(List<WhisperSegment> segments) {
         StringBuilder text = new StringBuilder();
         for (WhisperSegment segment : segments) {
-            text.append(segment.getSentence().trim());
+            text.append(segment.text().trim());
         }
         return text.toString();
     }
@@ -80,13 +78,13 @@ public class InferenceMapper {
         StringBuilder srt = new StringBuilder();
         int index = 1;
         for (WhisperSegment segment : segments) {
-            long start = segment.getStart();
-            long end = segment.getEnd();
+            long start = segment.start();
+            long end = segment.end();
             String startTime = formatTime(start);
             String endTime = formatTime(end);
             srt.append(index).append("\n");
             srt.append(startTime).append(" --> ").append(endTime).append("\n");
-            srt.append(segment.getSentence().trim()).append("\n\n");
+            srt.append(segment.text().trim()).append("\n\n");
             index++;
         }
         return srt.toString();
@@ -102,9 +100,7 @@ public class InferenceMapper {
         String text = toText(segments);
         List<WhisperSegment> trimmedSegments = segments.stream()
                 .map(segment -> new WhisperSegment(
-                        segment.getStart(),
-                        segment.getEnd(),
-                        segment.getSentence().trim()))
+                        segment.start(), segment.end(), segment.text().trim()))
                 .collect(Collectors.toList());
         return new InferenceResponse(text, trimmedSegments);
     }

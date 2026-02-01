@@ -1,9 +1,9 @@
 # Whisper Spring
 
-Whisper Spring attempts to seamlessly integrate whisper transcription capabilities into the Spring ecosystem by building on the native C++ implementation of whisper.cpp.  
-It provides autoconfigured services ready to use Whisper within Spring applications.  
-It also includes a CLI implementation of this library and a Spring server implementation that provides a ready-to-use Docker image with an OAI-like transcription API.  
-The library also packs and loads compiled native libs of whisper.cpp, with the goal of abstracting away the complexities and supporting most common architectures.  
+Whisper Spring integrates whisper transcription into the Spring ecosystem using Java 25's Foreign Function & Memory (FFM) API.  
+The library provides autoconfigured services ready to use Whisper within Spring applications.  
+It also includes a CLI implementation and a Spring server implementation that provides a ready-to-use Docker image with an OAI-like transcription API.  
+The library leverages FFM for direct, high-performance native interop with whisper.cpp's compiled native libraries.
 
 The project integrates [`whisper.cpp`](https://github.com/ggml-org/whisper.cpp) as a Git submodule, 
 which is an independent project providing optimized C++ implementations of Whisper inference.
@@ -84,9 +84,8 @@ public class MyService {
     private WhisperService whisperService;
 
     public void transcribe() throws IOException {
-        FileSystemResource audioFile = new FileSystemResource("sample.wav");
-        WhisperCpp whisper = whisperService.loadModel("ggml-tiny.bin");
-        List<WhisperSegment> segments = whisperService.transcribe(whisper, audioFile);
+        WhisperNative whisper = new WhisperNative("ggml-tiny.bin");
+        List<WhisperSegment> segments = whisperService.transcribe(whisper, new FileSystemResource("sample.wav"));
     }
 }
 ```

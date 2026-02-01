@@ -1,0 +1,9 @@
+Native library not found: whisper (cuda)
+Platform: windows/x64
+Resource path: /native/windows/x64/cuda/whisper.dll
+
+Possible solutions:
+1. Download or build native libraries for your platform from:
+   https://github.com/ggerganov/whisper.cpp/releases
+2. Ensure native libraries are included in the classpath
+3. Check that the library exists at: /native/

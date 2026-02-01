@@ -1,8 +1,10 @@
 package io.github.ferdinandmehlan.whisperspringcli;
 
-import com.sun.jna.Pointer;
-import io.github.ggerganov.whispercpp.callbacks.WhisperProgressCallback;
+import io.github.ferdinandmehlan.whisperspring._native.callback.WhisperProgressCallback;
 import java.io.PrintStream;
+import java.lang.foreign.MemorySegment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Progress callback implementation for whisper transcription.
@@ -14,26 +16,14 @@ public class WhisperProgressPrinter implements WhisperProgressCallback {
     private static final int progressStep = 5;
     private int progressPrev = 0;
 
-    /**
-     * Constructs a progress printer with the specified output stream.
-     *
-     * @param err the stream to print progress messages to
-     */
+    private static final Logger logger = LoggerFactory.getLogger(WhisperProgressPrinter.class);
+
     public WhisperProgressPrinter(PrintStream err) {
         this.out = err;
     }
 
-    /**
-     * Callback invoked to report transcription progress.
-     * Prints progress percentage at regular intervals.
-     *
-     * @param ctx the Whisper context pointer
-     * @param state the Whisper state pointer
-     * @param progress current progress percentage (0-100)
-     * @param user_data user data pointer (unused)
-     */
     @Override
-    public void callback(Pointer ctx, Pointer state, int progress, Pointer user_data) {
+    public void callback(MemorySegment ctx, MemorySegment state, int progress, MemorySegment userData) {
         progress = Math.min(progress, 100);
         if (progress >= progressPrev + progressStep) {
             progressPrev += progressStep;

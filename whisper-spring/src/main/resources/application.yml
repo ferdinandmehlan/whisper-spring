@@ -1,4 +1,0 @@
-whisper:
-  libraries:
-    mode: CPU # can be CPU, CUDA or Custom
-    path: ./libs # path to load custom libraries from if mode is set to Custom

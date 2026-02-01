@@ -21,17 +21,26 @@ dependencies {
 }
 
 /*
+ * Compile
+ */
+
+tasks.bootJar {
+    manifest {
+        attributes["Enable-Native-Access"] = "ALL-UNNAMED"
+    }
+}
+
+/*
  * Check
  */
 
-tasks.register<Copy>("copyTestModel") {
-    from("$rootDir/models/ggml-tiny.bin")
-    into("src/test/resources/test-models/")
-    dependsOn(":downloadTinyModel")
-    onlyIf { !file("src/test/resources/test-models/ggml-tiny.bin").exists() }
+tasks.processTestResources {
+    from("$rootDir/models") {
+        include("ggml-tiny.bin")
+    }
 }
 
 tasks.test {
     useJUnitPlatform()
-    dependsOn("copyTestModel")
+    dependsOn(":downloadTinyModel")
 }

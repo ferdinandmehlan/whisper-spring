@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.ferdinandmehlan.whisperspring.WhisperParams;
+import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.junit.jupiter.api.Test;
@@ -176,7 +178,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testPrinterConfigurationWithNoPrintsDisabled() {
+    void testPrinterConfigurationWithNoPrintsDisabled() throws IOException {
         // Given
         WhisperCliCommand command = new WhisperCliCommand(whisperService);
         command.noPrints = false; // Enable printing
@@ -186,10 +188,11 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
         command.printSpecial = true;
 
         // When
-        WhisperParams params = command.toWhisperParams();
+        WhisperTranscribeConfig config =
+                command.toWhisperTranscribeConfig(new WhisperNative("build/resources/test/ggml-tiny.bin"));
 
         // Then
-        assertNotNull(params, "Params should be created");
+        assertNotNull(config, "Params should be created");
         assertFalse(command.noPrints, "No prints should be disabled");
         assertTrue(command.printProgress, "Print progress should be enabled");
         assertTrue(command.printColors, "Print colors should be enabled");
@@ -198,7 +201,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testPrinterConfigurationWithNoPrintsEnabled() {
+    void testPrinterConfigurationWithNoPrintsEnabled() throws IOException {
         // Given
         WhisperCliCommand command = new WhisperCliCommand(whisperService);
         command.noPrints = true; // Disable printing
@@ -208,10 +211,11 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
         command.printSpecial = true;
 
         // When
-        WhisperParams params = command.toWhisperParams();
+        WhisperTranscribeConfig config =
+                command.toWhisperTranscribeConfig(new WhisperNative("build/resources/test/ggml-tiny.bin"));
 
         // Then
-        assertNotNull(params, "Params should be created");
+        assertNotNull(config, "Params should be created");
         assertTrue(command.noPrints, "No prints should be enabled");
         // Even though individual flags are set, no callbacks should be configured when noPrints is true
         assertTrue(command.printProgress, "Print progress flag should still be set");
@@ -219,7 +223,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testPrinterConfigurationWithTimestampsDisabled() {
+    void testPrinterConfigurationWithTimestampsDisabled() throws IOException {
         // Given
         WhisperCliCommand command = new WhisperCliCommand(whisperService);
         command.noPrints = false;
@@ -229,10 +233,11 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
         command.printSpecial = false;
 
         // When
-        WhisperParams params = command.toWhisperParams();
+        WhisperTranscribeConfig config =
+                command.toWhisperTranscribeConfig(new WhisperNative("build/resources/test/ggml-tiny.bin"));
 
         // Then
-        assertNotNull(params, "Params should be created");
+        assertNotNull(config, "Params should be created");
         assertFalse(command.noPrints, "No prints should be disabled");
         assertTrue(command.printProgress, "Print progress should be enabled");
         assertTrue(command.printColors, "Print colors should be enabled");
@@ -241,7 +246,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testPrinterConfigurationMinimalSetup() {
+    void testPrinterConfigurationMinimalSetup() throws IOException {
         // Given
         WhisperCliCommand command = new WhisperCliCommand(whisperService);
         command.noPrints = false;
@@ -251,10 +256,11 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
         command.printSpecial = false; // No special tokens
 
         // When
-        WhisperParams params = command.toWhisperParams();
+        WhisperTranscribeConfig config =
+                command.toWhisperTranscribeConfig(new WhisperNative("build/resources/test/ggml-tiny.bin"));
 
         // Then
-        assertNotNull(params, "Params should be created");
+        assertNotNull(config, "Params should be created");
         assertFalse(command.printProgress, "Print progress should be disabled");
         assertFalse(command.printColors, "Print colors should be disabled");
         assertTrue(command.noTimestamps, "No timestamps should be enabled");

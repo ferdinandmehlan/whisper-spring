@@ -1,14 +1,15 @@
 # Whisper Spring Core Library
 
-The core library of Whisper Spring provides seamless integration of Whisper transcription capabilities into Spring Boot applications.  
-It offers autoconfigured services, automatic native library loading,   
-and a clean API for audio transcription integrating the optimized C++ implementation from whisper.cpp.
+The core library of Whisper Spring provides seamless integration of Whisper transcription capabilities into Spring Boot applications using Java 25's Foreign Function & Memory (FFM) API.  
+It offers autoconfigured services, automatic native library loading via FFM SymbolLookup, and a clean API for audio transcription integrating the optimized C++ implementation from whisper.cpp.
 
 ## Features
 
+- **FFM Integration**: Direct native interop using Java 25's Foreign Function & Memory API for high-performance calls
 - **Auto-configuration**: Spring Boot auto-configuration for easy integration
 - **Native Library Management**: Ships with precompiled native libraries for CPU and CUDA inference, 
-  with automatic loading and extraction. Alternatively, supports providing self-compiled native libraries (e.g. for compiling with specific flags).
+  with automatic loading through FFM's `SymbolLookup`. Alternatively, supports providing self-compiled native libraries.
+- **Memory Safety**: Arena-based memory management ensures proper cleanup of native resources
 - **Service Layer**: Ready-to-use `WhisperService` for transcription operations
 - **Flexible Configuration**: Extensive parameter customization for transcription
 - **Multi-platform Support**: Supports CPU and CUDA architectures across major platforms
@@ -43,17 +44,6 @@ Or for Maven:
 </dependency>
 ```
 
-## Configuration
-
-The library provides configuration through Spring Boot's `@ConfigurationProperties`. Add to your `application.yml`:
-
-```yaml
-whisper:
-  libraries:
-    mode: CPU  # CPU, CUDA, or Custom
-    path: ./libraries  # Path to custom libraries (only used when mode is Custom)
-```
-
 ## Usage
 
 ### Basic Transcription
@@ -68,8 +58,8 @@ public class TranscriptionService {
     private WhisperService whisperService;
 
     public List<WhisperSegment> transcribeAudio(File audioFile) throws IOException {
-        // Load a Whisper model
-        WhisperCpp whisper = whisperService.loadModel("path/to/model.bin");
+        // Create a WhisperNative instance (loads model via FFM)
+        WhisperNative whisper = new WhisperNative("path/to/model.bin");
 
         // Transcribe the audio file
         FileSystemResource audioResource = new FileSystemResource(audioFile);
@@ -80,7 +70,7 @@ public class TranscriptionService {
 
 ### Advanced Configuration
 
-Customize transcription parameters using `WhisperParams`:
+Customize transcription parameters using `WhisperTranscribeConfig`:
 
 ```java
 @Service
@@ -90,59 +80,71 @@ public class AdvancedTranscriptionService {
     private WhisperService whisperService;
 
     public List<WhisperSegment> transcribeWithCustomParams(File audioFile) throws IOException {
-        WhisperCpp whisper = whisperService.loadModel("models/ggml-base.bin");
+        WhisperNative whisper = new WhisperNative("models/ggml-base.bin");
 
         // Configure transcription parameters
-        WhisperParams params = new WhisperParams(
-            "en",        // language
-            false,       // translate
-            null,        // prompt
-            0.0f,        // temperature
-            0.2f,        // temperatureInc
-            2,           // offsetTMs
-            -1,          // offsetN
-            0,           // durationMs
-            -1,          // maxContext
-            0,           // maxLen
-            false,       // splitOnWord
-            5,           // bestOf
-            5,           // beamSize
-            0,           // audioContext
-            0.01f,       // wordThreshold
-            2.4f,        // entropyThreshold
-            -1.0f,       // logprobThreshold
-            false,       // noTimestamps
-            4,           // threads
-            null,        // newSegmentCallback
-            null         // progressCallback
-        );
+        WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+        config.language = "en";
+        config.translate = true;
+        config.nThreads = 4;
+        config.temperature = 0.0f;
+        config.temperatureInc = 0.2f;
 
         FileSystemResource audioResource = new FileSystemResource(audioFile);
-        return whisperService.transcribe(whisper, params, audioResource);
+        return whisperService.transcribe(whisper, config, audioResource);
     }
 }
 ```
 
 ### Callbacks for Real-time Processing
 
-Implement callbacks for progress tracking and segment processing:
+Implement callbacks for progress tracking and segment processing using the sealed `WhisperCallback` interface:
 
 ```java
-WhisperParams params = new WhisperParams(
-    // ... other parameters
-    new WhisperNewSegmentCallback() {
-        @Override
-        public void callback(WhisperContext context, WhisperSegment segment) {
-            System.out.println("New segment: " + segment.getText());
-        }
-    },
-    new WhisperProgressCallback() {
-        @Override
-        public void callback(WhisperContext context, int progress) {
-            System.out.println("Progress: " + progress + "%");
-        }
+WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+
+config.newSegmentCallback = new WhisperNewSegmentCallback() {
+    @Override
+    public void callback(MemorySegment ctx, MemorySegment state, int nNew, MemorySegment userData) {
+        System.out.println("New segment(s) decoded: " + nNew);
     }
-);
+};
+
+config.progressCallback = new WhisperProgressCallback() {
+    @Override
+    public void callback(MemorySegment ctx, MemorySegment state, int progress, MemorySegment userData) {
+        System.out.println("Progress: " + progress + "%");
+    }
+};
+
+config.encoderBeginCallback = new WhisperEncoderBeginCallback() {
+    @Override
+    public boolean callback(MemorySegment ctx, MemorySegment state, MemorySegment userData) {
+        System.out.println("Encoder starting...");
+        return true; // continue encoding
+    }
+};
+```
+
+### Direct WhisperNative Usage
+
+For more control, use `WhisperNative` directly with FFM-based transcription:
+
+```java
+try (WhisperNative whisper = new WhisperNative("ggml-base.bin")) {
+    float[] audioSamples = loadAudioSamples("speech.wav");
+    
+    WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+    config.language = "en";
+    config.printProgress = true;
+    
+    List<WhisperSegment> segments = whisper.transcribe(audioSamples, config);
+    
+    for (WhisperSegment segment : segments) {
+        System.out.printf("[%.2fs -> %.2fs]: %s%n", 
+            segment.start() / 100.0, segment.end() / 100.0, segment.text());
+    }
+}
 ```
 
 ## Audio Requirements
@@ -154,3 +156,18 @@ The library and the underlying whisper models expect audio in the following form
 - **Bit Depth**: 16-bit
 
 The `WaveService` checks for format compatibility.
+
+## Foreign Function & Memory API
+
+This library uses Java 25's Foreign Function & Memory (FFM) API for native interop:
+
+- **Native Calls**: Functions are invoked via `Linker.nativeLinker()` without JNI overhead
+- **Memory Management**: `Arena` instances manage native memory lifecycle automatically
+- **Upcall Stubs**: Java callbacks are registered as native function pointers using `Linker.upcallStub()`
+- **Symbol Lookup**: Native symbols are resolved via FFM's `SymbolLookup`
+
+This approach provides:
+- Better performance through direct native calls
+- Automatic memory safety via arena-based management
+- No manual JNI code generation required
+- Full integration with Java's type system

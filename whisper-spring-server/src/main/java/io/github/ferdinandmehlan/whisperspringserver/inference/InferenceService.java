@@ -1,13 +1,12 @@
 package io.github.ferdinandmehlan.whisperspringserver.inference;
 
-import io.github.ferdinandmehlan.whisperspring.WhisperParams;
 import io.github.ferdinandmehlan.whisperspring.WhisperService;
+import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperContextConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
 import io.github.ferdinandmehlan.whisperspringserver.WhisperServerConfiguration;
-import io.github.ggerganov.whispercpp.WhisperCpp;
-import io.github.ggerganov.whispercpp.bean.WhisperSegment;
-import io.github.ggerganov.whispercpp.params.WhisperContextParams;
 import jakarta.annotation.PostConstruct;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -24,7 +23,7 @@ public class InferenceService {
 
     private final WhisperServerConfiguration config;
     private final WhisperService whisperService;
-    private WhisperCpp whisper;
+    private WhisperNative whisper;
     private final ReentrantLock lock = new ReentrantLock();
 
     /**
@@ -43,29 +42,28 @@ public class InferenceService {
      * Initializes the Whisper context after bean construction.
      * Configures GPU usage and flash attention based on server configuration.
      *
-     * @throws FileNotFoundException if the model file cannot be found
+     * @throws IOException if the model file cannot be found
      */
     @PostConstruct
-    public void init() throws FileNotFoundException {
-        whisper = new WhisperCpp();
-        WhisperContextParams.ByValue contextParams = whisper.getContextDefaultParams();
-        contextParams.useGpu(!config.isNoGpu());
-        contextParams.useFlashAttn(config.isFlashAttn());
-        whisper.initContext(config.getModel(), contextParams);
+    public void init() throws IOException {
+        WhisperContextConfig contextConfig = new WhisperContextConfig();
+        contextConfig.useGpu = !config.isNoGpu();
+        contextConfig.flashAttn = config.isFlashAttn();
+        whisper = new WhisperNative(config.getModel(), contextConfig);
     }
 
     /**
      * Performs audio transcription using the configured Whisper model.
      * This method is thread-safe and uses locking to ensure sequential access to the Whisper context.
      *
-     * @param params the whisper transcription parameters
+     * @param config the whisper transcription configuration
      * @param audioFile the audio file resource to transcribe
      * @return list of transcription segments with timestamps and text
      */
-    public List<WhisperSegment> transcribe(WhisperParams params, Resource audioFile) {
+    public List<WhisperSegment> transcribe(WhisperTranscribeConfig config, Resource audioFile) {
         lock.lock();
         try {
-            return whisperService.transcribe(whisper, params, audioFile);
+            return whisperService.transcribe(whisper, config, audioFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
