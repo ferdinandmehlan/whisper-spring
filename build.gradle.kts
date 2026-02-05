@@ -1,9 +1,12 @@
+import de.undercouch.gradle.tasks.download.Download
+
 plugins {
     id("com.diffplug.spotless") version "7.0.4"
+    id("de.undercouch.download") version "5.6.0"
 }
 
 tasks.wrapper {
-    gradleVersion = "9.1.0"
+    gradleVersion = "9.2.0"
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -52,7 +55,7 @@ spotless {
  * Download tiny model for testing
  */
 
-tasks.register<Exec>("downloadTinyModel") {
-    commandLine("$rootDir/models/download-model.sh", "tiny")
-    onlyIf { !file("models/ggml-tiny.bin").exists() }
+tasks.register<Download>("downloadTinyModel") {
+    src("https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin")
+    dest(file("models/ggml-tiny.bin"))
 }
