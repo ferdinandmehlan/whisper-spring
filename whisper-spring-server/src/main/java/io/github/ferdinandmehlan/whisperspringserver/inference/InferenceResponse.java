@@ -1,6 +1,6 @@
 package io.github.ferdinandmehlan.whisperspringserver.inference;
 
-import io.github.ggerganov.whispercpp.bean.WhisperSegment;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 

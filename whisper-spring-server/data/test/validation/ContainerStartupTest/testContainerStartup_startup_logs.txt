@@ -10,17 +10,16 @@ _    _ _     _                       _____            _
 whisper-spring-server 0.1.0
 spring-boot 4.0.0
 
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Starting WhisperSpringServerApplication v0.1.0 using Java 21.0.9 with PID 1 (/app/whisper-spring-server.jar started by root in /app)
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Starting WhisperSpringServerApplication v0.1.0 using Java 25.0.1 with PID 1 (/app/whisper-spring-server.jar started by root in /app)
 [TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : No active profile set, falling back to 1 default profile: "default"
 [TIMESTAMP]  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
 [TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
 [TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.14]
 [TIMESTAMP]  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in [TIME] ms
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Loading /native/linux-x86-64/libggml-base.so
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Loading /native/linux-x86-64/libggml-cpu.so
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Loading /native/linux-x86-64/libggml.so
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Loading /native/linux-x86-64/libwhisper.so
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.loader.WhisperNativeLoader       : Native libraries loaded successfully
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.NativeLoader             : Extracting library from resource: /native/linux/x64/libggml-base.so
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.NativeLoader             : Extracting library from resource: /native/linux/x64/libggml-cpu.so
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.NativeLoader             : Extracting library from resource: /native/linux/x64/libggml.so
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.NativeLoader             : Extracting library from resource: /native/linux/x64/libwhisper.so
 whisper_init_from_file_with_params_no_state: loading model from 'models/ggml-tiny.bin'
 whisper_init_with_params_no_state: use gpu    = 1
 whisper_init_with_params_no_state: flash attn = 0

@@ -26,7 +26,7 @@ public class ContainerStartupTest extends BaseIntegrationTest {
                     "ghcr.io/ferdinandmehlan/whisper-spring-server:dev")
             .withExposedPorts(8080)
             .withCreateContainerCmdModifier(cmd -> cmd.withName("whisper-spring-server-" + UUID.randomUUID()))
-            .withFileSystemBind("src/test/resources/test-models", "/app/models", BindMode.READ_ONLY)
+            .withFileSystemBind("build/resources/test/ggml-tiny.bin", "/app/models/ggml-tiny.bin", BindMode.READ_ONLY)
             .waitingFor(Wait.forLogMessage(".*Tomcat started on port.*", 1));
 
     private static String getWhisperSpringServerHost() {

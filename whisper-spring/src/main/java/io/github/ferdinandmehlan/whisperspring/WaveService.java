@@ -26,7 +26,7 @@ public class WaveService {
      * @return an array of float samples representing the audio waveform
      * @throws IllegalArgumentException if the resource is null, does not exist, or is not in the supported format
      */
-    float[] toWaveSamples(Resource resource) {
+    public float[] toWaveSamples(Resource resource) {
         if (resource == null || !resource.exists()) {
             throw new IllegalArgumentException("Audio file does not exist: " + resource);
         }

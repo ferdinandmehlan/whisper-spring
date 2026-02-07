@@ -23,7 +23,7 @@ public class WhisperSpringCliTest extends BaseIntegrationTest {
         WhisperCliCommand command = new WhisperCliCommand(whisperService, new PrintStream(out), new PrintStream(err));
 
         // Configure command with tiny model and print flags
-        command.model = "src/test/resources/test-models/ggml-tiny.bin";
+        command.model = "build/resources/test/ggml-tiny.bin";
         command.file = Path.of("src/test/resources/audio/sample.wav");
         command.printProgress = true;
         command.printColors = false;

@@ -1,8 +1,7 @@
 # Whisper Spring Core Library
 
 The core library of Whisper Spring provides seamless integration of Whisper transcription capabilities into Spring Boot applications.  
-It offers autoconfigured services, automatic native library loading,   
-and a clean API for audio transcription integrating the optimized C++ implementation from whisper.cpp.
+It offers autoconfigured services, automatic native library loading, and a clean API for audio transcription integrating the optimized C++ implementation from whisper.cpp.
 
 ## Features
 
@@ -41,17 +40,6 @@ Or for Maven:
     <artifactId>whisper-spring</artifactId>
     <version>0.1.0</version>
 </dependency>
-```
-
-## Configuration
-
-The library provides configuration through Spring Boot's `@ConfigurationProperties`. Add to your `application.yml`:
-
-```yaml
-whisper:
-  libraries:
-    mode: CPU  # CPU, CUDA, or Custom
-    path: ./libraries  # Path to custom libraries (only used when mode is Custom)
 ```
 
 ## Usage

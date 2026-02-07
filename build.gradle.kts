@@ -7,7 +7,7 @@ tasks.wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-val javaVersion by extra(JavaLanguageVersion.of("25"))
+val javaVersion: JavaLanguageVersion by extra(JavaLanguageVersion.of("25"))
 
 allprojects {
     group = "io.github.ferdinandmehlan"
@@ -20,18 +20,19 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "com.diffplug.spotless")
-
-    spotless {
-        java {
-            target("src/**/*.java")
-            targetExclude("**/test-models/")
-            removeUnusedImports()
-            palantirJavaFormat()
-            formatAnnotations()
-            toggleOffOn()
-        }
-    }
+// Has issues with JDK 25
+//    apply(plugin = "com.diffplug.spotless")
+//
+//    spotless {
+//        java {
+//            target("src/**/*.java")
+//            targetExclude("**/test-models/")
+//            removeUnusedImports()
+//            palantirJavaFormat()
+//            formatAnnotations()
+//            toggleOffOn()
+//        }
+//    }
 }
 
 /*
