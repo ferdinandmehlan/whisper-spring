@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Provides endpoints for transcribing audio files using Whisper models.
  */
 @RestController
-@RequestMapping("/inference")
+@RequestMapping("/api/inference")
 public class InferenceController {
 
     private final InferenceService inferenceService;

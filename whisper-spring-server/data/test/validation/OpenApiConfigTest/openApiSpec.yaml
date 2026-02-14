@@ -5,7 +5,7 @@ info:
 servers:
 - url: http://localhost:8080
 paths:
-  /inference:
+  /api/inference:
     post:
       tags:
       - inference-controller

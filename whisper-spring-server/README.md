@@ -26,7 +26,6 @@ To enable CUDA acceleration in the Docker container:
 ```bash
 docker run --gpus all -p 8080:8080 \
   -v ./models:/app/models \
-  -e WHISPER_LIBRARIES_MODE=CUDA \
   ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0
 ```
 
@@ -66,7 +65,7 @@ This builds the Docker image and starts the containerized server.
 ## Usage
 
 ```bash
-curl -X POST http://localhost:8080/inference \
+curl -X POST http://localhost:8080/api/inference \
   -F "file=@sample.wav" \
   -F "responseFormat=json"
 ```

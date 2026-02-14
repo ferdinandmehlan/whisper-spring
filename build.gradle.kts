@@ -28,7 +28,7 @@ subprojects {
     spotless {
         java {
             target("src/**/*.java")
-            targetExclude("**/test-models/")
+            targetExclude("build")
             removeUnusedImports()
             palantirJavaFormat()
             formatAnnotations()
