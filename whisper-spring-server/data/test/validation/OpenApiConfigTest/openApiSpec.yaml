@@ -5,16 +5,16 @@ info:
 servers:
 - url: http://localhost:8080
 paths:
-  /api/inference:
+  /api/transcription:
     post:
       tags:
-      - inference-controller
-      operationId: inference
+      - transcription-controller
+      operationId: transcription
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/InferenceRequest"
+              $ref: "#/components/schemas/TranscriptionRequest"
       responses:
         "200":
           description: OK
@@ -24,7 +24,7 @@ paths:
                 type: object
 components:
   schemas:
-    InferenceRequest:
+    TranscriptionRequest:
       type: object
       properties:
         file:

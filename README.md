@@ -32,7 +32,7 @@ which is an independent project providing optimized C++ implementations of Whisp
 3. Use the Web-UI at http://localhost:8080 or transcribe an audio file directly:
 
    ```sh
-   curl -X POST http://localhost:8080/api/inference \
+   curl -X POST http://localhost:8080/api/transcription \
      -F "file=@/audio/sample.wav" \
      -F "responseFormat=json"
    ```
@@ -119,7 +119,7 @@ Start the server with:
 Then transcribe via API:
 
 ```sh
-  curl -X POST http://localhost:8080/api/inference \
+  curl -X POST http://localhost:8080/api/transcription \
     -F "file=@sample.wav" \
     -F "responseFormat=json"
 ```

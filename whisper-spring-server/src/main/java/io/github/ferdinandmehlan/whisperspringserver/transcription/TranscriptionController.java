@@ -1,4 +1,4 @@
-package io.github.ferdinandmehlan.whisperspringserver.inference;
+package io.github.ferdinandmehlan.whisperspringserver.transcription;
 
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
@@ -12,25 +12,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * REST controller for handling audio transcription inference requests.
+ * REST controller for handling audio transcription requests.
  * Provides endpoints for transcribing audio files using Whisper models.
  */
 @RestController
-@RequestMapping("/api/inference")
-public class InferenceController {
+@RequestMapping("/api/transcription")
+public class TranscriptionController {
 
-    private final InferenceService inferenceService;
-    private final InferenceMapper inferenceMapper;
+    private final TranscriptionService transcriptionService;
+    private final TranscriptionMapper transcriptionMapper;
 
     /**
-     * Creates a new InferenceController with required dependencies.
+     * Creates a new TranscriptionController with required dependencies.
      *
-     * @param inferenceService the service for performing transcription
-     * @param inferenceMapper the mapper for converting between request/response objects
+     * @param transcriptionService the service for performing transcription
+     * @param transcriptionMapper the mapper for converting between request/response objects
      */
-    public InferenceController(InferenceService inferenceService, InferenceMapper inferenceMapper) {
-        this.inferenceService = inferenceService;
-        this.inferenceMapper = inferenceMapper;
+    public TranscriptionController(TranscriptionService transcriptionService, TranscriptionMapper transcriptionMapper) {
+        this.transcriptionService = transcriptionService;
+        this.transcriptionMapper = transcriptionMapper;
     }
 
     /**
@@ -38,24 +38,24 @@ public class InferenceController {
      * Accepts multipart form data with audio file and transcription parameters,
      * returns transcription results in the requested format.
      *
-     * @param request the inference request containing audio file and parameters
+     * @param request the transcription request containing audio file and parameters
      * @return ResponseEntity with transcription results in JSON, text, or SRT format
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> inference(@Valid @ModelAttribute InferenceRequest request) {
-        WhisperTranscribeConfig config = inferenceMapper.toWhisperParams(request);
+    public ResponseEntity<?> transcription(@Valid @ModelAttribute TranscriptionRequest request) {
+        WhisperTranscribeConfig config = transcriptionMapper.toWhisperParams(request);
 
         List<WhisperSegment> segments =
-                inferenceService.transcribe(config, request.file().getResource());
+                transcriptionService.transcribe(config, request.file().getResource());
 
         if (request.responseFormat() == ResponseFormat.TEXT) {
-            String text = inferenceMapper.toText(segments);
+            String text = transcriptionMapper.toText(segments);
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(text);
         } else if (request.responseFormat() == ResponseFormat.SRT) {
-            String srt = inferenceMapper.toSrt(segments);
+            String srt = transcriptionMapper.toSrt(segments);
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(srt);
         } else {
-            InferenceResponse response = inferenceMapper.toJson(segments);
+            TranscriptionResponse response = transcriptionMapper.toJson(segments);
             return ResponseEntity.ok(response);
         }
     }
