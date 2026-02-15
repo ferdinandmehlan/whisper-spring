@@ -1,4 +1,4 @@
-package io.github.ferdinandmehlan.whisperspringserver.inference;
+package io.github.ferdinandmehlan.whisperspringserver.transcription;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
@@ -11,10 +11,10 @@ import java.util.Objects;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * Request object for audio transcription inference.
+ * Request object for audio transcription.
  * Contains all parameters for configuring the Whisper transcription process.
  */
-public record InferenceRequest(
+public record TranscriptionRequest(
         // File
         @Schema(description = "Audio file to transcribe") MultipartFile file,
         // Base Settings
@@ -66,7 +66,7 @@ public record InferenceRequest(
         @Schema(description = "Do not include timestamps in output", defaultValue = "false")
         Boolean noTimestamps) {
 
-    public InferenceRequest {
+    public TranscriptionRequest {
         language = Objects.requireNonNullElse(language, "auto");
         translate = Objects.requireNonNullElse(translate, false);
         temperature = Objects.requireNonNullElse(temperature, 0.0f);

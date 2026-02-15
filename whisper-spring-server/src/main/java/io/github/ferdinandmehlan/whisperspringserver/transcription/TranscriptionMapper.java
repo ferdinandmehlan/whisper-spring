@@ -1,4 +1,4 @@
-package io.github.ferdinandmehlan.whisperspringserver.inference;
+package io.github.ferdinandmehlan.whisperspringserver.transcription;
 
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
@@ -8,30 +8,30 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /**
- * Mapper component for converting between inference request/response objects and Whisper parameters.
+ * Mapper component for converting between transcription request/response objects and Whisper parameters.
  * Handles transformation of data between different formats for transcription processing.
  */
 @Component
-public class InferenceMapper {
+public class TranscriptionMapper {
 
     private final WhisperServerConfiguration configuration;
 
     /**
-     * Creates a new InferenceMapper with server configuration.
+     * Creates a new TranscriptionMapper with server configuration.
      *
      * @param configuration the server configuration containing thread settings
      */
-    public InferenceMapper(WhisperServerConfiguration configuration) {
+    public TranscriptionMapper(WhisperServerConfiguration configuration) {
         this.configuration = configuration;
     }
 
     /**
-     * Converts an InferenceRequest to WhisperParams for transcription.
+     * Converts an TranscriptionRequest to WhisperParams for transcription.
      *
-     * @param request the inference request with transcription parameters
+     * @param request the transcription request with transcription parameters
      * @return WhisperParams configured for transcription
      */
-    public WhisperTranscribeConfig toWhisperParams(InferenceRequest request) {
+    public WhisperTranscribeConfig toWhisperParams(TranscriptionRequest request) {
         WhisperTranscribeConfig config = new WhisperTranscribeConfig();
         config.language = request.language();
         config.translate = request.translate();
@@ -94,15 +94,15 @@ public class InferenceMapper {
      * Converts whisper segments to JSON response format.
      *
      * @param segments the list of whisper segments
-     * @return InferenceResponse with full text and segment details
+     * @return TranscriptionResponse with full text and segment details
      */
-    public InferenceResponse toJson(List<WhisperSegment> segments) {
+    public TranscriptionResponse toJson(List<WhisperSegment> segments) {
         String text = toText(segments);
         List<WhisperSegment> trimmedSegments = segments.stream()
                 .map(segment -> new WhisperSegment(
                         segment.start(), segment.end(), segment.text().trim()))
                 .collect(Collectors.toList());
-        return new InferenceResponse(text, trimmedSegments);
+        return new TranscriptionResponse(text, trimmedSegments);
     }
 
     private String formatTime(long whisperTime) {

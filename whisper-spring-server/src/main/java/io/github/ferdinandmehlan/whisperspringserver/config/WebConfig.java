@@ -1,6 +1,6 @@
 package io.github.ferdinandmehlan.whisperspringserver.config;
 
-import io.github.ferdinandmehlan.whisperspringserver.inference.ResponseFormat;
+import io.github.ferdinandmehlan.whisperspringserver.transcription.ResponseFormat;
 import java.io.IOException;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

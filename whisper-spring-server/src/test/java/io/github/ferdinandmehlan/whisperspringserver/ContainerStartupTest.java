@@ -59,7 +59,7 @@ public class ContainerStartupTest extends BaseIntegrationTest {
 
         // Make request to inference endpoint
         ResponseEntity<String> response = testRestTemplate.postForEntity(
-                getWhisperSpringServerHost() + "/api/inference", requestEntity, String.class);
+                getWhisperSpringServerHost() + "/api/transcription", requestEntity, String.class);
 
         // Verify response
         assertWithFileIncludingHttpStatus(response);
