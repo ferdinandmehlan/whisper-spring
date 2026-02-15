@@ -113,6 +113,7 @@ tasks.register<PnpmTask>("playwright") {
     group = "verification"
     description = "Run Playwright tests"
     dependsOn("playwright-install", ":whisper-spring-server:composeUp")
+    finalizedBy(":whisper-spring-server:composeDown")
     inputs.files(inputFiles())
     outputs.upToDateWhen { true }
     environment.put("PLAYWRIGHT_BROWSERS_PATH", "$rootDir/.gradle/playwright")
