@@ -1,4 +1,4 @@
-package io.github.ferdinandmehlan.whisperspringserver.inference;
+package io.github.ferdinandmehlan.whisperspringserver.transcription;
 
 import io.github.ferdinandmehlan.whisperspring.WhisperService;
 import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
@@ -15,11 +15,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 /**
- * Service for handling audio transcription inference using Whisper.
+ * Service for handling audio transcription using Whisper.
  * Manages Whisper context initialization and provides thread-safe transcription operations.
  */
 @Service
-public class InferenceService {
+public class TranscriptionService {
 
     private final WhisperServerConfiguration config;
     private final WhisperService whisperService;
@@ -27,13 +27,13 @@ public class InferenceService {
     private final ReentrantLock lock = new ReentrantLock();
 
     /**
-     * Creates a new InferenceService with required dependencies.
+     * Creates a new TranscriptionService with required dependencies.
      *
      * @param config the server configuration
      * @param whisperService the underlying whisper service
      */
     @Autowired
-    public InferenceService(WhisperServerConfiguration config, WhisperService whisperService) {
+    public TranscriptionService(WhisperServerConfiguration config, WhisperService whisperService) {
         this.config = config;
         this.whisperService = whisperService;
     }

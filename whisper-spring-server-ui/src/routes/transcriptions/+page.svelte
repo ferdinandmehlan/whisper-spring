@@ -71,7 +71,7 @@
 		}
 
 		try {
-			const response = await fetch('/api/inference', {
+			const response = await fetch('/api/transcription', {
 				method: 'POST',
 				body: formData
 			});

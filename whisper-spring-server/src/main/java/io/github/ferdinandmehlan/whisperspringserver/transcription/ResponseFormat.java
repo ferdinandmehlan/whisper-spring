@@ -1,4 +1,4 @@
-package io.github.ferdinandmehlan.whisperspringserver.inference;
+package io.github.ferdinandmehlan.whisperspringserver.transcription;
 
 /**
  * Enumeration of supported response formats for transcription results.

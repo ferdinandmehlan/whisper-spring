@@ -1,6 +1,7 @@
 package io.github.ferdinandmehlan.whisperspringserver.inference;
 
 import io.github.ferdinandmehlan.whisperspringserver.BaseIntegrationTest;
+import io.github.ferdinandmehlan.whisperspringserver.transcription.TranscriptionResponse;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.FileSystemResource;
@@ -11,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class InferenceControllerTest extends BaseIntegrationTest {
+public class TranscriptionControllerTest extends BaseIntegrationTest {
 
     @Test
     public void testInferenceMinimalTextFormat() {
@@ -28,7 +29,8 @@ public class InferenceControllerTest extends BaseIntegrationTest {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         // Request
-        ResponseEntity<String> response = testRestTemplate.postForEntity("/api/inference", requestEntity, String.class);
+        ResponseEntity<String> response =
+                testRestTemplate.postForEntity("/api/transcription", requestEntity, String.class);
 
         // Verify response
         assertWithFileIncludingHttpStatus(response);
@@ -50,7 +52,8 @@ public class InferenceControllerTest extends BaseIntegrationTest {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         // Request
-        ResponseEntity<String> response = testRestTemplate.postForEntity("/api/inference", requestEntity, String.class);
+        ResponseEntity<String> response =
+                testRestTemplate.postForEntity("/api/transcription", requestEntity, String.class);
 
         // Verify response
         assertWithFileIncludingHttpStatus(response);
@@ -72,8 +75,8 @@ public class InferenceControllerTest extends BaseIntegrationTest {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         // Request
-        ResponseEntity<InferenceResponse> response =
-                testRestTemplate.postForEntity("/api/inference", requestEntity, InferenceResponse.class);
+        ResponseEntity<TranscriptionResponse> response =
+                testRestTemplate.postForEntity("/api/transcription", requestEntity, TranscriptionResponse.class);
 
         // Verify response
         assertWithFileIncludingHttpStatus(response);
