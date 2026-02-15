@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Icon from '$lib/ui/Icon.svelte';
 	import Button from '$lib/ui/Button.svelte';
+	import Sheet from '$lib/ui/Sheet.svelte';
 
 	interface Segment {
 		start: number;
@@ -97,9 +98,7 @@
 
 	<div class="grid gap-6 lg:grid-cols-2">
 		<div class="space-y-6">
-			<div class="rounded-xl bg-surface p-6 shadow-md">
-				<h3 class="mb-4 text-lg font-semibold">Upload Audio</h3>
-
+			<Sheet title="Upload Audio">
 				<div
 					class="relative rounded-lg border-2 border-dashed border-border p-8 text-center transition-colors hover:border-primary"
 					ondrop={handleDrop}
@@ -141,42 +140,37 @@
 						/>
 					</div>
 				{/if}
-			</div>
-
-			<div class="rounded-xl bg-surface p-6 shadow-md">
-				<h3 class="mb-4 text-lg font-semibold">Options</h3>
-
-				<div class="space-y-4">
-					<div>
-						<label for="prompt" class="mb-2 block text-sm font-medium">
-							Initial Prompt
-							<span class="text-secondary">(optional)</span>
-						</label>
-						<textarea
-							id="prompt"
-							bind:value={prompt}
-							placeholder="Enter context to help with transcription (e.g., speaker names, technical terms)"
-							class="w-full resize-none rounded-lg border-none bg-background px-4 py-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
-							rows="4"
-						></textarea>
-						<p class="mt-1 text-xs text-secondary">Max 500 characters</p>
-					</div>
-
-					<Button
-						variant="filled"
-						icon={isLoading ? 'sync' : 'speech_to_text'}
-						onclick={handleSubmit}
-						disabled={!selectedFile || isLoading}
-						class="w-full"
-					>
-						{#if isLoading}
-							Transcribing...
-						{:else}
-							Start Transcription
-						{/if}
-					</Button>
+			</Sheet>
+			<Sheet title="Options">
+				<div class="mb-4">
+					<label for="prompt" class="mb-2 block text-sm font-medium">
+						Initial Prompt
+						<span class="text-secondary">(optional)</span>
+					</label>
+					<textarea
+						id="prompt"
+						bind:value={prompt}
+						placeholder="Enter context to help with transcription (e.g., speaker names, technical terms)"
+						class="w-full resize-none rounded-lg border-none bg-background px-4 py-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+						rows="4"
+					></textarea>
+					<p class="mt text-xs text-secondary">Max 500 characters</p>
 				</div>
-			</div>
+				<Button
+					variant="filled"
+					onclick={handleSubmit}
+					disabled={!selectedFile || isLoading}
+					class="w-full"
+				>
+					{#if isLoading}
+						<Icon icon="sync" class="animate-spin [animation-duration:1.5s]" />
+						Transcribing...
+					{:else}
+						<Icon icon="speech_to_text" />
+						Start Transcription
+					{/if}
+				</Button>
+			</Sheet>
 		</div>
 
 		<div class="space-y-6">
@@ -189,20 +183,16 @@
 					<p class="mt-2 text-sm">{error}</p>
 				</div>
 			{:else if result}
-				<div class="rounded-xl bg-surface p-6 shadow-md">
-					<h3 class="mb-4 text-lg font-semibold">Result</h3>
-
+				<Sheet title="Result">
 					<div class="space-y-4">
 						<div class="rounded-lg bg-background p-4">
 							<p class="whitespace-pre-wrap">{result.text}</p>
 						</div>
 					</div>
-				</div>
+				</Sheet>
 
 				{#if result.segments && result.segments.length > 0}
-					<div class="rounded-xl bg-surface p-6 shadow-md">
-						<h3 class="mb-4 text-lg font-semibold">Segments</h3>
-
+					<Sheet title="Segments">
 						<div class="space-y-2">
 							{#each result.segments as segment, i (i)}
 								<div class="flex gap-3 rounded-lg bg-background p-3">
@@ -213,17 +203,15 @@
 								</div>
 							{/each}
 						</div>
-					</div>
+					</Sheet>
 				{/if}
 			{:else}
-				<div
-					class="flex h-full min-h-[300px] items-center justify-center rounded-xl bg-surface p-6 shadow-md"
-				>
+				<Sheet class="flex h-full min-h-[300px] items-center justify-center">
 					<div class="text-center text-secondary">
 						<Icon icon="audio_file" class="mx-auto text-4xl! opacity-50" />
 						<p class="mt-4">Upload an audio file to get started</p>
 					</div>
-				</div>
+				</Sheet>
 			{/if}
 		</div>
 	</div>
