@@ -143,5 +143,9 @@ components:
           type: boolean
           default: false
           description: Do not include timestamps in output
+        stream:
+          type: boolean
+          default: false
+          description: Stream partial results via SSE
         fileNotEmpty:
           type: boolean

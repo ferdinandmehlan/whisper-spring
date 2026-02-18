@@ -5,7 +5,7 @@ plugins {
 }
 
 tasks.bootRun {
-    args("--spring.profiles.active=test")
+    args("--spring.profiles.active=dev")
 }
 
 java {
@@ -17,6 +17,7 @@ java {
 dependencies {
     implementation(project(":whisper-spring"))
     implementation("org.springframework.boot:spring-boot-starter-web:4.0.0")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:4.0.0")
     implementation("org.springframework.boot:spring-boot-starter-validation:4.0.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator:4.0.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")

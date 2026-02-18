@@ -1,4 +1,0 @@
-content-length: [427]
-content-type: [text/plain]
-date: [MASKED]
-vary: [Origin, Access-Control-Request-Method, Access-Control-Request-Headers]
