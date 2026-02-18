@@ -9,7 +9,7 @@ paths:
     post:
       tags:
       - transcription-controller
-      operationId: transcription
+      operationId: transcriptionStream
       requestBody:
         content:
           multipart/form-data:
@@ -21,7 +21,11 @@ paths:
           content:
             '*/*':
               schema:
-                type: object
+                oneOf:
+                - $ref: "#/components/schemas/TranscriptionResponse"
+                - type: array
+                  items:
+                    $ref: "#/components/schemas/ServerSentEventTranscriptionEvent"
 components:
   schemas:
     TranscriptionRequest:
@@ -31,6 +35,10 @@ components:
           type: string
           format: binary
           description: Audio file to transcribe
+        stream:
+          type: boolean
+          default: false
+          description: Stream partial results via SSE
         language:
           type: string
           default: auto
@@ -58,14 +66,6 @@ components:
           description: Temperature increment between 0.0 and 1.0
           maximum: 1.0
           minimum: 0.0
-        responseFormat:
-          type: string
-          default: json
-          description: Response format
-          enum:
-          - JSON
-          - TEXT
-          - SRT
         offsetTMs:
           type: integer
           format: int32
@@ -145,3 +145,26 @@ components:
           description: Do not include timestamps in output
         fileNotEmpty:
           type: boolean
+    ServerSentEventTranscriptionEvent: {}
+    TranscriptionResponse:
+      type: object
+      properties:
+        text:
+          type: string
+          description: The full transcribed text from the audio
+        segments:
+          type: array
+          description: Detailed segments of the transcription with timestamps
+          items:
+            $ref: "#/components/schemas/WhisperSegment"
+    WhisperSegment:
+      type: object
+      properties:
+        start:
+          type: integer
+          format: int64
+        end:
+          type: integer
+          format: int64
+        text:
+          type: string

@@ -33,7 +33,7 @@ public interface ResponseEntityValidationTraits extends JUnit5ValidationFileAsse
      * @return a ValidationNormalizer that masks dates
      */
     default ValidationNormalizer defaultValidationNormalizer() {
-        return new SimpleRegexReplacement("date: .*", "date: [MASKED]");
+        return new SimpleRegexReplacement("Date: .*", "Date: [MASKED]");
     }
 
     /**

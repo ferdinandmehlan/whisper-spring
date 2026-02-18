@@ -2,6 +2,7 @@ package io.github.ferdinandmehlan.whisperspringserver;
 
 import de.cronn.assertions.validationfile.normalization.SimpleRegexReplacement;
 import de.cronn.assertions.validationfile.normalization.ValidationNormalizer;
+import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionResponse;
 import java.nio.file.Path;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -52,14 +53,13 @@ public class ContainerStartupTest extends BaseIntegrationTest {
         // Create multipart request
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", audioFile);
-        body.add("responseFormat", "text");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        // Make request to inference endpoint
-        ResponseEntity<String> response = testRestTemplate.postForEntity(
-                getWhisperSpringServerHost() + "/api/transcription", requestEntity, String.class);
+        // Request
+        ResponseEntity<TranscriptionResponse> response = testRestTemplate.postForEntity(
+                getWhisperSpringServerHost() + "/api/transcription", requestEntity, TranscriptionResponse.class);
 
         // Verify response
         assertWithFileIncludingHttpStatus(response);

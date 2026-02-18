@@ -1,11 +1,9 @@
 <script lang="ts">
 </script>
 
-<div class="space-y-6">
-	<div class="flex items-center justify-between">
-		<h2 class="text-3xl font-bold tracking-tight">Models</h2>
-	</div>
-	<div class="rounded-lg bg-surface p-8 text-center shadow-md">
-		<p class="text-secondary">Model page coming soon...</p>
-	</div>
+<div class="flex-1 space-y-6 p-6">
+  <h2>Models</h2>
+  <div class="rounded-lg bg-surface p-8 text-center shadow-md">
+    <p class="text-secondary">Model page coming soon...</p>
+  </div>
 </div>

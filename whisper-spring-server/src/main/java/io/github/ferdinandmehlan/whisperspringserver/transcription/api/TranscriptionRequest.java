@@ -1,4 +1,4 @@
-package io.github.ferdinandmehlan.whisperspringserver.transcription;
+package io.github.ferdinandmehlan.whisperspringserver.transcription.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
@@ -17,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 public record TranscriptionRequest(
         // File
         @Schema(description = "Audio file to transcribe") MultipartFile file,
+        // Streaming
+        @Schema(description = "Stream partial results via SSE", defaultValue = "false")
+        Boolean stream,
         // Base Settings
         @Schema(description = "Spoken language ('auto' for auto-detect)", defaultValue = "auto")
         String language,
@@ -32,8 +35,6 @@ public record TranscriptionRequest(
         @Schema(description = "Temperature increment between 0.0 and 1.0", defaultValue = "0.2")
         @DecimalMin("0.0") @DecimalMax("1.0") Float temperatureInc,
 
-        @Schema(description = "Response format", defaultValue = "json")
-        ResponseFormat responseFormat,
         // Additional Settings
         @Schema(description = "Time offset in milliseconds", defaultValue = "0") @Min(0) Integer offsetTMs,
 
@@ -67,11 +68,12 @@ public record TranscriptionRequest(
         Boolean noTimestamps) {
 
     public TranscriptionRequest {
+        stream = Objects.requireNonNullElse(stream, false);
+
         language = Objects.requireNonNullElse(language, "auto");
         translate = Objects.requireNonNullElse(translate, false);
         temperature = Objects.requireNonNullElse(temperature, 0.0f);
         temperatureInc = Objects.requireNonNullElse(temperatureInc, 0.2f);
-        responseFormat = Objects.requireNonNullElse(responseFormat, ResponseFormat.JSON);
 
         offsetTMs = Objects.requireNonNullElse(offsetTMs, 0);
         offsetN = Objects.requireNonNullElse(offsetN, 0);
