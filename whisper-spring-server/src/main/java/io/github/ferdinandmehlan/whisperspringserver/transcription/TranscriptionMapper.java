@@ -3,6 +3,8 @@ package io.github.ferdinandmehlan.whisperspringserver.transcription;
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
 import io.github.ferdinandmehlan.whisperspringserver.WhisperServerConfiguration;
+import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionRequest;
+import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -69,28 +71,6 @@ public class TranscriptionMapper {
     }
 
     /**
-     * Converts whisper segments to SRT (SubRip) subtitle format.
-     *
-     * @param segments the list of whisper segments
-     * @return SRT formatted string with timestamps and text
-     */
-    public String toSrt(List<WhisperSegment> segments) {
-        StringBuilder srt = new StringBuilder();
-        int index = 1;
-        for (WhisperSegment segment : segments) {
-            long start = segment.start();
-            long end = segment.end();
-            String startTime = formatTime(start);
-            String endTime = formatTime(end);
-            srt.append(index).append("\n");
-            srt.append(startTime).append(" --> ").append(endTime).append("\n");
-            srt.append(segment.text().trim()).append("\n\n");
-            index++;
-        }
-        return srt.toString();
-    }
-
-    /**
      * Converts whisper segments to JSON response format.
      *
      * @param segments the list of whisper segments
@@ -103,14 +83,5 @@ public class TranscriptionMapper {
                         segment.start(), segment.end(), segment.text().trim()))
                 .collect(Collectors.toList());
         return new TranscriptionResponse(text, trimmedSegments);
-    }
-
-    private String formatTime(long whisperTime) {
-        long millis = whisperTime * 10;
-        long hours = millis / 3600000;
-        long minutes = (millis % 3600000) / 60000;
-        long seconds = (millis % 60000) / 1000;
-        long ms = millis % 1000;
-        return String.format("%02d:%02d:%02d,%03d", hours, minutes, seconds, ms);
     }
 }

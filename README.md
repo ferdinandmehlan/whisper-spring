@@ -141,6 +141,14 @@ Alternatively the published docker image can be used like this:
   docker run -p 8080:8080 -v ./models:/app/models ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0
 ```
 
+Alternatively with CUDA acceleration :
+
+```bash
+docker run -p 8080:8080 \
+  -v ./models:/app/models \
+  --gpus all \
+  ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0-cuda
+```
 Then use as above.
 
 ## License

@@ -1,4 +1,4 @@
-package io.github.ferdinandmehlan.whisperspringserver.transcription;
+package io.github.ferdinandmehlan.whisperspringserver.transcription.api;
 
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
 import io.swagger.v3.oas.annotations.media.Schema;

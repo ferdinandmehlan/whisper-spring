@@ -1,218 +1,242 @@
 <script lang="ts">
-	import Icon from '$lib/ui/Icon.svelte';
-	import Button from '$lib/ui/Button.svelte';
-	import Sheet from '$lib/ui/Sheet.svelte';
+  import Button from '$lib/ui/Button.svelte';
+  import Icon from '$lib/ui/Icon.svelte';
+  import {
+    transcribe,
+    type TranscriptionRequest,
+    type TranscriptionResponse
+  } from '$lib/transcriptions';
 
-	interface Segment {
-		start: number;
-		end: number;
-		text: string;
-	}
+  let isDragging = $state(false);
+  let fileInput = $state<HTMLInputElement | null>(null);
 
-	interface InferenceResponse {
-		text: string;
-		segments: Segment[];
-	}
+  let input = $state<TranscriptionInput>({});
+  let sentInput = $state<TranscriptionInput>();
+  let isLoading = $state(false);
+  let result = $state<TranscriptionResponse>({ segments: [], text: '' });
 
-	let selectedFile = $state<File | null>(null);
-	let fileInput = $state<HTMLInputElement | null>(null);
-	let prompt = $state('');
-	let isLoading = $state(false);
-	let error = $state<string | null>(null);
-	let result = $state<InferenceResponse | null>(null);
+  interface TranscriptionInput {
+    file?: File;
+    fileName?: string;
+    fileSize?: string;
+    prompt?: string;
+  }
 
-	function handleFileSelect(event: Event) {
-		const input = event.target as HTMLInputElement;
-		if (input.files && input.files[0]) {
-			selectedFile = input.files[0];
-			error = null;
-		}
-	}
+  // Dragging events
+  function handleDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
 
-	function handleDrop(event: DragEvent) {
-		event.preventDefault();
-		if (event.dataTransfer?.files && event.dataTransfer.files[0]) {
-			selectedFile = event.dataTransfer.files[0];
-			error = null;
-		}
-	}
+  function handleDragEnter() {
+    isDragging = true;
+  }
 
-	function clearFile() {
-		selectedFile = null;
-		if (fileInput) {
-			fileInput.value = '';
-		}
-	}
+  function handleDragLeave(event: DragEvent) {
+    const target = event.currentTarget as Node | null;
+    const relatedTarget = event.relatedTarget as Node | null;
+    if (target && !target.contains(relatedTarget)) {
+      isDragging = false;
+    }
+  }
 
-	function handleDragOver(event: DragEvent) {
-		event.preventDefault();
-	}
+  function handleDrop(event: DragEvent) {
+    event.preventDefault();
+    isDragging = false;
+    if (event.dataTransfer?.files?.[0]) {
+      setFile(event.dataTransfer.files[0]);
+    }
+  }
 
-	function formatTime(ms: number): string {
-		const seconds = Math.floor(ms / 1000);
-		const minutes = Math.floor(seconds / 60);
-		const remainingSeconds = seconds % 60;
-		return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-	}
+  // File events
+  function handleFileSelect(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.[0]) {
+      setFile(input.files[0]);
+    }
+  }
 
-	async function handleSubmit() {
-		if (!selectedFile) {
-			error = 'Please select an audio file';
-			return;
-		}
+  function setFile(file: File | undefined) {
+    input.file = file;
+  }
 
-		isLoading = true;
-		error = null;
-		result = null;
+  function clearFile() {
+    setFile(undefined);
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  }
 
-		const formData = new FormData();
-		formData.append('file', selectedFile);
-		if (prompt.trim()) {
-			formData.append('prompt', prompt.trim());
-		}
+  // Submit
+  function mapInputToRequest(input: TranscriptionInput): TranscriptionRequest {
+    if (!input.file) {
+      throw new Error('Please select an audio file');
+    }
 
-		try {
-			const response = await fetch('/api/transcription', {
-				method: 'POST',
-				body: formData
-			});
+    return {
+      file: input.file,
+      stream: true,
+      prompt: input.prompt
+    };
+  }
 
-			if (!response.ok) {
-				const errorText = await response.text();
-				throw new Error(errorText || `HTTP ${response.status}`);
-			}
+  async function handleSubmit() {
+    const request = mapInputToRequest(input);
+    isLoading = true;
+    sentInput = {
+      fileName: input.file?.name,
+      fileSize: ((input.file?.size ?? 0) / 1024 / 1024).toFixed(2) + ' MB',
+      prompt: input.prompt
+    };
+    result = { segments: [], text: '' };
+    reset();
 
-			result = await response.json();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to transcribe audio';
-		} finally {
-			isLoading = false;
-		}
-	}
+    try {
+      await transcribe(request, (segment) => {
+        result.segments.push(segment);
+        result.text += segment.text.trim() + ' ';
+      });
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function reset() {
+    input = {};
+    clearFile();
+  }
+
+  // Autoscroll to the bottom on a new segment
+  $effect(() => {
+    if (result.segments.length) {
+      const scrollEl = document.getElementById('scroll');
+      if (scrollEl) {
+        scrollEl.scrollTop = scrollEl.scrollHeight;
+      }
+    }
+  });
 </script>
 
-<div class="space-y-6">
-	<div class="flex items-center justify-between">
-		<h2 class="text-2xl font-bold tracking-tight">Transcriptions</h2>
-	</div>
+{#if isDragging}
+  <div
+    class="pointer-events-none fixed inset-0 z-9999 flex items-center justify-center backdrop-blur-sm"
+  >
+    <div
+      class="flex flex-col items-center gap-4 rounded-2xl border-4 border-dashed border-primary p-8"
+    >
+      <Icon icon="upload" class="animate-bounce text-4xl! text-primary" />
+      <span class="text-xl font-semibold">Drop audio file</span>
+    </div>
+  </div>
+{/if}
 
-	<div class="grid gap-6 lg:grid-cols-2">
-		<div class="space-y-6">
-			<Sheet title="Upload Audio">
-				<div
-					class="relative rounded-lg border-2 border-dashed border-border p-8 text-center transition-colors hover:border-primary"
-					ondrop={handleDrop}
-					ondragover={handleDragOver}
-					role="button"
-					tabindex="0"
-				>
-					<div class="flex flex-col items-center gap-2">
-						<Icon icon="upload" class="text-4xl! text-secondary" />
-						<span class="font-medium">Drop audio file here</span>
-						<span class="text-sm text-secondary">or click to browse</span>
-					</div>
-					<input
-						type="file"
-						accept="audio/*"
-						class="absolute inset-0 cursor-pointer opacity-0"
-						onchange={handleFileSelect}
-						bind:this={fileInput}
-					/>
-				</div>
+<div class="flex min-h-0 flex-1 flex-col items-center">
+  <div
+    ondragenter={handleDragEnter}
+    ondragleave={handleDragLeave}
+    ondragover={handleDragOver}
+    ondrop={handleDrop}
+    role="application"
+    class="flex w-3xl flex-auto flex-col p-4"
+  >
+    {#if sentInput}
+      <div class="mb-3 flex justify-end">
+        <div
+          class="flex max-w-md flex-col gap-2 rounded-tl-2xl rounded-tr-xs rounded-br-2xl rounded-bl-2xl bg-surface p-4"
+        >
+          <div class="flex items-center gap-2">
+            <Icon icon="audio_file" class="text-primary" />
+            <span>{sentInput.fileName}</span>
+            <span class="text-sm text-secondary">({sentInput.fileSize})</span>
+          </div>
+          {#if sentInput.prompt}
+            <div>
+              <span class="text-secondary">Prompt: </span>
+              <span>{sentInput.prompt}</span>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
 
-				{#if selectedFile}
-					<div class="mt-4 flex items-center justify-between rounded-lg bg-background p-4">
-						<div class="flex items-center gap-3">
-							<Icon icon="audio_file" class="text-primary" />
-							<div>
-								<span class="font-medium">{selectedFile.name}</span>
-								<span class="ml-2 text-sm text-secondary">
-									{(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-								</span>
-							</div>
-						</div>
-						<Button
-							variant="text"
-							icon="close"
-							onclick={clearFile}
-							aria-label="Remove file"
-							class="text-error"
-						/>
-					</div>
-				{/if}
-			</Sheet>
-			<Sheet title="Options">
-				<div class="mb-4">
-					<label for="prompt" class="mb-2 block text-sm font-medium">
-						Initial Prompt
-						<span class="text-secondary">(optional)</span>
-					</label>
-					<textarea
-						id="prompt"
-						bind:value={prompt}
-						placeholder="Enter context to help with transcription (e.g., speaker names, technical terms)"
-						class="w-full resize-none rounded-lg border-none bg-background px-4 py-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
-						rows="4"
-					></textarea>
-					<p class="mt text-xs text-secondary">Max 500 characters</p>
-				</div>
-				<Button
-					variant="filled"
-					onclick={handleSubmit}
-					disabled={!selectedFile || isLoading}
-					class="w-full"
-				>
-					{#if isLoading}
-						<Icon icon="sync" class="animate-spin [animation-duration:1.5s]" />
-						Transcribing...
-					{:else}
-						<Icon icon="speech_to_text" />
-						Start Transcription
-					{/if}
-				</Button>
-			</Sheet>
-		</div>
+    {#if result.text || isLoading}
+      {result.text}
 
-		<div class="space-y-6">
-			{#if error}
-				<div class="rounded-xl border border-error/50 bg-error/10 p-6">
-					<div class="flex items-center gap-2 text-error">
-						<Icon icon="error" class="h-5 w-5" />
-						<span class="font-medium">Error</span>
-					</div>
-					<p class="mt-2 text-sm">{error}</p>
-				</div>
-			{:else if result}
-				<Sheet title="Result">
-					<div class="space-y-4">
-						<div class="rounded-lg bg-background p-4">
-							<p class="whitespace-pre-wrap">{result.text}</p>
-						</div>
-					</div>
-				</Sheet>
+      {#if isLoading}
+        <span
+          class="mt-2 inline-block h-4 w-4 animate-pulse rounded-full bg-primary [animation-duration:1s]"
+        >
+        </span>
+      {/if}
+    {:else}
+      <div class="flex-auto content-center text-center text-secondary">
+        <Icon icon="audio_file" class="mx-auto text-4xl! opacity-50" />
+        <p class="mt-4">Drop or upload an audio file to get started</p>
+      </div>
+    {/if}
+  </div>
 
-				{#if result.segments && result.segments.length > 0}
-					<Sheet title="Segments">
-						<div class="space-y-2">
-							{#each result.segments as segment, i (i)}
-								<div class="flex gap-3 rounded-lg bg-background p-3">
-									<span class="shrink-0 font-mono text-sm whitespace-nowrap text-secondary">
-										{formatTime(segment.start)} → {formatTime(segment.end)}
-									</span>
-									<span class="whitespace-pre-wrap">{segment.text}</span>
-								</div>
-							{/each}
-						</div>
-					</Sheet>
-				{/if}
-			{:else}
-				<Sheet class="flex h-full min-h-[300px] items-center justify-center">
-					<div class="text-center text-secondary">
-						<Icon icon="audio_file" class="mx-auto text-4xl! opacity-50" />
-						<p class="mt-4">Upload an audio file to get started</p>
-					</div>
-				</Sheet>
-			{/if}
-		</div>
-	</div>
+  <div class="sticky bottom-0 z-30 flex w-full justify-center p-4 backdrop-blur-lg">
+    <div class="w-2xl rounded-2xl bg-surface p-2">
+      {#if input.file}
+        <div
+          class="mb-2 flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2"
+        >
+          <Icon icon="audio_file" class="text-primary" />
+          <span class="flex-1 truncate text-sm font-medium">{input.file.name}</span>
+          <span class="text-sm text-secondary">
+            {(input.file.size / 1024 / 1024).toFixed(2)} MB
+          </span>
+          <Button
+            class="text-error"
+            onclick={clearFile}
+            aria-label="Remove file"
+            icon="close"
+            variant="text"
+          />
+        </div>
+      {/if}
+
+      <textarea
+        id="prompt"
+        bind:value={input.prompt}
+        placeholder="Add context for the transcription (optional)"
+        rows="1"
+        class="without-ring field-sizing-content w-full resize-none border-none bg-transparent"
+        maxlength="500"
+        onkeydown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey && input.file) {
+            e.preventDefault();
+            handleSubmit();
+          }
+        }}
+      ></textarea>
+
+      <div class="flex justify-between">
+        <Button
+          onclick={() => fileInput?.click()}
+          aria-label="Upload audio"
+          icon="upload"
+          variant="text"
+        />
+        <Button
+          onclick={handleSubmit}
+          disabled={!input.file}
+          aria-label="Start transcription"
+          icon="send"
+          variant="outlined"
+          class="text-forground border-forground"
+        >
+          Transcribe
+        </Button>
+      </div>
+    </div>
+
+    <input
+      type="file"
+      accept="audio/*"
+      class="hidden"
+      onchange={handleFileSelect}
+      bind:this={fileInput}
+    />
+  </div>
 </div>
