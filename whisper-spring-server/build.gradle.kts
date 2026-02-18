@@ -4,10 +4,6 @@ plugins {
     id("com.avast.gradle.docker-compose") version "0.17.20"
 }
 
-tasks.bootRun {
-    args("--spring.profiles.active=test")
-}
-
 java {
     toolchain {
         languageVersion.set(rootProject.extra["javaVersion"] as JavaLanguageVersion)
@@ -17,6 +13,7 @@ java {
 dependencies {
     implementation(project(":whisper-spring"))
     implementation("org.springframework.boot:spring-boot-starter-web:4.0.0")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:4.0.0")
     implementation("org.springframework.boot:spring-boot-starter-validation:4.0.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator:4.0.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
@@ -29,7 +26,7 @@ dependencies {
 }
 
 /*
- * Build
+ * Compile
  */
 
 tasks.register<Copy>("copyUIFiles") {
@@ -48,14 +45,14 @@ listOf("compileTestJava", "resolveMainClassName", "jar").forEach {
     tasks.named(it) { dependsOn("copyUIFiles") }
 }
 
-/*
- * Compile
- */
-
 tasks.bootJar {
     manifest {
         attributes["Enable-Native-Access"] = "ALL-UNNAMED"
     }
+}
+
+tasks.bootRun {
+    args("--spring.profiles.active=dev")
 }
 
 /*

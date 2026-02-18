@@ -70,4 +70,17 @@ public class TranscriptionService {
             lock.unlock();
         }
     }
+
+    /**
+     * Performs audio transcription with streaming callback.
+     * Segments are delivered via the callback as they become available.
+     * This method is thread-safe and uses locking to ensure sequential access to the Whisper context.
+     *
+     * @param config the whisper transcription configuration
+     * @param audioFile the audio file resource to transcribe
+     * @param segmentCallback callback invoked for each new segment
+     */
+    public WhisperNative getWhisper() {
+        return whisper;
+    }
 }
