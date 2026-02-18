@@ -5,11 +5,13 @@ import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeCon
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 /**
  * REST controller for handling audio transcription requests.
@@ -39,24 +41,39 @@ public class TranscriptionController {
      * returns transcription results in the requested format.
      *
      * @param request the transcription request containing audio file and parameters
-     * @return ResponseEntity with transcription results in JSON, text, or SRT format
+     * @return TranscriptionResponse with transcription results
      */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> transcription(@Valid @ModelAttribute TranscriptionRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, params = "stream=false")
+    public TranscriptionResponse transcription(@Valid @ModelAttribute TranscriptionRequest request) {
         WhisperTranscribeConfig config = transcriptionMapper.toWhisperParams(request);
-
         List<WhisperSegment> segments =
                 transcriptionService.transcribe(config, request.file().getResource());
+        return transcriptionMapper.toJson(segments);
+    }
 
-        if (request.responseFormat() == ResponseFormat.TEXT) {
-            String text = transcriptionMapper.toText(segments);
-            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(text);
-        } else if (request.responseFormat() == ResponseFormat.SRT) {
-            String srt = transcriptionMapper.toSrt(segments);
-            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(srt);
-        } else {
-            TranscriptionResponse response = transcriptionMapper.toJson(segments);
-            return ResponseEntity.ok(response);
-        }
+    /**
+     * Handles audio transcription requests.
+     * Accepts multipart form data with audio file and transcription parameters,
+     * returns a stream of partial transcription results.
+     *
+     * @param request the transcription request containing audio file and parameters
+     * @return Flux<ServerSentEvent<WhisperSegment>> with partial transcription results
+     */
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, params = "stream=true")
+    public Flux<ServerSentEvent<WhisperSegment>> transcriptionStream(@Valid @ModelAttribute TranscriptionRequest request) {
+        WhisperTranscribeConfig config = transcriptionMapper.toWhisperParams(request);
+        Sinks.Many<ServerSentEvent<WhisperSegment>> sink = Sinks.many().unicast().onBackpressureBuffer();
+        config.newSegmentCallback = new NewSegmentCallback(transcriptionService.getWhisper(), sink);
+
+        Thread.ofVirtual().start(() -> {
+            try {
+                transcriptionService.transcribe(config, request.file().getResource());
+                sink.tryEmitComplete();
+            } catch (Exception e) {
+                sink.tryEmitError(e);
+            }
+        });
+
+        return sink.asFlux().onTerminateDetach();
     }
 }

@@ -82,4 +82,26 @@ public class TranscriptionControllerTest extends BaseIntegrationTest {
         assertWithFileIncludingHttpStatus(response);
         assertHeadersWithFile(response);
     }
+
+    @Test
+    public void testStreamingTranscription() {
+        // Load test audio file
+        Path audioPath = Path.of("src/test/resources/audio/sample.wav");
+        FileSystemResource audioFile = new FileSystemResource(audioPath);
+
+        // Create multipart request with stream=true
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", audioFile);
+        body.add("stream", "true");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        // Request - should return SSE stream
+        ResponseEntity<String> response =
+                testRestTemplate.postForEntity("/api/transcription", requestEntity, String.class);
+
+        // Verify response
+        assertWithFileIncludingHttpStatus(response);
+    }
 }

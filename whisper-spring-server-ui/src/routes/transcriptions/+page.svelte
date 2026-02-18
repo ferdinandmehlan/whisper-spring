@@ -2,6 +2,7 @@
 	import Icon from '$lib/ui/Icon.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import Sheet from '$lib/ui/Sheet.svelte';
+	import Toggle from '$lib/ui/Toggle.svelte';
 
 	interface Segment {
 		start: number;
@@ -17,9 +18,13 @@
 	let selectedFile = $state<File | null>(null);
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let prompt = $state('');
+	let stream = $state(false);
 	let isLoading = $state(false);
 	let error = $state<string | null>(null);
 	let result = $state<InferenceResponse | null>(null);
+
+	let liveText = $state('');
+	let liveSegments = $state<Segment[]>([]);
 
 	function handleFileSelect(event: Event) {
 		const input = event.target as HTMLInputElement;
@@ -64,30 +69,98 @@
 		isLoading = true;
 		error = null;
 		result = null;
+		liveText = '';
+		liveSegments = [];
 
 		const formData = new FormData();
 		formData.append('file', selectedFile);
 		if (prompt.trim()) {
 			formData.append('prompt', prompt.trim());
 		}
+		formData.append('stream', stream.toString());
 
 		try {
-			const response = await fetch('/api/transcription', {
-				method: 'POST',
-				body: formData
-			});
+			if (stream) {
+				await handleStreamingSubmit(formData);
+			} else {
+				const response = await fetch('/api/transcription', {
+					method: 'POST',
+					body: formData
+				});
 
-			if (!response.ok) {
-				const errorText = await response.text();
-				throw new Error(errorText || `HTTP ${response.status}`);
+				if (!response.ok) {
+					const errorText = await response.text();
+					throw new Error(errorText || `HTTP ${response.status}`);
+				}
+
+				result = await response.json();
 			}
-
-			result = await response.json();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to transcribe audio';
 		} finally {
 			isLoading = false;
 		}
+	}
+
+	async function handleStreamingSubmit(formData: FormData) {
+		const response = await fetch('/api/transcription', {
+			method: 'POST',
+			body: formData
+		});
+
+		if (!response.ok) {
+			const errorText = await response.text();
+			throw new Error(errorText || `HTTP ${response.status}`);
+		}
+
+		const reader = response.body?.getReader();
+		if (!reader) {
+			throw new Error('Response body is not readable');
+		}
+
+		const decoder = new TextDecoder();
+
+		while (true) {
+			const { done, value } = await reader.read();
+			if (done) break;
+
+			const chunk = decoder.decode(value, { stream: true });
+			const lines = chunk.split('\n');
+
+			for (const line of lines) {
+				if (line.startsWith('data:')) {
+					const data = line.slice(5).trim();
+					if (data && data !== '[DONE]') {
+						try {
+							const segment = JSON.parse(data) as Segment;
+							liveSegments = [...liveSegments, segment];
+							liveText = liveText + segment.text + ' ';
+						} catch {
+							// Ignore parse errors for incomplete chunks
+						}
+					}
+				}
+			}
+		}
+
+		result = {
+			text: liveText.trim(),
+			segments: liveSegments
+		};
+	}
+
+	function getDisplayText(): string {
+		if (stream && isLoading) {
+			return liveText;
+		}
+		return result?.text || '';
+	}
+
+	function getDisplaySegments(): Segment[] {
+		if (stream && isLoading) {
+			return liveSegments;
+		}
+		return result?.segments || [];
 	}
 </script>
 
@@ -156,6 +229,12 @@
 					></textarea>
 					<p class="mt text-xs text-secondary">Max 500 characters</p>
 				</div>
+				<div class="mb-6">
+					<Toggle bind:checked={stream} label="Stream results via SSE" />
+					<p class="mt-1 text-xs text-secondary">
+						Receive transcription segments in real-time as they are generated
+					</p>
+				</div>
 				<Button
 					variant="filled"
 					onclick={handleSubmit}
@@ -182,19 +261,22 @@
 					</div>
 					<p class="mt-2 text-sm">{error}</p>
 				</div>
-			{:else if result}
+			{:else if (stream && isLoading && (liveText || liveSegments.length > 0)) || result}
 				<Sheet title="Result">
 					<div class="space-y-4">
 						<div class="rounded-lg bg-background p-4">
-							<p class="whitespace-pre-wrap">{result.text}</p>
+							<p class="whitespace-pre-wrap">{getDisplayText()}</p>
+							{#if stream && isLoading}
+								<span class="inline-block h-4 w-2 animate-pulse bg-current"></span>
+							{/if}
 						</div>
 					</div>
 				</Sheet>
 
-				{#if result.segments && result.segments.length > 0}
+				{#if getDisplaySegments().length > 0}
 					<Sheet title="Segments">
 						<div class="space-y-2">
-							{#each result.segments as segment, i (i)}
+							{#each getDisplaySegments() as segment, i (i)}
 								<div class="flex gap-3 rounded-lg bg-background p-3">
 									<span class="shrink-0 font-mono text-sm whitespace-nowrap text-secondary">
 										{formatTime(segment.start)} → {formatTime(segment.end)}
@@ -202,6 +284,13 @@
 									<span class="whitespace-pre-wrap">{segment.text}</span>
 								</div>
 							{/each}
+						</div>
+					</Sheet>
+				{:else if stream && isLoading}
+					<Sheet title="Segments">
+						<div class="flex items-center justify-center py-4 text-secondary">
+							<Icon icon="sync" class="mr-2 animate-spin [animation-duration:1.5s]" />
+							Waiting for segments...
 						</div>
 					</Sheet>
 				{/if}
