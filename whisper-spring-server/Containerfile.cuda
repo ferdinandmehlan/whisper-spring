@@ -1,0 +1,22 @@
+FROM nvidia/cuda:12.9.0-runtime-ubuntu24.04 AS final
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl libgomp1 libstdc++6 wget gnupg ca-certificates && \
+    mkdir -p /etc/apt/keyrings && \
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor > /etc/apt/keyrings/adoptium.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb jammy main" | tee /etc/apt/sources.list.d/adoptium.list && \
+    apt-get update && apt-get install -y --no-install-recommends temurin-25-jre && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /tmp/*
+
+WORKDIR /app
+
+ENV JAVA_HOME=/usr/lib/jvm/temurin-25-jre-amd64
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+COPY build/libs/whisper-spring-server-*.jar whisper-spring-server.jar
+
+HEALTHCHECK --interval=5s --timeout=2s --start-period=15s --retries=5 \
+  CMD curl --fail http://localhost:8080/actuator/health || exit 1
+
+CMD ["java", "-jar", "whisper-spring-server.jar"]

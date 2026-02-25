@@ -28,6 +28,12 @@ which is an independent project providing optimized C++ implementations of Whisp
    ```sh
    ./gradlew compopseUp
    ```
+   
+   Or with cuda acceleration
+
+   ```sh
+   ./gradlew compopseUp -Pcuda
+   ```
 
 3. Use the Web-UI at http://localhost:8080 or transcribe an audio file directly:
 
@@ -53,14 +59,15 @@ All important commands are made available via the Gradle build tool.
 This fully leverages gradle inputs/outputs from compiling the library, downloading a whisper model for testing, to building the docker image.
 Some of the important tasks include:
 
-| Command                   | Description                                                                            |
-|---------------------------|----------------------------------------------------------------------------------------|
-| `./gradlew composeUp`     | Start the whisper-spring-server in containerized setup (open at http://localhost:8080) |
-| `./gradlew composeDown`   | Stop the container                                                                     |
-| `./gradlew clean`         | Clean build artifacts, caches, and generated files                                     |
-| `./gradlew check`         | Run all tests and formatting checks                                                    |
-| `./gradlew build`         | Execute tests and build application artifacts                                          |
-| `./gradlew spotlessApply` | Apply code formatting to all files                                                     |
+| Command                      | Description                                                                                                   |
+|------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `./gradlew composeUp`        | Start the whisper-spring-server in containerized setup (open at http://localhost:8080)                        |
+| `./gradlew composeUp -Pcuda` | Start the whisper-spring-server in containerized setup with cuda acceleration (open at http://localhost:8080) |
+| `./gradlew composeDown`      | Stop the container                                                                                            |
+| `./gradlew clean`            | Clean build artifacts, caches, and generated files                                                            |
+| `./gradlew check`            | Run all tests and formatting checks                                                                           |
+| `./gradlew build`            | Execute tests and build application artifacts                                                                 |
+| `./gradlew spotlessApply`    | Apply code formatting to all files                                                                            |
 
 
 ## Usage Examples

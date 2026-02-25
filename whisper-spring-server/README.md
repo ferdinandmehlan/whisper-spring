@@ -24,25 +24,27 @@ docker run -p 8080:8080 -v ./models:/app/models ghcr.io/ferdinandmehlan/whisper-
 To enable CUDA acceleration in the Docker container:
 
 ```bash
-docker run --gpus all -p 8080:8080 \
+docker run -p 8080:8080 \
   -v ./models:/app/models \
-  ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0
+  --gpus all \
+  ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0-cuda
 ```
 
 **Note**: Requires NVIDIA Docker runtime and CUDA-compatible GPU.
 
 ## Gradle Tasks
 
-| Command                                          | Description                                        |
-|--------------------------------------------------|----------------------------------------------------|
-| `./gradlew :whisper-spring-server:clean`         | Clean build artifacts, caches, and generated files |
-| `./gradlew :whisper-spring-server:check`         | Run all tests and formatting checks                |
-| `./gradlew :whisper-spring-server:build`         | Execute tests and build application artifacts      |
-| `./gradlew :whisper-spring-server:bootJar`       | Build the executable JAR file                      |
-| `./gradlew :whisper-spring-server:bootRun`       | Run the application locally                        |
-| `./gradlew :whisper-spring-server:spotlessApply` | Apply code formatting to all files                 |
-| `./gradlew :whisper-spring-server:composeUp`     | Start the server in Docker container               |
-| `./gradlew :whisper-spring-server:composeDown`   | Stop the Docker container                          |
+| Command                                             | Description                                                 |
+|-----------------------------------------------------|-------------------------------------------------------------|
+| `./gradlew :whisper-spring-server:clean`            | Clean build artifacts, caches, and generated files          |
+| `./gradlew :whisper-spring-server:check`            | Run all tests and formatting checks                         |
+| `./gradlew :whisper-spring-server:build`            | Execute tests and build application artifacts               |
+| `./gradlew :whisper-spring-server:bootJar`          | Build the executable JAR file                               |
+| `./gradlew :whisper-spring-server:bootRun`          | Run the application locally                                 |
+| `./gradlew :whisper-spring-server:spotlessApply`    | Apply code formatting to all files                          |
+| `./gradlew :whisper-spring-server:composeUp`        | Start the server in Docker container                        |
+| `./gradlew :whisper-spring-server:composeUp -Pcuda` | Start the server in Docker container including cuda support |
+| `./gradlew :whisper-spring-server:composeDown`      | Stop the Docker container                                   |
 
 ## Local Development
 
@@ -61,6 +63,11 @@ Or run it containerized using Docker Compose:
 ```
 
 This builds the Docker image and starts the containerized server.
+
+Or with cuda acceleration do:
+```sh
+./gradlew composeUp -Pcuda
+```
 
 ## Usage
 

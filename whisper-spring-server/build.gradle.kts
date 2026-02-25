@@ -82,6 +82,11 @@ dockerCompose {
     setProjectName("whisper-spring")
     useComposeFiles = listOf("../compose.yaml")
     environment.put("TAG", project.findProperty("TAG") ?: "dev")
+
+    if (project.hasProperty("cuda")) {
+        useComposeFiles = listOf("../compose-cuda.yaml")
+        environment.put("TAG", project.findProperty("TAG") ?: "dev-cuda")
+    }
 }
 
 tasks.named("composeBuild") {
