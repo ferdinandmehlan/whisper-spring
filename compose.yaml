@@ -9,8 +9,3 @@ services:
       - "8080:8080"
     volumes:
       - ./models:/app/models
-    # Or when using custom native libraries:
-    # - ./libs:/app/libs
-    # environment:
-    #   WHISPER_LIBRARIES_MODE: Custom
-    #   WHISPER_LIBRARIES_PATH: /app/libs
