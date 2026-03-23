@@ -79,8 +79,7 @@ public class TranscriptionMapper {
     public TranscriptionResponse toJson(List<WhisperSegment> segments) {
         String text = toText(segments);
         List<WhisperSegment> trimmedSegments = segments.stream()
-                .map(segment -> new WhisperSegment(
-                        segment.start(), segment.end(), segment.text().trim()))
+                .map(segment -> new WhisperSegment(segment.text().trim(), segment.start(), segment.end()))
                 .collect(Collectors.toList());
         return new TranscriptionResponse(text, trimmedSegments);
     }

@@ -434,10 +434,10 @@ public class WhisperCliCommand implements Runnable {
 
         if (!this.noPrints) {
             config.newSegmentCallback =
-                    new WhisperNewSegmentPrinter(whisper, this.noTimestamps, this.printColors, this.printSpecial, err);
+                    new NewSegmentCallbackPrinter(whisper, this.noTimestamps, this.printColors, this.printSpecial, err);
         }
         if (this.printProgress) {
-            config.progressCallback = new WhisperProgressPrinter(err);
+            config.progressCallback = new ProgressCallbackPrinter(err);
         }
 
         return config;

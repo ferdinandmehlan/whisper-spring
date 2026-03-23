@@ -160,11 +160,23 @@ components:
     WhisperSegment:
       type: object
       properties:
+        text:
+          type: string
         start:
           type: integer
           format: int64
         end:
           type: integer
           format: int64
-        text:
+        tokens:
+          type: array
+          items:
+            $ref: "#/components/schemas/WhisperTokenDetail"
+    WhisperTokenDetail:
+      type: object
+      properties:
+        token:
           type: string
+        probability:
+          type: number
+          format: float
