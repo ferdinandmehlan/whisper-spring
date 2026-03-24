@@ -14,6 +14,7 @@
   let sentInput = $state<TranscriptionInput>();
   let isLoading = $state(false);
   let result = $state<TranscriptionResponse>({ segments: [], text: '' });
+  let error = $state<string | null>(null);
 
   interface TranscriptionInput {
     file?: File;
@@ -88,6 +89,7 @@
       prompt: input.prompt
     };
     result = { segments: [], text: '' };
+    error = null;
     reset();
 
     try {
@@ -95,6 +97,8 @@
         result.segments.push(segment);
         result.text += segment.text.trim() + ' ';
       });
+    } catch (e) {
+      error = e instanceof Error ? e.message : 'An error occurred';
     } finally {
       isLoading = false;
     }
@@ -158,7 +162,7 @@
       </div>
     {/if}
 
-    {#if result.text || isLoading}
+    {#if result.text || isLoading || error}
       {result.text}
 
       {#if isLoading}
@@ -166,6 +170,12 @@
           class="mt-2 inline-block h-4 w-4 animate-pulse rounded-full bg-primary [animation-duration:1s]"
         >
         </span>
+      {/if}
+
+      {#if error}
+        <div class="rounded-lg border border-error bg-error/10 p-4 text-error">
+          {error}
+        </div>
       {/if}
     {:else}
       <div class="flex-auto content-center text-center text-secondary">
