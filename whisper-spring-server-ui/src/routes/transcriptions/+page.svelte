@@ -118,6 +118,18 @@
       }
     }
   });
+
+  function downloadAsTxt() {
+    if (!sentInput?.fileName) return;
+    const baseName = sentInput.fileName.replace(/\.[^/.]+$/, '');
+    const blob = new Blob([result.text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${baseName}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 </script>
 
 {#if isDragging}
@@ -162,21 +174,27 @@
       </div>
     {/if}
 
-    {#if result.text || isLoading || error}
-      {result.text}
+    <p class="ml-2 whitespace-pre-wrap">{result.text}</p>
 
-      {#if isLoading}
-        <span
-          class="mt-2 inline-block h-4 w-4 animate-pulse rounded-full bg-primary [animation-duration:1s]"
-        >
-        </span>
-      {/if}
-
-      {#if error}
-        <div class="rounded-lg border border-error bg-error/10 p-4 text-error">
-          {error}
-        </div>
-      {/if}
+    {#if isLoading}
+      <span
+        class="mt-2 ml-2 inline-block h-4 w-4 animate-pulse rounded-full bg-primary [animation-duration:1s]"
+      >
+      </span>
+    {:else if error}
+      <div class="rounded-lg border border-error bg-error/10 p-4 text-error">
+        {error}
+      </div>
+    {:else if result.text.length > 0}
+      <div class="mt-2 flex">
+        <Button
+          onclick={downloadAsTxt}
+          aria-label="Download transcription"
+          icon="download"
+          variant="text"
+          class="p-0 text-secondary"
+        />
+      </div>
     {:else}
       <div class="flex-auto content-center text-center text-secondary">
         <Icon icon="audio_file" class="mx-auto text-4xl! opacity-50" />
