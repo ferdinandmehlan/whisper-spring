@@ -7,6 +7,8 @@ import io.github.ferdinandmehlan.whisperspringserver.transcription.api.Transcrip
 import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionResponse;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,6 +25,8 @@ import reactor.core.publisher.Sinks;
 @RestController
 @RequestMapping("/api/transcription")
 public class TranscriptionController {
+
+    private static final Logger log = LoggerFactory.getLogger(TranscriptionController.class.getName());
 
     private final TranscriptionService transcriptionService;
     private final TranscriptionMapper transcriptionMapper;
@@ -48,6 +52,8 @@ public class TranscriptionController {
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public TranscriptionResponse transcription(@Valid @ModelAttribute TranscriptionRequest request) {
+        log.info("Received transcription request for file {}", request.file().getOriginalFilename());
+
         WhisperTranscribeConfig config = transcriptionMapper.toWhisperParams(request);
         List<WhisperSegment> segments =
                 transcriptionService.transcribe(config, request.file().getResource());
@@ -65,11 +71,12 @@ public class TranscriptionController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, params = "stream=true")
     public Flux<ServerSentEvent<TranscriptionEvent>> transcriptionStream(
             @Valid @ModelAttribute TranscriptionRequest request) {
+        log.info(
+                "Received transcription streaming request for file {}",
+                request.file().getOriginalFilename());
+
         WhisperTranscribeConfig config = transcriptionMapper.toWhisperParams(request);
-        config.tokenTimestamps = true;
-        Sinks.Many<ServerSentEvent<TranscriptionEvent>> sink =
-                Sinks.many().unicast().onBackpressureBuffer();
-        config.newSegmentCallback = new NewSegmentCallback(transcriptionService.getWhisper(), sink);
+        Sinks.Many<ServerSentEvent<TranscriptionEvent>> sink = transcriptionService.createSSESink(config);
 
         Thread.ofVirtual().start(() -> {
             try {
