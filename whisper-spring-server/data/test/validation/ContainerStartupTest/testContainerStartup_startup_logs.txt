@@ -16,6 +16,7 @@ spring-boot 4.0.0
 [TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
 [TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.14]
 [TIMESTAMP]  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in [TIME] ms
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.t.TranscriptionService           : Initializing transcription service
 [TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.loader.NativeLoader      : Loading native libraries
 whisper_init_from_file_with_params_no_state: loading model from 'models/ggml-tiny.bin'
 whisper_init_with_params_no_state: use gpu    = 1

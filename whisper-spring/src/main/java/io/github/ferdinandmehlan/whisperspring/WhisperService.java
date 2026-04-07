@@ -5,6 +5,8 @@ import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
 import java.io.IOException;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class WhisperService {
+
+    private static final Logger log = LoggerFactory.getLogger(WhisperService.class.getName());
 
     private final WaveService waveService;
 
@@ -49,7 +53,11 @@ public class WhisperService {
      */
     public List<WhisperSegment> transcribe(WhisperNative whisper, WhisperTranscribeConfig config, Resource audioFile)
             throws IOException {
+        log.info("Encoding wave samples from {}", audioFile.getFilename());
         float[] audioData = waveService.toWaveSamples(audioFile);
-        return whisper.transcribe(audioData, config);
+        log.info("Transcribing audio file: {}", audioFile.getFilename());
+        List<WhisperSegment> result = whisper.transcribe(audioData, config);
+        log.info("Finished transcribing audio file: {}", audioFile.getFilename());
+        return result;
     }
 }
