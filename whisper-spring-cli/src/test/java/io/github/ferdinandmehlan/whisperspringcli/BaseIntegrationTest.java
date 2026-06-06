@@ -1,6 +1,6 @@
 package io.github.ferdinandmehlan.whisperspringcli;
 
-import io.github.ferdinandmehlan.whisperspring.WhisperService;
+import io.github.ferdinandmehlan.whisperspring.WhisperTranscriptionModel;
 import io.github.ferdinandmehlan.whisperspringtestcommon.BaseTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,7 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 public abstract class BaseIntegrationTest extends BaseTest {
 
     @Autowired
-    WhisperService whisperService;
+    WhisperTranscriptionModel whisperTranscriptionModel;
 
     @MockitoBean
     CommandLineRunner runner; // Mock runner bean so it does not autostart

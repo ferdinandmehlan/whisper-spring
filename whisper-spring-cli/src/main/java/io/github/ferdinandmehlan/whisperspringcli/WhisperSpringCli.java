@@ -1,6 +1,6 @@
 package io.github.ferdinandmehlan.whisperspringcli;
 
-import io.github.ferdinandmehlan.whisperspring.WhisperService;
+import io.github.ferdinandmehlan.whisperspring.WhisperTranscriptionModel;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,11 +25,11 @@ public class WhisperSpringCli {
     /**
      * Creates a CommandLineRunner bean that executes the Whisper CLI command.
      *
-     * @param service the WhisperService instance for transcription
+     * @param service the WhisperTranscriptionModel instance for transcription
      * @return CommandLineRunner that runs the CLI command and exits with appropriate code
      */
     @Bean
-    CommandLineRunner runner(WhisperService service) {
+    CommandLineRunner runner(WhisperTranscriptionModel service) {
         return args -> {
             WhisperCliCommand command = new WhisperCliCommand(service);
             int exitCode = new CommandLine(command).execute(args);

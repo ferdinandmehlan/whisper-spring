@@ -13,7 +13,10 @@ java {
 }
 
 dependencies {
-    api("org.springframework.boot:spring-boot-starter:4.0.0")
+    api(platform("org.springframework.boot:spring-boot-dependencies:4.0.6"))
+    api(platform("org.springframework.ai:spring-ai-bom:1.1.7"))
+    api("org.springframework.boot:spring-boot-starter")
+    api("org.springframework.ai:spring-ai-model")
 
     testImplementation(project(":whisper-spring-test-common"))
 

@@ -1,15 +1,12 @@
 package io.github.ferdinandmehlan.whisperspringcli;
 
-import io.github.ferdinandmehlan.whisperspring.WhisperService;
+import io.github.ferdinandmehlan.whisperspring.WhisperTranscriptionModel;
 import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperContextConfig;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperNativeConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscriptionOptions;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import picocli.CommandLine.Command;
@@ -22,28 +19,28 @@ import picocli.CommandLine.Option;
 @Command(name = "whisper", mixinStandardHelpOptions = true)
 public class WhisperCliCommand implements Runnable {
 
-    private final WhisperService whisperService;
+    private final WhisperTranscriptionModel whisperTranscriptionModel;
     private final PrintStream out;
     private final PrintStream err;
 
     /**
      * Constructs a WhisperCliCommand with default output streams.
      *
-     * @param whisperService the service for audio transcription
+     * @param whisperTranscriptionModel the service for audio transcription
      */
-    public WhisperCliCommand(WhisperService whisperService) {
-        this(whisperService, System.out, System.err);
+    public WhisperCliCommand(WhisperTranscriptionModel whisperTranscriptionModel) {
+        this(whisperTranscriptionModel, System.out, System.err);
     }
 
     /**
      * Constructs a WhisperCliCommand with specified output streams.
      *
-     * @param whisperService the service for audio transcription
+     * @param whisperTranscriptionModel the service for audio transcription
      * @param out the output stream for results
      * @param err the error stream for messages
      */
-    public WhisperCliCommand(WhisperService whisperService, PrintStream out, PrintStream err) {
-        this.whisperService = whisperService;
+    public WhisperCliCommand(WhisperTranscriptionModel whisperTranscriptionModel, PrintStream out, PrintStream err) {
+        this.whisperTranscriptionModel = whisperTranscriptionModel;
         this.out = out;
         this.err = err;
     }
@@ -373,22 +370,18 @@ public class WhisperCliCommand implements Runnable {
         }
 
         try {
-            WhisperContextConfig config = new WhisperContextConfig();
+            WhisperNativeConfig config = new WhisperNativeConfig();
             config.useGpu = !this.noGpu;
             config.flashAttn = this.flashAttn;
             WhisperNative whisper = new WhisperNative(this.model, config);
+            whisperTranscriptionModel.initWhisperNative(whisper);
 
             Resource resource = new FileSystemResource(file);
 
-            List<WhisperSegment> segments =
-                    whisperService.transcribe(whisper, toWhisperTranscribeConfig(whisper), resource);
+            String result = whisperTranscriptionModel.transcribe(resource, toWhisperTranscriptionOptions(whisper));
             // If realtime output is enabled, segments are already printed via callback
             // Otherwise, print the final result
             if (this.noPrints) {
-                String result = segments.stream()
-                        .map(WhisperSegment::text)
-                        .map(String::trim)
-                        .collect(Collectors.joining("\n"));
                 out.println(result);
             }
         } catch (Exception e) {
@@ -397,12 +390,12 @@ public class WhisperCliCommand implements Runnable {
     }
 
     /**
-     * Converts command-line options to WhisperTranscribeConfig object.
+     * Converts command-line options to WhisperTranscriptionOptions object.
      *
-     * @return WhisperTranscribeConfig configured with current command options
+     * @return WhisperTranscriptionOptions configured with current command options
      */
-    protected WhisperTranscribeConfig toWhisperTranscribeConfig(WhisperNative whisper) {
-        WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+    protected WhisperTranscriptionOptions toWhisperTranscriptionOptions(WhisperNative whisper) {
+        WhisperTranscriptionOptions config = new WhisperTranscriptionOptions();
         config.language = "auto".equals(this.language) ? null : this.language;
         config.translate = this.translate;
         config.initialPrompt = this.prompt;

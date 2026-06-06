@@ -1,8 +1,8 @@
 package io.github.ferdinandmehlan.whisperspringserver.transcription;
 
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
-import io.github.ferdinandmehlan.whisperspringserver.WhisperServerConfiguration;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscription;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscriptionOptions;
 import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionRequest;
 import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionResponse;
 import java.util.List;
@@ -16,25 +16,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class TranscriptionMapper {
 
-    private final WhisperServerConfiguration configuration;
-
-    /**
-     * Creates a new TranscriptionMapper with server configuration.
-     *
-     * @param configuration the server configuration containing thread settings
-     */
-    public TranscriptionMapper(WhisperServerConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
     /**
      * Converts an TranscriptionRequest to WhisperParams for transcription.
      *
      * @param request the transcription request with transcription parameters
      * @return WhisperParams configured for transcription
      */
-    public WhisperTranscribeConfig toWhisperParams(TranscriptionRequest request) {
-        WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+    public WhisperTranscriptionOptions toWhisperParams(TranscriptionRequest request) {
+        WhisperTranscriptionOptions config = new WhisperTranscriptionOptions();
         config.language = request.language();
         config.translate = request.translate();
         config.initialPrompt = request.prompt();
@@ -52,33 +41,18 @@ public class TranscriptionMapper {
         config.entropyThold = request.entropyThreshold();
         config.logprobThold = request.logprobThreshold();
         config.noTimestamps = request.noTimestamps();
-        config.nThreads = configuration.getThreads();
         return config;
-    }
-
-    /**
-     * Converts whisper segments to plain text format.
-     *
-     * @param segments the list of whisper segments
-     * @return concatenated text from all segments
-     */
-    public String toText(List<WhisperSegment> segments) {
-        StringBuilder text = new StringBuilder();
-        for (WhisperSegment segment : segments) {
-            text.append(segment.text().trim());
-        }
-        return text.toString();
     }
 
     /**
      * Converts whisper segments to JSON response format.
      *
-     * @param segments the list of whisper segments
+     * @param transcription the completed whisper transcription
      * @return TranscriptionResponse with full text and segment details
      */
-    public TranscriptionResponse toJson(List<WhisperSegment> segments) {
-        String text = toText(segments);
-        List<WhisperSegment> trimmedSegments = segments.stream()
+    public TranscriptionResponse toJson(WhisperTranscription transcription) {
+        String text = transcription.getOutput();
+        List<WhisperSegment> trimmedSegments = transcription.getMetadata().getSegments().stream()
                 .map(segment -> new WhisperSegment(segment.text().trim(), segment.start(), segment.end()))
                 .collect(Collectors.toList());
         return new TranscriptionResponse(text, trimmedSegments);

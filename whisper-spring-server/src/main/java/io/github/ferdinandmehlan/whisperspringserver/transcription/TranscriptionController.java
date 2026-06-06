@@ -1,12 +1,11 @@
 package io.github.ferdinandmehlan.whisperspringserver.transcription;
 
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscription;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscriptionOptions;
 import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionEvent;
 import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionRequest;
 import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionResponse;
 import jakarta.validation.Valid;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -54,10 +53,10 @@ public class TranscriptionController {
     public TranscriptionResponse transcription(@Valid @ModelAttribute TranscriptionRequest request) {
         log.info("Received transcription request for file {}", request.file().getOriginalFilename());
 
-        WhisperTranscribeConfig config = transcriptionMapper.toWhisperParams(request);
-        List<WhisperSegment> segments =
-                transcriptionService.transcribe(config, request.file().getResource());
-        return transcriptionMapper.toJson(segments);
+        WhisperTranscriptionOptions config = transcriptionMapper.toWhisperParams(request);
+        WhisperTranscription transcription =
+                transcriptionService.transcribe(request.file().getResource(), config);
+        return transcriptionMapper.toJson(transcription);
     }
 
     /**
@@ -75,12 +74,12 @@ public class TranscriptionController {
                 "Received transcription streaming request for file {}",
                 request.file().getOriginalFilename());
 
-        WhisperTranscribeConfig config = transcriptionMapper.toWhisperParams(request);
+        WhisperTranscriptionOptions config = transcriptionMapper.toWhisperParams(request);
         Sinks.Many<ServerSentEvent<TranscriptionEvent>> sink = transcriptionService.createSSESink(config);
 
         Thread.ofVirtual().start(() -> {
             try {
-                transcriptionService.transcribe(config, request.file().getResource());
+                transcriptionService.transcribe(request.file().getResource(), config);
                 sink.tryEmitComplete();
             } catch (Exception e) {
                 sink.tryEmitError(e);
