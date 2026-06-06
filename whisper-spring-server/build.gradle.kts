@@ -1,30 +1,30 @@
 plugins {
     id("java")
-    id("org.springframework.boot") version "4.0.6"
-    id("com.avast.gradle.docker-compose") version "0.17.20"
+    alias(libs.plugins.springBoot)
+    alias(libs.plugins.dockerCompose)
 }
 
 java {
     toolchain {
-        languageVersion.set(rootProject.extra["javaVersion"] as JavaLanguageVersion)
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
     }
 }
 
 dependencies {
     implementation(project(":whisper-spring"))
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.6"))
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
+    implementation(platform(libs.springBootDependencies))
+    implementation(libs.springBootStarterWeb)
+    implementation(libs.springBootStarterWebflux)
+    implementation(libs.springBootStarterValidation)
+    implementation(libs.springBootStarterActuator)
+    implementation(libs.springdoc)
 
     testImplementation(project(":whisper-spring-test-common"))
-    testImplementation("org.springframework.boot:spring-boot-starter-restclient")
-    testImplementation("org.springframework.boot:spring-boot-resttestclient")
-    testImplementation("org.testcontainers:junit-jupiter:1.21.4")
+    testImplementation(libs.springBootStarterRestclient)
+    testImplementation(libs.springBootResttestclient)
+    testImplementation(libs.testcontainers)
 
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly(libs.junitPlatformLauncher)
 }
 
 /*

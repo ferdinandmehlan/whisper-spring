@@ -4,14 +4,14 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(rootProject.extra["javaVersion"] as JavaLanguageVersion)
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
     }
 }
 
 dependencies {
-    api(platform("org.springframework.boot:spring-boot-dependencies:4.0.6"))
-    api("org.springframework.boot:spring-boot-starter-test")
-    api("org.springframework.boot:spring-boot-starter-web")
-    api("de.cronn:validation-file-assertions:0.8.0")
-    api("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    api(platform(libs.springBootDependencies))
+    api(libs.springBootStarterTest)
+    api(libs.springBootStarterWeb)
+    api(libs.validationFileAssertions)
+    api(libs.jacksonDatabind)
 }

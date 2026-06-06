@@ -1,23 +1,23 @@
 plugins {
     id("java")
-    id("org.springframework.boot") version "4.0.6"
+    alias(libs.plugins.springBoot)
 }
 
 java {
     toolchain {
-        languageVersion.set(rootProject.extra["javaVersion"] as JavaLanguageVersion)
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
     }
 }
 
 dependencies {
     implementation(project(":whisper-spring"))
-    implementation("info.picocli:picocli:4.7.7")
+    implementation(libs.picocli)
 
-    annotationProcessor("info.picocli:picocli-codegen:4.7.7")
+    annotationProcessor(libs.picocliCodegen)
 
     testImplementation(project(":whisper-spring-test-common"))
 
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly(libs.junitPlatformLauncher)
 }
 
 /*
