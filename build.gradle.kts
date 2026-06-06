@@ -1,20 +1,20 @@
 import de.undercouch.gradle.tasks.download.Download
 
 plugins {
-    id("com.diffplug.spotless") version "8.2.1"
-    id("de.undercouch.download") version "5.6.0"
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.download)
 }
 
 tasks.wrapper {
-    gradleVersion = "9.3.1"
+    gradleVersion = libs.versions.gradle.get()
     distributionType = Wrapper.DistributionType.ALL
 }
 
-val javaVersion: JavaLanguageVersion by extra(JavaLanguageVersion.of("25"))
+val projectVersion: String = libs.versions.project.get()
 
 allprojects {
     group = "io.github.ferdinandmehlan"
-    version = "0.1.0"
+    version = projectVersion
 
     repositories {
         mavenCentral()
