@@ -5,7 +5,7 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(rootProject.extra["javaVersion"] as JavaLanguageVersion)
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
     }
 
     withSourcesJar()
@@ -13,14 +13,14 @@ java {
 }
 
 dependencies {
-    api(platform("org.springframework.boot:spring-boot-dependencies:4.0.6"))
-    api(platform("org.springframework.ai:spring-ai-bom:1.1.7"))
-    api("org.springframework.boot:spring-boot-starter")
-    api("org.springframework.ai:spring-ai-model")
+    api(platform(libs.springBootDependencies))
+    api(platform(libs.springAiBom))
+    api(libs.springBootStarter)
+    api(libs.springAiModel)
 
     testImplementation(project(":whisper-spring-test-common"))
 
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly(libs.junitPlatformLauncher)
 }
 
 /*

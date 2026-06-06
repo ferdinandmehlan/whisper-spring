@@ -1,0 +1,42 @@
+[versions]
+project = "0.1.0"
+java = "25"
+gradle = "9.4.1"
+spotless = "8.2.1"
+download = "5.6.0"
+docker-compose = "0.17.20"
+node-gradle = "7.1.0"
+spring-boot = "4.0.6"
+spring-ai = "1.1.7"
+springdoc = "3.0.0"
+jackson = "2.15.2"
+picocli = "4.7.7"
+validation-file-assertions = "0.8.0"
+testcontainers = "1.21.4"
+
+[libraries]
+springBootDependencies = { group = "org.springframework.boot", name = "spring-boot-dependencies", version.ref = "spring-boot" }
+springAiBom = { group = "org.springframework.ai", name = "spring-ai-bom", version.ref = "spring-ai" }
+springBootStarter = { group = "org.springframework.boot", name = "spring-boot-starter" }
+springAiModel = { group = "org.springframework.ai", name = "spring-ai-model" }
+springBootStarterWeb = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
+springBootStarterWebflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
+springBootStarterValidation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
+springBootStarterActuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
+springBootStarterTest = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
+springBootStarterRestclient = { group = "org.springframework.boot", name = "spring-boot-starter-restclient" }
+springBootResttestclient = { group = "org.springframework.boot", name = "spring-boot-resttestclient" }
+picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli" }
+picocliCodegen = { group = "info.picocli", name = "picocli-codegen", version.ref = "picocli" }
+validationFileAssertions = { group = "de.cronn", name = "validation-file-assertions", version.ref = "validation-file-assertions" }
+jacksonDatabind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+testcontainers = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
+junitPlatformLauncher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+
+[plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+download = { id = "de.undercouch.download", version.ref = "download" }
+springBoot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+dockerCompose = { id = "com.avast.gradle.docker-compose", version.ref = "docker-compose" }
+nodeGradle = { id = "com.github.node-gradle.node", version.ref = "node-gradle" }
