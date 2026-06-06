@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscriptionOptions;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,7 +19,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testFlagParsing() {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         CommandLine cmd = new CommandLine(command);
 
         // When
@@ -34,7 +34,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testDefaultValues() {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
 
         // Then - check default values
         assertEquals(4, command.threads, "Default threads should be 4");
@@ -49,7 +49,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testBooleanFlags() {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         CommandLine cmd = new CommandLine(command);
 
         // When
@@ -65,7 +65,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testNumericOptions() {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         CommandLine cmd = new CommandLine(command);
 
         // When
@@ -93,7 +93,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testFloatOptions() {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         CommandLine cmd = new CommandLine(command);
 
         // When
@@ -117,7 +117,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testStringOptions() {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         CommandLine cmd = new CommandLine(command);
 
         // When
@@ -137,7 +137,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testShortOptions() {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         CommandLine cmd = new CommandLine(command);
 
         // When
@@ -152,7 +152,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testInvalidOptionShowsError() {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         CommandLine cmd = new CommandLine(command);
 
         // When & Then
@@ -164,7 +164,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testHelpOutput() {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         CommandLine cmd = new CommandLine(command);
         StringWriter sw = new StringWriter();
         cmd.setOut(new PrintWriter(sw));
@@ -180,7 +180,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testPrinterConfigurationWithNoPrintsDisabled() throws IOException {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         command.noPrints = false; // Enable printing
         command.printProgress = true;
         command.printColors = true;
@@ -188,8 +188,8 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
         command.printSpecial = true;
 
         // When
-        WhisperTranscribeConfig config =
-                command.toWhisperTranscribeConfig(new WhisperNative("build/resources/test/ggml-tiny.bin"));
+        WhisperTranscriptionOptions config =
+                command.toWhisperTranscriptionOptions(new WhisperNative("build/resources/test/ggml-tiny.bin"));
 
         // Then
         assertNotNull(config, "Params should be created");
@@ -203,7 +203,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testPrinterConfigurationWithNoPrintsEnabled() throws IOException {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         command.noPrints = true; // Disable printing
         command.printProgress = true;
         command.printColors = true;
@@ -211,8 +211,8 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
         command.printSpecial = true;
 
         // When
-        WhisperTranscribeConfig config =
-                command.toWhisperTranscribeConfig(new WhisperNative("build/resources/test/ggml-tiny.bin"));
+        WhisperTranscriptionOptions config =
+                command.toWhisperTranscriptionOptions(new WhisperNative("build/resources/test/ggml-tiny.bin"));
 
         // Then
         assertNotNull(config, "Params should be created");
@@ -225,7 +225,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testPrinterConfigurationWithTimestampsDisabled() throws IOException {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         command.noPrints = false;
         command.printProgress = true;
         command.printColors = true;
@@ -233,8 +233,8 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
         command.printSpecial = false;
 
         // When
-        WhisperTranscribeConfig config =
-                command.toWhisperTranscribeConfig(new WhisperNative("build/resources/test/ggml-tiny.bin"));
+        WhisperTranscriptionOptions config =
+                command.toWhisperTranscriptionOptions(new WhisperNative("build/resources/test/ggml-tiny.bin"));
 
         // Then
         assertNotNull(config, "Params should be created");
@@ -248,7 +248,7 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
     @Test
     void testPrinterConfigurationMinimalSetup() throws IOException {
         // Given
-        WhisperCliCommand command = new WhisperCliCommand(whisperService);
+        WhisperCliCommand command = new WhisperCliCommand(whisperTranscriptionModel);
         command.noPrints = false;
         command.printProgress = false; // No progress printing
         command.printColors = false; // No color printing
@@ -256,8 +256,8 @@ class WhisperCliCommandTest extends BaseIntegrationTest {
         command.printSpecial = false; // No special tokens
 
         // When
-        WhisperTranscribeConfig config =
-                command.toWhisperTranscribeConfig(new WhisperNative("build/resources/test/ggml-tiny.bin"));
+        WhisperTranscriptionOptions config =
+                command.toWhisperTranscriptionOptions(new WhisperNative("build/resources/test/ggml-tiny.bin"));
 
         // Then
         assertNotNull(config, "Params should be created");

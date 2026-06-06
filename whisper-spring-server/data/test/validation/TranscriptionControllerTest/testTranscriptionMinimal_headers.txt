@@ -1,4 +1,4 @@
 Vary: [Origin, Access-Control-Request-Method, Access-Control-Request-Headers]
 Content-Type: [application/json]
-Transfer-Encoding: [chunked]
+Content-Length: [MASKED]
 Date: [MASKED]

@@ -2,3 +2,4 @@ whisper:
   model-path: build/resources/test/ggml-tiny.bin
   noGpu: true
   flashAttn: false
+  gpuDevice: 0

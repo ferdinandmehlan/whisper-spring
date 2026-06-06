@@ -4,12 +4,13 @@ import io.github.ferdinandmehlan.whisperspring._native.callback.WhisperEncoderBe
 import io.github.ferdinandmehlan.whisperspring._native.callback.WhisperNewSegmentCallback;
 import io.github.ferdinandmehlan.whisperspring._native.callback.WhisperProgressCallback;
 import io.github.ferdinandmehlan.whisperspring._native.ffm.WhisperSamplingStrategy;
+import org.springframework.ai.audio.transcription.AudioTranscriptionOptions;
 
 /**
  * Configuration for Whisper transcription.
  * Contains all parameters that control the transcription process.
  */
-public class WhisperTranscribeConfig {
+public class WhisperTranscriptionOptions implements AudioTranscriptionOptions {
 
     public WhisperSamplingStrategy strategy;
     public int nThreads;
@@ -70,9 +71,9 @@ public class WhisperTranscribeConfig {
     public WhisperEncoderBeginCallback encoderBeginCallback;
 
     /**
-     * Creates a new WhisperTranscribeConfig with default settings.
+     * Creates a new WhisperTranscriptionOptions with default settings.
      */
-    public WhisperTranscribeConfig() {
+    public WhisperTranscriptionOptions() {
         this.strategy = WhisperSamplingStrategy.WHISPER_SAMPLING_GREEDY;
         this.nThreads = Math.max(1, Math.min(4, Runtime.getRuntime().availableProcessors()));
         this.nMaxTextCtx = 16384;
@@ -115,5 +116,10 @@ public class WhisperTranscribeConfig {
         this.vad = false;
         this.vadModelPath = null;
         this.vadConfig = new WhisperVadConfig();
+    }
+
+    @Override
+    public String getModel() {
+        return "whisper-native";
     }
 }

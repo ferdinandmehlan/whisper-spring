@@ -1,6 +1,6 @@
 package io.github.ferdinandmehlan.whisperspring._native.ffm;
 
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscriptionOptions;
 import io.github.ferdinandmehlan.whisperspring._native.callback.CallbackHelper;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
@@ -162,13 +162,13 @@ public class WhisperFullParams {
             LAYOUT.byteOffset(MemoryLayout.PathElement.groupElement("vad_params"));
 
     /**
-     * Allocates a whisper_full_params memory segment from a WhisperTranscribeConfig.
+     * Allocates a whisper_full_params memory segment from a WhisperTranscriptionOptions.
      *
      * @param arena the arena to allocate memory from
      * @param config the transcription configuration
      * @return the allocated memory segment
      */
-    public static MemorySegment allocate(Arena arena, WhisperTranscribeConfig config) {
+    public static MemorySegment allocate(Arena arena, WhisperTranscriptionOptions config) {
         MemorySegment segment = arena.allocate(LAYOUT);
         STRATEGY.set(segment, 0L, config.strategy.getValue());
         N_THREADS.set(segment, 0L, config.nThreads);

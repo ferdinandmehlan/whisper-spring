@@ -8,15 +8,14 @@ _    _ _     _                       _____            _
                    |_|                     |_|                 |___/
 
 whisper-spring-server 0.1.0
-spring-boot 4.0.0
+spring-boot 4.0.6
 
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Starting WhisperSpringServerApplication v0.1.0 using Java 25.0.2 with PID 1 (/app/whisper-spring-server.jar started by root in /app)
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Starting WhisperSpringServerApplication v0.1.0 using Java 25.0.3 with PID 1 (/app/whisper-spring-server.jar started by root in /app)
 [TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : No active profile set, falling back to 1 default profile: "default"
 [TIMESTAMP]  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
 [TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-[TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.14]
+[TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
 [TIMESTAMP]  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in [TIME] ms
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.t.TranscriptionService           : Initializing transcription service
 [TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.loader.NativeLoader      : Loading native libraries
 whisper_init_from_file_with_params_no_state: loading model from 'models/ggml-tiny.bin'
 whisper_init_with_params_no_state: use gpu    = 1

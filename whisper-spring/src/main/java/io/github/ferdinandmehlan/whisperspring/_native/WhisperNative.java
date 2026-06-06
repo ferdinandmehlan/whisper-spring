@@ -1,8 +1,10 @@
 package io.github.ferdinandmehlan.whisperspring._native;
 
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperContextConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperNativeConfig;
 import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscription;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscriptionMetadata;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscriptionOptions;
 import io.github.ferdinandmehlan.whisperspring._native.ffm.WhisperContextParams;
 import io.github.ferdinandmehlan.whisperspring._native.ffm.WhisperFullParams;
 import io.github.ferdinandmehlan.whisperspring._native.ffm.WhisperH;
@@ -12,6 +14,7 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * High-level wrapper for the Whisper native library.
@@ -28,7 +31,7 @@ public class WhisperNative extends WhisperH implements AutoCloseable {
      * @throws IOException if the model cannot be loaded
      */
     public WhisperNative(String modelPathStr) throws IOException {
-        this(modelPathStr, new WhisperContextConfig());
+        this(modelPathStr, new WhisperNativeConfig());
     }
 
     /**
@@ -38,7 +41,7 @@ public class WhisperNative extends WhisperH implements AutoCloseable {
      * @param contextConfig configuration for context initialization
      * @throws IOException if the model cannot be loaded
      */
-    public WhisperNative(String modelPathStr, WhisperContextConfig contextConfig) throws IOException {
+    public WhisperNative(String modelPathStr, WhisperNativeConfig contextConfig) throws IOException {
         super();
 
         try {
@@ -55,30 +58,17 @@ public class WhisperNative extends WhisperH implements AutoCloseable {
     }
 
     /**
-     * Transcribes audio data using default transcription configuration.
-     *
-     * @param audioData array of float audio samples
-     * @return list of transcription segments
-     * @throws IOException if transcription fails
-     */
-    public List<WhisperSegment> transcribe(float[] audioData) throws IOException {
-        return transcribe(audioData, new WhisperTranscribeConfig());
-    }
-
-    /**
      * Transcribes audio data with custom transcription configuration.
      *
      * @param audioData array of float audio samples
-     * @param transcribeConfig configuration for transcription
+     * @param transcriptionOptions configuration for transcription
      * @return list of transcription segments
-     * @throws IOException if transcription fails
      */
-    public List<WhisperSegment> transcribe(float[] audioData, WhisperTranscribeConfig transcribeConfig)
-            throws IOException {
+    public WhisperTranscription transcribe(float[] audioData, WhisperTranscriptionOptions transcriptionOptions) {
 
         try (Arena callArena = Arena.ofConfined()) {
             MemorySegment audioSegment = callArena.allocateFrom(ValueLayout.JAVA_FLOAT, audioData);
-            MemorySegment params = WhisperFullParams.allocate(callArena, transcribeConfig);
+            MemorySegment params = WhisperFullParams.allocate(callArena, transcriptionOptions);
 
             int result = full(ctx, params, audioSegment, audioData.length);
             if (result != 0) {
@@ -96,9 +86,15 @@ public class WhisperNative extends WhisperH implements AutoCloseable {
                 segments.add(new WhisperSegment(text, t0, t1));
             }
 
-            return segments;
+            String fullTranscriptText = segments.stream()
+                    .map(WhisperSegment::text)
+                    .filter(text -> text != null && !text.isBlank())
+                    .collect(Collectors.joining("\n"));
+
+            return new WhisperTranscription(fullTranscriptText)
+                    .withTranscriptionMetadata(new WhisperTranscriptionMetadata(segments));
         } catch (Throwable t) {
-            throw new IOException("Failed to transcribe", t);
+            throw new RuntimeException("Failed to transcribe", t);
         }
     }
 
