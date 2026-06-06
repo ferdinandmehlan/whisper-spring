@@ -1,8 +1,10 @@
 import de.undercouch.gradle.tasks.download.Download
+import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 
 plugins {
     alias(libs.plugins.spotless)
     alias(libs.plugins.download)
+    alias(libs.plugins.versionCatalogUpdate)
 }
 
 tasks.wrapper {
@@ -59,4 +61,16 @@ tasks.register<Download>("downloadTinyModel") {
     src("https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin")
     dest(file("models/ggml-tiny.bin"))
     onlyIf { !dest.exists() }
+}
+
+/*
+ * Version Catalog Update
+ */
+
+versionCatalogUpdate {
+    sortByKey.set(false)
+    keep {
+        keepUnusedVersions.set(true)
+    }
+    versionSelector(VersionSelectors.STABLE)
 }
