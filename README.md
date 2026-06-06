@@ -47,7 +47,7 @@ For detailed usage instructions, see the README files in each module.
 
 ## Modules
 
-- [whisper-spring](whisper-spring/README.md) - Core library with services and native lib loader
+- [whisper-spring](whisper-spring/README.md) - Core library with Spring AI audio provider and native lib loader
 - [whisper-spring-cli](whisper-spring-cli/README.md) - Command-line interface for transcription
 - [whisper-spring-server](whisper-spring-server/README.md) - REST API server for transcription services
 - [whisper-spring-test-common](whisper-spring-test-common/README.md) - Shared test utilities
@@ -80,22 +80,32 @@ To use whisper-spring with a spring application add the dependency:
 
 ```gradle
 dependencies {
-    implementation 'io.github.ferdinandmehlan:whisper-spring:0.1.0'
+    implementation("io.github.ferdinandmehlan:whisper-spring:0.1.0")
 }
+```
+
+Configure the model location to automatically load
+
+```yaml
+whisper:
+  model-path: models/ggml-tiny.bin
+  noGpu: false
+  flashAttn: true
+  gpuDevice: 0
 ```
 
 Then use in your service:
 
 ```java
 @Service
-public class MyService {
+public class TranscriptionService {
 
     @Autowired
-    private WhisperService whisperService;
+    private WhisperTranscriptionModel model;
 
-    public void transcribe() throws IOException {
-        WhisperNative whisper = new WhisperNative("ggml-tiny.bin");
-        List<WhisperSegment> segments = whisperService.transcribe(whisper, new FileSystemResource("sample.wav"));
+    public String transcribeAudio(File audioFile) throws IOException {
+        FileSystemResource audioResource = new FileSystemResource(audioFile);
+        return model.transcribe(audioResource);
     }
 }
 ```

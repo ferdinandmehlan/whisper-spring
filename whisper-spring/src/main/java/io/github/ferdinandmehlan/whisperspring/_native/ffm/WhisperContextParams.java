@@ -1,6 +1,6 @@
 package io.github.ferdinandmehlan.whisperspring._native.ffm;
 
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperContextConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperNativeConfig;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemoryLayout.PathElement;
@@ -49,13 +49,13 @@ public class WhisperContextParams {
     private static final VarHandle GPU_DEVICE = LAYOUT.varHandle(PathElement.groupElement("gpu_device"));
 
     /**
-     * Allocates a whisper_context_params memory segment from a WhisperContextConfig.
+     * Allocates a whisper_context_params memory segment from a WhisperNativeConfig.
      *
      * @param arena the arena to allocate memory from
      * @param config the context configuration
      * @return the allocated memory segment
      */
-    public static MemorySegment allocate(Arena arena, WhisperContextConfig config) {
+    public static MemorySegment allocate(Arena arena, WhisperNativeConfig config) {
         MemorySegment segment = arena.allocate(LAYOUT);
         USE_GPU.set(segment, 0L, config.useGpu);
         FLASH_ATTN.set(segment, 0L, config.flashAttn);

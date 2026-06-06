@@ -20,7 +20,8 @@ public class WhisperSpringCliTest extends BaseIntegrationTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
 
-        WhisperCliCommand command = new WhisperCliCommand(whisperService, new PrintStream(out), new PrintStream(err));
+        WhisperCliCommand command =
+                new WhisperCliCommand(whisperTranscriptionModel, new PrintStream(out), new PrintStream(err));
 
         // Configure command with tiny model and print flags
         command.model = "build/resources/test/ggml-tiny.bin";

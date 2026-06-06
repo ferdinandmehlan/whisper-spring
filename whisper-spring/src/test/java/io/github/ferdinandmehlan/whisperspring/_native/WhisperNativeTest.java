@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.ferdinandmehlan.whisperspring.BaseIntegrationTest;
 import io.github.ferdinandmehlan.whisperspring.WaveService;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperSegment;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscribeConfig;
+import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperTranscriptionOptions;
 import io.github.ferdinandmehlan.whisperspring._native.callback.WhisperEncoderBeginCallback;
 import io.github.ferdinandmehlan.whisperspring._native.callback.WhisperNewSegmentCallback;
 import io.github.ferdinandmehlan.whisperspring._native.callback.WhisperProgressCallback;
@@ -15,8 +14,8 @@ import java.lang.foreign.MemorySegment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.springframework.ai.audio.transcription.AudioTranscription;
 import org.springframework.core.io.FileSystemResource;
 
 public class WhisperNativeTest extends BaseIntegrationTest {
@@ -34,9 +33,8 @@ public class WhisperNativeTest extends BaseIntegrationTest {
         WaveService waveService = new WaveService();
         float[] audioData = waveService.toWaveSamples(audioFile);
 
-        List<WhisperSegment> segments = ffmWhisper.transcribe(audioData);
-        String result = segments.stream().map(WhisperSegment::text).collect(Collectors.joining("\n"));
-        assertWithFile(result);
+        AudioTranscription transcription = ffmWhisper.transcribe(audioData, new WhisperTranscriptionOptions());
+        assertWithFile(transcription.getOutput());
     }
 
     @Test
@@ -46,7 +44,7 @@ public class WhisperNativeTest extends BaseIntegrationTest {
         WaveService waveService = new WaveService();
         float[] audioData = waveService.toWaveSamples(audioFile);
 
-        WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+        WhisperTranscriptionOptions config = new WhisperTranscriptionOptions();
         config.strategy = WhisperSamplingStrategy.WHISPER_SAMPLING_GREEDY;
         config.nThreads = 4;
         config.nMaxTextCtx = 16384;
@@ -87,9 +85,8 @@ public class WhisperNativeTest extends BaseIntegrationTest {
         config.beamSize = 5;
         config.patience = -1.0f;
 
-        List<WhisperSegment> segments = whisper.transcribe(audioData, config);
-        String result = segments.stream().map(WhisperSegment::text).collect(Collectors.joining("\n"));
-        assertWithFile(result);
+        AudioTranscription transcription = whisper.transcribe(audioData, config);
+        assertWithFile(transcription.getOutput());
     }
 
     @Test
@@ -100,7 +97,7 @@ public class WhisperNativeTest extends BaseIntegrationTest {
         float[] audioData = waveService.toWaveSamples(audioFile);
 
         List<String> segmentTexts = new ArrayList<>();
-        WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+        WhisperTranscriptionOptions config = new WhisperTranscriptionOptions();
         config.newSegmentCallback = new WhisperNewSegmentCallback() {
             private int segmentCount = 0;
 
@@ -135,7 +132,7 @@ public class WhisperNativeTest extends BaseIntegrationTest {
         float[] audioData = waveService.toWaveSamples(audioFile);
 
         List<Integer> progressValues = new ArrayList<>();
-        WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+        WhisperTranscriptionOptions config = new WhisperTranscriptionOptions();
         config.progressCallback = new WhisperProgressCallback() {
             @Override
             public void callback(MemorySegment ctx, MemorySegment state, int progress, MemorySegment userData) {
@@ -155,7 +152,7 @@ public class WhisperNativeTest extends BaseIntegrationTest {
         float[] audioData = waveService.toWaveSamples(audioFile);
 
         AtomicInteger encoderBeginCalls = new AtomicInteger(0);
-        WhisperTranscribeConfig config = new WhisperTranscribeConfig();
+        WhisperTranscriptionOptions config = new WhisperTranscriptionOptions();
         config.encoderBeginCallback = new WhisperEncoderBeginCallback() {
             @Override
             public int callback(MemorySegment ctx, MemorySegment state, MemorySegment userData) {
