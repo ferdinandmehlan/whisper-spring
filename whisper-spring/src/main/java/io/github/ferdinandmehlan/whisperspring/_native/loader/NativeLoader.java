@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class NativeLoader {
 
-    private static final Logger log = LoggerFactory.getLogger(NativeLoader.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(NativeLoader.class);
 
     private static NativeLoader INSTANCE;
 

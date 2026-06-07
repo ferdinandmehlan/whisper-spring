@@ -19,7 +19,7 @@ import org.springframework.core.io.Resource;
  */
 public class WhisperTranscriptionModel implements TranscriptionModel {
 
-    private static final Logger log = LoggerFactory.getLogger(WhisperTranscriptionModel.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(WhisperTranscriptionModel.class);
 
     private final WaveService waveService;
 
