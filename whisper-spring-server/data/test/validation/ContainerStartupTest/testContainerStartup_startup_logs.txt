@@ -17,9 +17,10 @@ spring-boot 4.0.6
 [TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
 [TIMESTAMP]  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in [TIME] ms
 [TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.loader.NativeLoader      : Loading native libraries
-whisper_init_from_file_with_params_no_state: loading model from 'models/ggml-tiny.bin'
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.loader.NativeLoader      : CPU libraries loaded successfully
+whisper_init_from_file_with_params_no_state: loading model from '/app/models/ggml-tiny.bin'
 whisper_init_with_params_no_state: use gpu    = 1
-whisper_init_with_params_no_state: flash attn = 0
+whisper_init_with_params_no_state: flash attn = 1
 whisper_init_with_params_no_state: gpu_device = 0
 whisper_init_with_params_no_state: dtw        = 0
 whisper_init_with_params_no_state: devices    = 1
@@ -47,7 +48,7 @@ whisper_init_state: kv self size  =    3.15 MB
 whisper_init_state: kv cross size =    9.44 MB
 whisper_init_state: kv pad  size  =    2.36 MB
 whisper_init_state: compute buffer (conv)   =   13.21 MB
-whisper_init_state: compute buffer (encode) =   64.81 MB
+whisper_init_state: compute buffer (encode) =   17.72 MB
 whisper_init_state: compute buffer (cross)  =    3.89 MB
 whisper_init_state: compute buffer (decode) =   95.91 MB
 [TIMESTAMP]  INFO 1 --- [           main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
@@ -56,6 +57,6 @@ whisper_init_state: compute buffer (decode) =   95.91 MB
 [TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Started WhisperSpringServerApplication in [TIME] seconds (process running for [TIME])
 [TIMESTAMP]  WARN 1 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
 [TIMESTAMP]  WARN 1 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
-[TIMESTAMP]  INFO 1 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-[TIMESTAMP]  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-[TIMESTAMP]  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in [TIME] ms
+[TIMESTAMP]  INFO 1 --- [nio-8080-exec-N] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+[TIMESTAMP]  INFO 1 --- [nio-8080-exec-N] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+[TIMESTAMP]  INFO 1 --- [nio-8080-exec-N] o.s.web.servlet.DispatcherServlet        : Completed initialization in [TIME] ms

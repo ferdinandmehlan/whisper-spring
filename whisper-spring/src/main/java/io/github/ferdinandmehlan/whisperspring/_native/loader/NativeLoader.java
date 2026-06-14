@@ -20,13 +20,13 @@ public abstract class NativeLoader {
         if (INSTANCE == null) {
             log.info("Loading native libraries");
             try {
-                log.info("Attempting to load CUDA libraries first");
+                log.debug("Attempting to load CUDA libraries first");
                 CUDANativeLoader cudaLoader = new CUDANativeLoader();
                 cudaLoader.loadLibraries();
                 log.info("CUDA libraries loaded successfully");
                 INSTANCE = cudaLoader;
             } catch (UnsatisfiedLinkError | RuntimeException e) {
-                log.info("CUDA loading failed, falling back to CPU libraries: {}", e.getMessage());
+                log.debug("CUDA loading failed, falling back to CPU libraries: {}", e.getMessage());
                 CPUNativeLoader cpuLoader = new CPUNativeLoader();
                 cpuLoader.loadLibraries();
                 log.info("CPU libraries loaded successfully");
@@ -45,7 +45,7 @@ public abstract class NativeLoader {
     protected abstract void loadLibraries();
 
     protected synchronized void loadLibrary(String libName, String engine) {
-        log.info("Loading library: name={}, engine={}", libName, engine);
+        log.debug("Loading library: name={}, engine={}", libName, engine);
         loadedLibraries.computeIfAbsent(libName, _ -> {
             Path libraryPath = extractLibrary(libName, engine);
             System.load(libraryPath.toString());

@@ -15,6 +15,7 @@ dependencies {
     implementation(platform(libs.springBootDependencies))
     implementation(libs.springBootStarterWeb)
     implementation(libs.springBootStarterWebflux)
+    implementation(libs.springBootStarterWebsocket)
     implementation(libs.springBootStarterValidation)
     implementation(libs.springBootStarterActuator)
     implementation(libs.springdoc)
