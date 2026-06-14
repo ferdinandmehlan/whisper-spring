@@ -66,4 +66,5 @@ public class WhisperAutoConfiguration {
         whisperNative.ifPresent(model::initWhisperNative);
         return model;
     }
+
 }
