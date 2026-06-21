@@ -13,6 +13,7 @@ which is an independent project providing optimized C++ implementations of Whisp
 
 - Java 25
 - Docker
+- Git LFS
 
 
 ## Quick Start
@@ -20,6 +21,7 @@ which is an independent project providing optimized C++ implementations of Whisp
 1. Clone the repository including submodules:
 
    ```sh
+   git lfs install
    git clone --recursive https://github.com/ferdinandmehlan/whisper-spring.git
    ```
 
