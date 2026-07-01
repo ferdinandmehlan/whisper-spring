@@ -28,6 +28,7 @@ public class ContainerStartupTest extends BaseIntegrationTest {
             .withExposedPorts(8080)
             .withCreateContainerCmdModifier(cmd -> cmd.withName("whisper-spring-server-" + UUID.randomUUID()))
             .withFileSystemBind("build/resources/test/ggml-tiny.bin", "/app/models/ggml-tiny.bin", BindMode.READ_ONLY)
+            .withEnv("WHISPER_MODEL_PATH", "/app/models/ggml-tiny.bin")
             .waitingFor(Wait.forLogMessage(".*Completed initialization in.*", 1));
 
     private static String getWhisperSpringServerHost() {
@@ -38,7 +39,8 @@ public class ContainerStartupTest extends BaseIntegrationTest {
             new SimpleRegexReplacement("\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}(\\.\\d{3})?[Z]?", "[TIMESTAMP]"),
             new SimpleRegexReplacement("\\d+ ms", "[TIME] ms"),
             new SimpleRegexReplacement("in \\d+\\.\\d+ seconds", "in [TIME] seconds"),
-            new SimpleRegexReplacement("\\(process running for \\d+\\.\\d+\\)", "(process running for [TIME])"));
+            new SimpleRegexReplacement("\\(process running for \\d+\\.\\d+\\)", "(process running for [TIME])"),
+            new SimpleRegexReplacement("nio-8080-exec-\\d+", "nio-8080-exec-N"));
 
     @Test
     public void testContainerStartup() {

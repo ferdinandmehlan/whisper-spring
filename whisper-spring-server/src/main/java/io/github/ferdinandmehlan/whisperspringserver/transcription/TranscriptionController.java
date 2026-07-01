@@ -25,7 +25,7 @@ import reactor.core.publisher.Sinks;
 @RequestMapping("/api/transcription")
 public class TranscriptionController {
 
-    private static final Logger log = LoggerFactory.getLogger(TranscriptionController.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(TranscriptionController.class);
 
     private final TranscriptionService transcriptionService;
     private final TranscriptionMapper transcriptionMapper;
