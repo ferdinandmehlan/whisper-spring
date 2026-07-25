@@ -1,7 +1,7 @@
 [versions]
 project = "0.1.0"
 java = "25"
-gradle = "9.4.1"
+gradle = "9.6.1"
 spotless = "8.6.0"
 download = "5.7.0"
 docker-compose = "0.17.21"
