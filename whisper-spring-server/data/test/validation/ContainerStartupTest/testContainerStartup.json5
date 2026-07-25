@@ -1,35 +1,35 @@
 // HTTP 200 OK
 {
-  "text" : " Whisper spring is a Java library that integrates the Whisper.CPPE speech-text engine in\n to spring-based applications.\n It packages prebuilt Linux binaries and Java binings from the Whisper.CPPE project, making\n an easy to use, open AI-dust Whisper model for audio transcription.\n The project is structured into three modules, a core library, a command line interface,\n and a server component, supporting a range of deployment scenarios.",
+  "text" : " Whisper spring is a Java library that integrates the Whisper.CPPE speech-tox engine in\n to spring-based applications.\n It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making\n it easy to use, open AI-DOS Whisper model for audio transcription.\n The project is structured into three modules, a core library, a command line interface, and\n a server component, supporting a range of deployment scenarios.",
   "segments" : [ {
-    "text" : "Whisper spring is a Java library that integrates the Whisper.CPPE speech-text engine in",
+    "text" : "Whisper spring is a Java library that integrates the Whisper.CPPE speech-tox engine in",
     "start" : 0,
-    "end" : 464,
+    "end" : 512,
     "tokens" : [ ]
   }, {
     "text" : "to spring-based applications.",
-    "start" : 464,
-    "end" : 628,
+    "start" : 512,
+    "end" : 692,
     "tokens" : [ ]
   }, {
-    "text" : "It packages prebuilt Linux binaries and Java binings from the Whisper.CPPE project, making",
-    "start" : 628,
-    "end" : 1100,
+    "text" : "It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making",
+    "start" : 692,
+    "end" : 1222,
     "tokens" : [ ]
   }, {
-    "text" : "an easy to use, open AI-dust Whisper model for audio transcription.",
-    "start" : 1100,
-    "end" : 1684,
+    "text" : "it easy to use, open AI-DOS Whisper model for audio transcription.",
+    "start" : 1222,
+    "end" : 1872,
     "tokens" : [ ]
   }, {
-    "text" : "The project is structured into three modules, a core library, a command line interface,",
-    "start" : 1684,
-    "end" : 2136,
+    "text" : "The project is structured into three modules, a core library, a command line interface, and",
+    "start" : 1872,
+    "end" : 2376,
     "tokens" : [ ]
   }, {
-    "text" : "and a server component, supporting a range of deployment scenarios.",
-    "start" : 2136,
-    "end" : 2464,
+    "text" : "a server component, supporting a range of deployment scenarios.",
+    "start" : 2376,
+    "end" : 2728,
     "tokens" : [ ]
   } ]
 }

@@ -15,7 +15,7 @@ import reactor.core.publisher.Sinks;
  */
 public class NewSegmentCallback extends DefaultWhisperNewSegmentCallback {
 
-    private static final Logger log = LoggerFactory.getLogger(NewSegmentCallback.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(NewSegmentCallback.class);
 
     private final Sinks.Many<ServerSentEvent<TranscriptionEvent>> sink;
 

@@ -13,15 +13,15 @@ cmake --build build -j --config Release
 
 ## CUDA
 
-The provided binaries are built with CUDA 12.9 and gpu architecture targets:
+The provided binaries are built with CUDA 13.2 and gpu architecture targets:
 
-61: Pascal (Tesla P40, GTX 1080)
-70 : Volta (Tesla V100)
-75: Turing (GTX 16xx series, RTX 2000 series)
-80: Ampere (A30, A100)
-86: Ampere (A40, RTX 3000 series)
-89: Ada Lovelace (L4, L40, RTX 4000 series)
-90 : Hopper (H100, H200)
+- 61: Pascal (Tesla P40, GTX 1080)
+- 70 : Volta (Tesla V100)
+- 75: Turing (GTX 16xx series, RTX 2000 series)
+- 80: Ampere (A30, A100)
+- 86: Ampere (A40, RTX 3000 series)
+- 89: Ada Lovelace (L4, L40, RTX 4000 series)
+- 90 : Hopper (H100, H200)
 
 ```bash
 cmake -B build -DGGML_CUDA=ON \

@@ -37,7 +37,7 @@ public class WaveService {
             AudioFormat format = ais.getFormat();
             validateFormat(format);
             byte[] pcmBytes = ais.readAllBytes();
-            return pcm16leToFloat(pcmBytes);
+            return bytesToWaveSamples(pcmBytes);
 
         } catch (UnsupportedAudioFileException e) {
             throw new IllegalArgumentException("Unsupported audio file format", e);
@@ -47,12 +47,12 @@ public class WaveService {
     }
 
     /**
-     * Converts PCM 16-bit little-endian bytes to float samples normalized to [-1, 1].
+     * Converts raw PCM 16-bit little-endian bytes to float samples normalized to [-1, 1].
      *
      * @param pcmBytes the PCM bytes to convert
      * @return an array of float samples
      */
-    private float[] pcm16leToFloat(byte[] pcmBytes) {
+    public float[] bytesToWaveSamples(byte[] pcmBytes) {
         int numSamples = pcmBytes.length / 2;
         float[] samples = new float[numSamples];
 

@@ -1,0 +1,7 @@
+whisper:
+  model-path: ../models/ggml-tiny.bin
+
+logging:
+  level:
+    root: INFO
+    io.github.ferdinandmehlan: DEBUG
