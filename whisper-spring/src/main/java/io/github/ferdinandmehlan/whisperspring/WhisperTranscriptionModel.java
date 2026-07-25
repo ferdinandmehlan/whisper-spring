@@ -19,7 +19,7 @@ import org.springframework.core.io.Resource;
  */
 public class WhisperTranscriptionModel implements TranscriptionModel {
 
-    private static final Logger log = LoggerFactory.getLogger(WhisperTranscriptionModel.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(WhisperTranscriptionModel.class);
 
     private final WaveService waveService;
 
@@ -67,11 +67,16 @@ public class WhisperTranscriptionModel implements TranscriptionModel {
                 };
 
         Resource audioFile = prompt.getInstructions();
-        log.info("Encoding wave samples from {}", audioFile.getFilename());
-        float[] audioData = waveService.toWaveSamples(audioFile);
-        log.info("Transcribing audio file: {}", audioFile.getFilename());
-        WhisperTranscription transcription = whisperNative.transcribe(audioData, options);
-        log.info("Finished transcribing audio file: {}", audioFile.getFilename());
+        log.debug("Encoding wave samples from {}", audioFile.getFilename());
+        float[] samples = waveService.toWaveSamples(audioFile);
+        WhisperTranscription transcription = call(samples, options);
         return new WhisperTranscriptionResponse(transcription);
+    }
+
+    public WhisperTranscription call(float[] samples, WhisperTranscriptionOptions options) {
+        log.debug("Transcribing samples");
+        WhisperTranscription transcription = whisperNative.transcribe(samples, options);
+        log.debug("Finished transcribing samples");
+        return transcription;
     }
 }

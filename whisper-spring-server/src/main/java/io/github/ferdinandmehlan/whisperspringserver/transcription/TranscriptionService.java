@@ -21,7 +21,7 @@ import reactor.core.publisher.Sinks;
 @Service
 public class TranscriptionService {
 
-    private static final Logger log = LoggerFactory.getLogger(TranscriptionService.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(TranscriptionService.class);
 
     private final WhisperTranscriptionModel model;
     private final ReentrantLock lock = new ReentrantLock();

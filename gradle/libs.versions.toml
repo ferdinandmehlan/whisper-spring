@@ -22,6 +22,7 @@ springBootStarter = { module = "org.springframework.boot:spring-boot-starter" }
 springAiModel = { module = "org.springframework.ai:spring-ai-model" }
 springBootStarterWeb = { module = "org.springframework.boot:spring-boot-starter-web" }
 springBootStarterWebflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
+springBootStarterWebsocket = { module = "org.springframework.boot:spring-boot-starter-websocket" }
 springBootStarterValidation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 springBootStarterActuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 springBootStarterTest = { module = "org.springframework.boot:spring-boot-starter-test" }
