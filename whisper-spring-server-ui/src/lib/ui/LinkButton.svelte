@@ -18,7 +18,7 @@
 <a
   href={resolve(href)}
   class={twMerge(
-    'group flex items-center gap-3 rounded-xl px-4 py-3 text-secondary transition-all hover:bg-secondary/10 hover:text-foreground',
+    'group ripple flex items-center gap-3 rounded-xl px-4 py-3 text-secondary transition-all hover:bg-secondary/10 hover:text-foreground',
     className
   )}
 >

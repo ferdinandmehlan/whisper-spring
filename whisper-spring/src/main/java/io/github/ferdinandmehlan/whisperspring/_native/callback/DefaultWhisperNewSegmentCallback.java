@@ -36,9 +36,9 @@ public abstract class DefaultWhisperNewSegmentCallback implements WhisperNewSegm
 
             for (int i = s0; i < nSegments; i++) {
                 // whisper_full_get_segment_t0 - Get the start time of the segment in milliseconds
-                long t0 = whisper.fullGetSegmentT0(ctx, i);
+                long t0 = whisper.fullGetSegmentT0(ctx, i) * 10;
                 // whisper_full_get_segment_t1 - Get the end time of the segment in milliseconds
-                long t1 = whisper.fullGetSegmentT1(ctx, i);
+                long t1 = whisper.fullGetSegmentT1(ctx, i) * 10;
                 // whisper_full_get_segment_text - Get the transcribed token for this segment
                 MemorySegment textSegment = whisper.fullGetSegmentText(ctx, i);
                 String text = textSegment.reinterpret(1000).getString(0).trim();

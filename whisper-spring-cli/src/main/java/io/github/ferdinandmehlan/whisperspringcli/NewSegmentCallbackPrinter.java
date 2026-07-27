@@ -57,7 +57,7 @@ public class NewSegmentCallbackPrinter extends DefaultWhisperNewSegmentCallback 
             StringBuilder segmentOutput = new StringBuilder();
             for (WhisperTokenDetail tokenDetail : segment.tokens()) {
                 double colorIndex = Math.pow(tokenDetail.probability(), 3) * COLORS.length;
-                int col = Math.max(0, Math.min(COLORS.length - 1, (int) colorIndex));
+                int col = Math.clamp((int) colorIndex, 0, COLORS.length - 1);
                 segmentOutput.append(COLORS[col]).append(tokenDetail.token()).append(RESET);
             }
             err.println(segmentOutput);
@@ -72,12 +72,12 @@ public class NewSegmentCallbackPrinter extends DefaultWhisperNewSegmentCallback 
     }
 
     private String formatTimestamp(long time) {
-        long totalSeconds = time / 100;
+        long totalSeconds = time / 1000;
         long hours = totalSeconds / 3600;
         long minutes = (totalSeconds % 3600) / 60;
         long seconds = totalSeconds % 60;
-        long millis = time % 100;
+        long millis = time % 1000;
 
-        return String.format("%02d:%02d:%02d.%02d0", hours, minutes, seconds, millis);
+        return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis);
     }
 }
