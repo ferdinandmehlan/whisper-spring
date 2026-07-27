@@ -1,7 +1,7 @@
 whisper:
-  model-path: ../models/ggml-tiny.bin
+  model-path: ../models/ggml-large-v3-turbo-q8_0.bin
 
 logging:
   level:
     root: INFO
-    io.github.ferdinandmehlan: DEBUG
+    io.github.ferdinandmehlan: INFO

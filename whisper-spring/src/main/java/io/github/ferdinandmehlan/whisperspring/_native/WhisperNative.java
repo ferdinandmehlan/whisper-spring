@@ -79,8 +79,8 @@ public class WhisperNative extends WhisperH implements AutoCloseable {
             List<WhisperSegment> segments = new ArrayList<>(nSegments);
 
             for (int i = 0; i < nSegments; i++) {
-                long t0 = fullGetSegmentT0(ctx, i);
-                long t1 = fullGetSegmentT1(ctx, i);
+                long t0 = fullGetSegmentT0(ctx, i) * 10;
+                long t1 = fullGetSegmentT1(ctx, i) * 10;
                 MemorySegment textSegment = fullGetSegmentText(ctx, i);
                 String text = textSegment.reinterpret(1000).getString(0);
                 segments.add(new WhisperSegment(text, t0, t1));

@@ -4,32 +4,32 @@
   "segments" : [ {
     "text" : "Whisper spring is a Java library that integrates the Whisper.CPPE speech-to-extendion in",
     "start" : 0,
-    "end" : 504,
+    "end" : 5040,
     "tokens" : [ ]
   }, {
     "text" : "to spring-based applications.",
-    "start" : 504,
-    "end" : 688,
+    "start" : 5040,
+    "end" : 6880,
     "tokens" : [ ]
   }, {
     "text" : "It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making",
-    "start" : 688,
-    "end" : 1222,
+    "start" : 6880,
+    "end" : 12220,
     "tokens" : [ ]
   }, {
     "text" : "it easy to use, open AI-DOS Whisper model for audio transcription.",
-    "start" : 1222,
-    "end" : 1872,
+    "start" : 12220,
+    "end" : 18720,
     "tokens" : [ ]
   }, {
     "text" : "The project is structured into three modules, a core library, a command line interface, and",
-    "start" : 1872,
-    "end" : 2376,
+    "start" : 18720,
+    "end" : 23760,
     "tokens" : [ ]
   }, {
     "text" : "a server component, supporting a range of deployment scenarios.",
-    "start" : 2376,
-    "end" : 2728,
+    "start" : 23760,
+    "end" : 27280,
     "tokens" : [ ]
   } ]
 }

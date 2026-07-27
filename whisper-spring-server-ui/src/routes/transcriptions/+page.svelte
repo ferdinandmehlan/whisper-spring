@@ -1,20 +1,27 @@
 <script lang="ts">
   import Button from '$lib/ui/Button.svelte';
   import Icon from '$lib/ui/Icon.svelte';
+  import OptionsSidebar from './OptionsSidebar.svelte';
   import {
     transcribe,
+    formatTimestampRange,
+    loadSettings,
     type TranscriptionRequest,
     type TranscriptionResponse
   } from '$lib/transcriptions';
 
   let isDragging = $state(false);
   let fileInput = $state<HTMLInputElement | null>(null);
-
   let input = $state<TranscriptionInput>({});
   let sentInput = $state<TranscriptionInput>();
   let isLoading = $state(false);
   let result = $state<TranscriptionResponse>({ segments: [], text: '' });
   let error = $state<string | null>(null);
+  let showSettings = $state(false);
+
+  function toggleSettings() {
+    showSettings = !showSettings;
+  }
 
   interface TranscriptionInput {
     file?: File;
@@ -56,12 +63,12 @@
     }
   }
 
-  function setFile(file: File | undefined) {
+  function setFile(file: File) {
     input.file = file;
   }
 
   function clearFile() {
-    setFile(undefined);
+    input.file = undefined;
     if (fileInput) {
       fileInput.value = '';
     }
@@ -76,7 +83,7 @@
     return {
       file: input.file,
       stream: true,
-      prompt: input.prompt
+      ...loadSettings()
     };
   }
 
@@ -121,8 +128,14 @@
 
   function downloadAsTxt() {
     if (!sentInput?.fileName) return;
+    const settings = loadSettings();
     const baseName = sentInput.fileName.replace(/\.[^/.]+$/, '');
-    const blob = new Blob([result.text], { type: 'text/plain' });
+    const content = settings.includeTimestamps
+      ? result.segments
+          .map((s) => `${formatTimestampRange(s.start, s.end)} ${s.text.trim()}`)
+          .join('\n')
+      : result.text;
+    const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -174,7 +187,18 @@
       </div>
     {/if}
 
-    <p class="ml-2 whitespace-pre-wrap">{result.text}</p>
+    {#if loadSettings().includeTimestamps && result.segments.length > 0}
+      <div class="ml-2 font-mono text-sm whitespace-pre-wrap">
+        {#each result.segments as segment (segment.start + segment.end)}
+          <div>
+            <span class="text-secondary">{formatTimestampRange(segment.start, segment.end)}</span>
+            {segment.text.trim()}
+          </div>
+        {/each}
+      </div>
+    {:else}
+      <p class="ml-2 whitespace-pre-wrap">{result.text}</p>
+    {/if}
 
     {#if isLoading}
       <span
@@ -229,15 +253,14 @@
         bind:value={input.prompt}
         placeholder="Add context for the transcription (optional)"
         rows="1"
-        class="without-ring field-sizing-content w-full resize-none border-none bg-transparent"
+        class="without-ring w-full resize-none border-none bg-transparent"
         maxlength="500"
         onkeydown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey && input.file) {
             e.preventDefault();
             handleSubmit();
           }
-        }}
-      ></textarea>
+        }}></textarea>
 
       <div class="flex justify-between">
         <Button
@@ -246,16 +269,19 @@
           icon="upload"
           variant="text"
         />
-        <Button
-          onclick={handleSubmit}
-          disabled={!input.file}
-          aria-label="Start transcription"
-          icon="send"
-          variant="outlined"
-          class="text-forground border-forground"
-        >
-          Transcribe
-        </Button>
+        <div class="flex gap-2">
+          <Button onclick={toggleSettings} aria-label="Settings" icon="settings" variant="text" />
+          <Button
+            onclick={handleSubmit}
+            disabled={!input.file}
+            aria-label="Start transcription"
+            icon="send"
+            variant="outlined"
+            class="text-forground border-forground"
+          >
+            Transcribe
+          </Button>
+        </div>
       </div>
     </div>
 
@@ -267,4 +293,6 @@
       bind:this={fileInput}
     />
   </div>
+
+  <OptionsSidebar {showSettings} onClose={() => (showSettings = false)} />
 </div>

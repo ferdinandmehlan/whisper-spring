@@ -1,18 +1,18 @@
 // HTTP 200 OK
 event:segment
-data:{"start":0,"end":504,"text":"Whisper spring is a Java library that integrates the Whisper.CPPE speech-to-extendion in"}
+data:{"start":0,"end":5040,"text":"Whisper spring is a Java library that integrates the Whisper.CPPE speech-to-extendion in"}
 
 event:segment
-data:{"start":504,"end":688,"text":"to spring-based applications."}
+data:{"start":5040,"end":6880,"text":"to spring-based applications."}
 
 event:segment
-data:{"start":688,"end":1222,"text":"It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making"}
+data:{"start":6880,"end":12220,"text":"It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making"}
 
 event:segment
-data:{"start":1222,"end":1872,"text":"it easy to use, open AI-DOS Whisper model for audio transcription."}
+data:{"start":12220,"end":18720,"text":"it easy to use, open AI-DOS Whisper model for audio transcription."}
 
 event:segment
-data:{"start":1872,"end":2376,"text":"The project is structured into three modules, a core library, a command line interface, and"}
+data:{"start":18720,"end":23760,"text":"The project is structured into three modules, a core library, a command line interface, and"}
 
 event:segment
-data:{"start":2376,"end":2728,"text":"a server component, supporting a range of deployment scenarios."}
+data:{"start":23760,"end":27280,"text":"a server component, supporting a range of deployment scenarios."}

@@ -28,7 +28,7 @@
   }: ButtonProps = $props();
 
   const baseClasses =
-    'inline-flex items-center justify-center gap-2 p-2 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50';
+    'ripple relative inline-flex items-center justify-center gap-2 p-2 font-medium transition-colors overflow-hidden disabled:cursor-not-allowed disabled:opacity-50';
 
   const roundedClasses = $derived(!children && icon ? 'rounded-full' : 'rounded-lg');
 

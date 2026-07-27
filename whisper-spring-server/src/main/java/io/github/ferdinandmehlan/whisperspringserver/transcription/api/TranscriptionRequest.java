@@ -78,7 +78,7 @@ public record TranscriptionRequest(
         offsetTMs = Objects.requireNonNullElse(offsetTMs, 0);
         offsetN = Objects.requireNonNullElse(offsetN, 0);
         durationMs = Objects.requireNonNullElse(durationMs, 0);
-        maxContext = Objects.requireNonNullElse(maxContext, 1);
+        maxContext = Objects.requireNonNullElse(maxContext, -1);
         maxLen = Objects.requireNonNullElse(maxLen, 0);
         splitOnWord = Objects.requireNonNullElse(splitOnWord, false);
         bestOf = Objects.requireNonNullElse(bestOf, 2);
