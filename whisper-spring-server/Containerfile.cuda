@@ -1,10 +1,10 @@
-FROM nvidia/cuda:12.9.0-base-ubuntu24.04
+FROM nvidia/cuda:13.3.1-base-ubuntu26.04@sha256:30f7a2345973fbb584f4c8bc9a7c16c7bae6d0ec08883df4e030387d74756292
 
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    libcublas-12-9 \
+    libcublas-13-3 \
     libgomp1 \
     openjdk-25-jre-headless \
     && rm -rf /var/lib/apt/lists/* \
