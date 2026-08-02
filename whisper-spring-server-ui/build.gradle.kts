@@ -65,26 +65,17 @@ tasks.register<PnpmTask>("compile") {
     args = listOf("build")
 }
 
-tasks.register<PnpmTask>("svelte-check") {
-    group = "verification"
-    description = "Run Svelte type checking"
-    dependsOn("pnpmInstall")
-    inputs.files(inputFiles())
-    outputs.upToDateWhen { true }
-    args = listOf("check")
-}
-
 /*
  * Check
  */
 
-tasks.register<PnpmTask>("lint") {
+tasks.register<PnpmTask>("formatCheck") {
     group = "verification"
-    description = "Run ESLint to check code quality"
+    description = "Format code using Prettier"
     dependsOn("pnpmInstall")
     inputs.files(inputFiles())
     outputs.upToDateWhen { true }
-    args = listOf("lint")
+    args = listOf("format:check")
 }
 
 tasks.register<PnpmTask>("format") {
@@ -96,36 +87,63 @@ tasks.register<PnpmTask>("format") {
     args = listOf("format")
 }
 
+tasks.register<PnpmTask>("lintCheck") {
+    group = "verification"
+    description = "Run ESLint to check code quality"
+    dependsOn("pnpmInstall")
+    inputs.files(inputFiles())
+    outputs.upToDateWhen { true }
+    args = listOf("lint:check")
+}
+
+tasks.register<PnpmTask>("lint") {
+    group = "verification"
+    description = "Run ESLint to check code quality"
+    dependsOn("pnpmInstall")
+    inputs.files(inputFiles())
+    outputs.upToDateWhen { true }
+    args = listOf("lint")
+}
+
+tasks.register<PnpmTask>("svelteCheck") {
+    group = "verification"
+    description = "Run Svelte type checking"
+    dependsOn("pnpmInstall")
+    inputs.files(inputFiles())
+    outputs.upToDateWhen { false }
+    args = listOf("svelte:check")
+}
+
 /*
  * Playwright
  */
 
-tasks.register<PnpmTask>("playwright-install") {
+tasks.register<PnpmTask>("playwrightInstall") {
     group = "verification"
     description = "Install Playwright browsers"
     dependsOn("pnpmInstall")
     outputs.dir("$rootDir/.gradle/playwright")
     environment.put("PLAYWRIGHT_BROWSERS_PATH", "$rootDir/.gradle/playwright")
-    args = listOf("exec", "playwright", "install")
+    args = listOf("playwright-install")
 }
 
 tasks.register<PnpmTask>("playwright") {
     group = "verification"
     description = "Run Playwright tests"
-    dependsOn("playwright-install", ":whisper-spring-server:composeUp")
+    dependsOn("playwrightInstall", ":whisper-spring-server:composeUp")
     finalizedBy(":whisper-spring-server:composeDown")
     inputs.files(inputFiles())
     outputs.upToDateWhen { true }
     environment.put("PLAYWRIGHT_BROWSERS_PATH", "$rootDir/.gradle/playwright")
-    args = listOf("exec", "playwright", "test")
+    args = listOf("playwright")
 }
 
-tasks.register<PnpmTask>("playwright-ui") {
+tasks.register<PnpmTask>("playwrightUi") {
     group = "verification"
     description = "Open Playwright interactive UI"
-    dependsOn("playwright-install")
+    dependsOn("playwrightInstall")
     environment.put("PLAYWRIGHT_BROWSERS_PATH", "$rootDir/.gradle/playwright")
-    args = listOf("exec", "playwright", "test", "--ui")
+    args = listOf("playwright-ui")
 }
 
 /*
@@ -133,9 +151,21 @@ tasks.register<PnpmTask>("playwright-ui") {
  */
 
 tasks.named("check").configure {
-    dependsOn("svelte-check", "lint", "playwright")
+    dependsOn("formatCheck", "lintCheck", "svelteCheck", "playwright")
 }
 
 tasks.named("build").configure {
     dependsOn("compile", "check")
+}
+
+/*
+ * Dependency updates
+ */
+
+tasks.register<PnpmTask>("updateDependencies") {
+    group = "build"
+    description = "Updates dependencies to the latest version available according to allowed policies"
+    dependsOn("pnpmInstall")
+    outputs.files("$projectDir/package.json", "$projectDir/package-lock.yaml")
+    args = listOf("update", "--latest")
 }
