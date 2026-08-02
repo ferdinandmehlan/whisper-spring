@@ -1,5 +1,5 @@
 whisper:
-  model-path: ../models/ggml-large-v3-turbo-q8_0.bin
+  model-path: ../models/ggml-tiny.bin
 
 logging:
   level:
