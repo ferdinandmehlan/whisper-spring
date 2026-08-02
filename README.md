@@ -2,7 +2,7 @@
 
 Whisper Spring integrates whisper transcription into the Spring ecosystem using Java 25's Foreign Function & Memory (FFM) API.  
 The library provides autoconfigured services ready to use Whisper within Spring applications.  
-It also includes a CLI implementation and a Spring server implementation that provides a ready-to-use Docker image with an OAI-like transcription API.  
+It also includes a Spring server implementation that provides a ready-to-use Docker image with an OAI-like transcription API.  
 The library leverages FFM for direct, high-performance native interop with whisper.cpp's compiled native libraries.
 
 The project integrates [`whisper.cpp`](https://github.com/ggml-org/whisper.cpp) as a Git submodule, 
@@ -48,7 +48,6 @@ For detailed usage instructions, see the README files in each module.
 ## Modules
 
 - [whisper-spring](whisper-spring/README.md) - Core library with Spring AI audio provider and native lib loader
-- [whisper-spring-cli](whisper-spring-cli/README.md) - Command-line interface for transcription
 - [whisper-spring-server](whisper-spring-server/README.md) - REST API server for transcription services
 - [whisper-spring-test-common](whisper-spring-test-common/README.md) - Shared test utilities
 
@@ -108,21 +107,6 @@ public class TranscriptionService {
         return model.transcribe(audioResource);
     }
 }
-```
-
-### CLI (whisper-spring-cli)
-
-To use the CLI download or build it with:
-
-```sh
-  ./gradlew :whisper-spring-cli:bootJar
-```
-
-Download a Whisper model see [models/README.md](models/README.md) for details.  
-Then run:
-
-```sh
-  java -jar whisper-spring-cli-0.1.0.jar --file sample.wav --model models/ggml-base.bin
 ```
 
 ### Server (whisper-spring-server)
