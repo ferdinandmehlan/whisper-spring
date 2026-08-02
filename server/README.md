@@ -36,22 +36,22 @@ docker run -p 8080:8080 \
 
 | Command                                             | Description                                                 |
 |-----------------------------------------------------|-------------------------------------------------------------|
-| `./gradlew :whisper-spring-server:clean`            | Clean build artifacts, caches, and generated files          |
-| `./gradlew :whisper-spring-server:check`            | Run all tests and formatting checks                         |
-| `./gradlew :whisper-spring-server:build`            | Execute tests and build application artifacts               |
-| `./gradlew :whisper-spring-server:bootJar`          | Build the executable JAR file                               |
-| `./gradlew :whisper-spring-server:bootRun`          | Run the application locally                                 |
-| `./gradlew :whisper-spring-server:spotlessApply`    | Apply code formatting to all files                          |
-| `./gradlew :whisper-spring-server:composeUp`        | Start the server in Docker container                        |
-| `./gradlew :whisper-spring-server:composeUp -Pcuda` | Start the server in Docker container including cuda support |
-| `./gradlew :whisper-spring-server:composeDown`      | Stop the Docker container                                   |
+| `./gradlew :server:clean`            | Clean build artifacts, caches, and generated files          |
+| `./gradlew :server:check`            | Run all tests and formatting checks                         |
+| `./gradlew :server:build`            | Execute tests and build application artifacts               |
+| `./gradlew :server:bootJar`          | Build the executable JAR file                               |
+| `./gradlew :server:bootRun`          | Run the application locally                                 |
+| `./gradlew :server:spotlessApply`    | Apply code formatting to all files                          |
+| `./gradlew :server:composeUp`        | Start the server in Docker container                        |
+| `./gradlew :server:composeUp -Pcuda` | Start the server in Docker container including cuda support |
+| `./gradlew :server:composeDown`      | Stop the Docker container                                   |
 
 ## Local Development
 
 Build and run the server locally:
 
 ```sh
-./gradlew :whisper-spring-server:bootRun
+./gradlew :server:bootRun
 ```
 
 The server will start on `http://localhost:8080`.
@@ -85,4 +85,4 @@ Interactive API documentation is available at:
 
 ## Integration
 
-The server is built on top of the [whisper-spring](../whisper-spring/README.md) core library, providing REST API access to transcription capabilities.
+The server is built on top of the [whisper-spring](../core/README.md) core library, providing REST API access to transcription capabilities.

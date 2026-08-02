@@ -18,9 +18,13 @@ dependencies {
     api(libs.springBootStarter)
     api(libs.springAiModel)
 
-    testImplementation(project(":whisper-spring-test-common"))
+    testImplementation(project(":test-common"))
 
     testRuntimeOnly(libs.junitPlatformLauncher)
+}
+
+tasks.jar {
+    archiveBaseName.set("whisper-spring")
 }
 
 /*

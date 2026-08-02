@@ -25,7 +25,7 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "com.diffplug.spotless")
+    plugins.apply("com.diffplug.spotless")
 
     spotless {
         java {

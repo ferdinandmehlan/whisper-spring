@@ -1,4 +1,4 @@
-# whisper-spring-test-common
+# test-common
 
 Shared test utilities and base classes for testing Whisper Spring modules.
 
@@ -16,7 +16,7 @@ This module provides common testing infrastructure used across all Whisper Sprin
 Add as a test dependency in your module's build.gradle:
 
 ```gradle
-testImplementation project(':whisper-spring-test-common')
+testImplementation project(':test-common')
 ```
 
 ## Key Classes

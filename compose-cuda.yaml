@@ -3,7 +3,7 @@ services:
     image: ghcr.io/ferdinandmehlan/whisper-spring-server:${TAG:-dev-cuda}
     container_name: whisper-spring-server
     build:
-      context: ./whisper-spring-server
+      context: ./server
       dockerfile: Containerfile.cuda
     ports:
       - "8080:8080"

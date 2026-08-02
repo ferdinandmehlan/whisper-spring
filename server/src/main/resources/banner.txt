@@ -7,5 +7,5 @@
                    | |                     | |                  __/ |
                    |_|                     |_|                 |___/
 
-${application.title} ${application.version}
+whisper-spring-server ${application.version}
 spring-boot ${spring-boot.version}

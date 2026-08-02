@@ -17,12 +17,12 @@ It offers autoconfigured services, automatic native library loading via FFM Symb
 
 ## Gradle Tasks
 
-| Command                                   | Description                                        |
-|-------------------------------------------|----------------------------------------------------|
-| `./gradlew :whisper-spring:clean`         | Clean build artifacts, caches, and generated files |
-| `./gradlew :whisper-spring:check`         | Run all tests and formatting checks                |
-| `./gradlew :whisper-spring:build`         | Execute tests and build application artifacts      |
-| `./gradlew :whisper-spring:spotlessApply` | Apply code formatting to all files                 |
+| Command                         | Description                                        |
+|---------------------------------|----------------------------------------------------|
+| `./gradlew :core:clean`         | Clean build artifacts, caches, and generated files |
+| `./gradlew :core:check`         | Run all tests and formatting checks                |
+| `./gradlew :core:build`         | Execute tests and build application artifacts      |
+| `./gradlew :core:spotlessApply` | Apply code formatting to all files                 |
 
 ## Installation
 
