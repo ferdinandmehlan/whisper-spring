@@ -3,7 +3,7 @@ services:
     image: ghcr.io/ferdinandmehlan/whisper-spring-server:${TAG:-dev}
     container_name: whisper-spring-server
     build:
-      context: ./whisper-spring-server
+      context: ./server
       dockerfile: Containerfile
     ports:
       - "8080:8080"

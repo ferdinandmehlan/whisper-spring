@@ -11,7 +11,7 @@ java {
 }
 
 dependencies {
-    implementation(project(":whisper-spring"))
+    implementation(project(":core"))
     implementation(platform(libs.springBootDependencies))
     implementation(libs.springBootStarterWeb)
     implementation(libs.springBootStarterWebflux)
@@ -20,7 +20,7 @@ dependencies {
     implementation(libs.springBootStarterActuator)
     implementation(libs.springdoc)
 
-    testImplementation(project(":whisper-spring-test-common"))
+    testImplementation(project(":test-common"))
     testImplementation(libs.springBootStarterRestclient)
     testImplementation(libs.springBootResttestclient)
     testImplementation(libs.testcontainers)
@@ -36,19 +36,22 @@ tasks.register<Copy>("copyUIFiles") {
     group = "build"
     description = "Copy static UI files from the UI build"
 
-    dependsOn(":whisper-spring-server-ui:compile")
+    dependsOn(":server-ui:compile")
     doFirst {
         delete("$projectDir/build/resources/main/static")
     }
-    from("$rootDir/whisper-spring-server-ui/build")
+    from("$rootDir/server-ui/build")
     into("$projectDir/build/resources/main/static")
 }
 
-listOf("compileTestJava", "resolveMainClassName", "jar").forEach {
+listOf("compileTestJava", "resolveMainClassName").forEach {
     tasks.named(it) { dependsOn("copyUIFiles", ":downloadTinyModel") }
 }
 
+tasks.jar { enabled = false }
+
 tasks.bootJar {
+    archiveBaseName.set("whisper-spring-server")
     manifest {
         attributes["Enable-Native-Access"] = "ALL-UNNAMED"
     }

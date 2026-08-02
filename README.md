@@ -47,9 +47,10 @@ For detailed usage instructions, see the README files in each module.
 
 ## Modules
 
-- [whisper-spring](whisper-spring/README.md) - Core library with Spring AI audio provider and native lib loader
-- [whisper-spring-server](whisper-spring-server/README.md) - REST API server for transcription services
-- [whisper-spring-test-common](whisper-spring-test-common/README.md) - Shared test utilities
+- [core](core/README.md) - Core library with Spring AI audio provider and native lib loader
+- [server](server/README.md) - REST API server for transcription services
+- [server-ui](server-ui/README.md) - Static UI build for the server module
+- [test-common](test-common/README.md) - Shared test utilities
 
 
 ## Gradle Tasks
@@ -73,7 +74,7 @@ Some of the important tasks include:
 
 These are some quick examples of how this project can be used. For more details, see the module specific readmes.
 
-### Core Library (whisper-spring)
+### Core Library
 
 To use whisper-spring with a spring application add the dependency:
 
@@ -109,12 +110,12 @@ public class TranscriptionService {
 }
 ```
 
-### Server (whisper-spring-server)
+### Server
 
 Start the server with:
 
 ```sh
-  ./gradlew :whisper-spring-server:bootRun
+  ./gradlew :server:bootRun
 ```
 
 Then transcribe via API:

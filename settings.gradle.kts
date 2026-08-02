@@ -1,6 +1,6 @@
 rootProject.name = "whisper-spring"
 
-include("whisper-spring")
-include("whisper-spring-server")
-include("whisper-spring-server-ui")
-include("whisper-spring-test-common")
+include("core")
+include("server")
+include("server-ui")
+include("test-common")
