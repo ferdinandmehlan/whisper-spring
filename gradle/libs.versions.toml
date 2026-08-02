@@ -12,7 +12,6 @@ spring-boot = "4.1.0"
 spring-ai = "2.0.0"
 springdoc = "3.1.0"
 jackson = "2.22.1"
-picocli = "4.7.7"
 validation-file-assertions = "0.9.0"
 testcontainers = "1.21.4"
 versionCatalogUpdate = "1.1.1"
@@ -30,8 +29,6 @@ springBootStarterActuator = { module = "org.springframework.boot:spring-boot-sta
 springBootStarterTest = { module = "org.springframework.boot:spring-boot-starter-test" }
 springBootStarterRestclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
 springBootResttestclient = { module = "org.springframework.boot:spring-boot-resttestclient" }
-picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
-picocliCodegen = { module = "info.picocli:picocli-codegen", version.ref = "picocli" }
 validationFileAssertions = { module = "de.cronn:validation-file-assertions", version.ref = "validation-file-assertions" }
 jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 springdoc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
