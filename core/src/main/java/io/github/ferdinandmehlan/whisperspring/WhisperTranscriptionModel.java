@@ -55,16 +55,14 @@ public class WhisperTranscriptionModel implements TranscriptionModel {
                     "WhisperNative has not been initialized yet. Ensure initWhisperNative() is called before processing requests.");
         }
 
-        WhisperTranscriptionOptions options =
-                switch (prompt.getOptions()) {
-                    case null -> new WhisperTranscriptionOptions();
-                    case WhisperTranscriptionOptions opts -> opts;
-                    default ->
-                        throw new IllegalArgumentException(
-                                "Unsupported options type [%s]. Whisper Native provider requires an instance of WhisperTranscriptionOptions."
-                                        .formatted(
-                                                prompt.getOptions().getClass().getName()));
-                };
+        WhisperTranscriptionOptions options = switch (prompt.getOptions()) {
+            case null -> new WhisperTranscriptionOptions();
+            case WhisperTranscriptionOptions opts -> opts;
+            default ->
+                throw new IllegalArgumentException(
+                        "Unsupported options type [%s]. Whisper Native provider requires an instance of WhisperTranscriptionOptions."
+                                .formatted(prompt.getOptions().getClass().getName()));
+        };
 
         Resource audioFile = prompt.getInstructions();
         log.debug("Encoding wave samples from {}", audioFile.getFilename());
