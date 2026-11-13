@@ -1,9 +1,9 @@
 <script lang="ts">
   import '../app.css';
-  import favicon from '$lib/assets/favicon.svg';
-  import LinkButton from '$lib/ui/LinkButton.svelte';
-  import Button from '$lib/ui/Button.svelte';
-  import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+  import favicon from '#lib/assets/favicon.svg';
+  import LinkButton from '#lib/ui/LinkButton.svelte';
+  import Button from '#lib/ui/Button.svelte';
+  import ThemeToggle from '#lib/components/ThemeToggle.svelte';
 
   let { children } = $props();
 </script>

@@ -1,16 +1,16 @@
 <script lang="ts">
-  import Button from '$lib/ui/Button.svelte';
-  import Input from '$lib/ui/Input.svelte';
-  import Sidebar from '$lib/ui/Sidebar.svelte';
-  import Select from '$lib/ui/Select.svelte';
-  import Slider from '$lib/ui/Slider.svelte';
-  import Toggle from '$lib/ui/Toggle.svelte';
+  import Button from '#lib/ui/Button.svelte';
+  import Input from '#lib/ui/Input.svelte';
+  import Sidebar from '#lib/ui/Sidebar.svelte';
+  import Select from '#lib/ui/Select.svelte';
+  import Slider from '#lib/ui/Slider.svelte';
+  import Toggle from '#lib/ui/Toggle.svelte';
   import {
     loadSettings,
     saveSettings,
     resetSettings,
     type TranscriptionSettings
-  } from '$lib/transcriptions';
+  } from '#lib/transcriptions';
 
   let { showSettings, onClose }: { showSettings: boolean; onClose: () => void } = $props();
 

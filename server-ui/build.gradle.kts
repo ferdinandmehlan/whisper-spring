@@ -1,16 +1,29 @@
 import com.github.gradle.node.pnpm.task.PnpmTask
+import groovy.json.JsonSlurper
 
 plugins {
     alias(libs.plugins.nodeGradle)
 }
+
+@Suppress("UNCHECKED_CAST")
+val packageJson = JsonSlurper().parse(file("package.json")) as Map<String, Any>
+
+fun Map<String, Any>.getIn(path: String): String? =
+    path
+        .split(".")
+        .fold(this as Any?) { acc, key ->
+            (acc as? Map<*, *>)?.get(key)
+        }?.toString()
+val nodePkgVersion: String? = packageJson.getIn("devEngines.runtime.version")
+val pnpmPkgVersion: String? = packageJson.getIn("devEngines.packageManager.version")
 
 /*
  * Node
  */
 
 node {
-    version = libs.versions.nodeVersion.get()
-    pnpmVersion = libs.versions.pnpmVersion.get()
+    version = nodePkgVersion
+    pnpmVersion = pnpmPkgVersion
     download = true
     workDir = file("$rootDir/.gradle/nodejs")
     pnpmWorkDir = file("$rootDir/.gradle/pnpm")
@@ -24,7 +37,6 @@ fun Project.inputFiles() =
         file("$projectDir/package.json"),
         file("$projectDir/playwright.config.ts"),
         file("$projectDir/pnpm-lock.yaml"),
-        file("$projectDir/svelte.config.js"),
         file("$projectDir/tsconfig.json"),
         file("$projectDir/vite.config.ts"),
     )
@@ -159,13 +171,22 @@ tasks.named("build").configure {
 }
 
 /*
- * Dependency updates
+ * Dependency Updates
  */
 
+tasks.register<PnpmTask>("nodeUpdate") {
+    description = "Updates Node.js to the latest version"
+    args = listOf("runtime", "set", "node", "latest")
+}
+
+tasks.register<PnpmTask>("pnpmUpdate") {
+    description = "Updates pnpm to the latest version"
+    environment.put("PNPM_CONFIG_MINIMUM_RELEASE_AGE", "10080")
+    args = listOf("self-update")
+}
+
 tasks.register<PnpmTask>("updateDependencies") {
-    group = "build"
-    description = "Updates dependencies to the latest version available according to allowed policies"
-    dependsOn("pnpmInstall")
-    outputs.files("$projectDir/package.json", "$projectDir/package-lock.yaml")
+    description = "Updates all node dependencies to their latest versions"
+    dependsOn("nodeUpdate", "pnpmUpdate")
     args = listOf("update", "--latest")
 }

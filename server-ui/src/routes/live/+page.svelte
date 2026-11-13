@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
-  import Button from '$lib/ui/Button.svelte';
-  import Icon from '$lib/ui/Icon.svelte';
+  import Button from '#lib/ui/Button.svelte';
+  import Icon from '#lib/ui/Icon.svelte';
 
   let isRecording = $state(false);
   let isConnecting = $state(false);

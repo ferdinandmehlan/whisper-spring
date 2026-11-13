@@ -4,6 +4,10 @@ trustPolicyIgnoreAfter: 40320
 strictDepBuilds: true
 blockExoticSubdeps: true
 
+update:
+  ignoreDeps:
+    - typescript # Keep typescript pinned at 6.0.3: eslint is not yet compatible with 7.x.
+
 onlyBuiltDependencies:
   - esbuild
 
