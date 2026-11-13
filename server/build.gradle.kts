@@ -32,6 +32,10 @@ dependencies {
  * Compile
  */
 
+tasks.processResources {
+    dependsOn(":buildNativeLibraries", ":downloadTinyModel")
+}
+
 tasks.register<Copy>("copyUIFiles") {
     group = "build"
     description = "Copy static UI files from the UI build"
@@ -62,17 +66,12 @@ tasks.bootJar {
 
 tasks.bootRun {
     args("--spring.profiles.active=dev")
-    dependsOn(":downloadTinyModel")
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
 }
 
 /*
  * Check
  */
-
-tasks.processTestResources {
-    from(project(":test-common").layout.buildDirectory.dir("resources/main"))
-    dependsOn(":test-common:processResources", ":downloadTinyModel")
-}
 
 tasks.test {
     useJUnitPlatform()

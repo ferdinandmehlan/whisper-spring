@@ -46,22 +46,10 @@ docker run -p 8080:8080 \
 
 ## Local Development
 
-Running the server locally requires a whisper.cpp build for your platform. Build and install the
-shared libraries once:
-
-```sh
-cmake -B whisper.cpp/build -S whisper.cpp \
-  -DBUILD_SHARED_LIBS=ON \
-  -DGGML_NATIVE=OFF \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=whisper.cpp/build/install \
-  -DCMAKE_INSTALL_RPATH='$ORIGIN' \
-  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
-cmake --build whisper.cpp/build --config Release -j
-cmake --install whisper.cpp/build
-```
-
-Then run the server:
+Running the server locally requires a whisper.cpp build for your platform. No native binaries are
+checked in: the `:buildNativeLibraries` task compiles them from the `whisper.cpp` submodule for the
+platform of the JVM that runs the build and writes them to `build/native/lib`. `bootRun` depends on
+it, so a single command is enough:
 
 ```sh
 ./gradlew :server:bootRun
@@ -69,7 +57,7 @@ Then run the server:
 
 The server will start on `http://localhost:8080`.
 
-Or run it containerized using Docker Compose:
+Or run it containerized building whisper.cpp native libs inside a container using Docker Compose:
 
 ```sh
 ./gradlew composeUp

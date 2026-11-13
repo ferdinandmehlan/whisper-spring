@@ -13,7 +13,7 @@ class NativeLibraryTest {
 
     private static final NativePlatform PLATFORM = NativePlatform.detect();
 
-    private static final Path NATIVE_LIBRARY_DIRECTORY = Path.of("build/resources/test/native");
+    private static final Path NATIVE_LIBRARY_DIRECTORY = Path.of("../build/native/lib");
 
     @BeforeEach
     void requireNativeLibrariesForThisPlatform() {
@@ -56,7 +56,7 @@ class NativeLibraryTest {
 
     @Test
     void failsWithHelpfulMessageWhenPathDoesNotExist() {
-        Path missing = Path.of("build/resources/test/native/does-not-exist");
+        Path missing = Path.of("../build/native/lib/does-not-exist");
         assertThatThrownBy(() -> NativeLibrary.load(missing))
                 .isInstanceOf(NativeLibraryNotFoundException.class)
                 .hasMessageContaining("Native library not found")

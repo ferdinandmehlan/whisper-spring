@@ -45,7 +45,7 @@ class WhisperAutoConfigurationTest {
 
         @Test
         void testModelPathIsConfigured() {
-            assertThat(modelPath).isEqualTo("../models/ggml-tiny.bin");
+            assertThat(modelPath).isEqualTo("../build/models/ggml-tiny.bin");
         }
 
         @Test

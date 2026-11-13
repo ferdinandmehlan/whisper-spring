@@ -27,7 +27,7 @@ public class ContainerStartupTest extends BaseIntegrationTest {
                     "ghcr.io/ferdinandmehlan/whisper-spring-server:dev")
             .withExposedPorts(8080)
             .withCreateContainerCmdModifier(cmd -> cmd.withName("whisper-spring-server-" + UUID.randomUUID()))
-            .withFileSystemBind("../models/ggml-tiny.bin", "/app/models/ggml-tiny.bin", BindMode.READ_ONLY)
+            .withFileSystemBind("../build/models/ggml-tiny.bin", "/app/models/ggml-tiny.bin", BindMode.READ_ONLY)
             .withEnv("WHISPER_MODEL_PATH", "/app/models/ggml-tiny.bin")
             .waitingFor(Wait.forLogMessage(".*Started WhisperSpringServerApplication in.*", 1));
 

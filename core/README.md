@@ -53,6 +53,10 @@ at a CUDA build, a CPU build if you point at a CPU build.
 
 ### Building whisper.cpp
 
+Inside this repository, the native libraries for the local platform are built by
+`./gradlew buildNativeLibraries` and written to `build/native/lib`. For an own build, for example a
+CUDA build for a deployment, use:
+
 ```sh
 cmake -B whisper.cpp/build -S whisper.cpp \
   -DBUILD_SHARED_LIBS=ON \

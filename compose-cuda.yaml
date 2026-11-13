@@ -10,7 +10,7 @@ services:
     environment:
       WHISPER_MODEL_PATH: "models/ggml-tiny.bin"
     volumes:
-      - ./models:/app/models
+      - ./build/models:/app/models
     # For gpus to be accessible by containers the NVIDIA Container Toolkit needs to be installed
     # Attaching gpus for podman
     devices:

@@ -16,17 +16,3 @@ dependencies {
     api(libs.validationFileAssertions)
     api(libs.jacksonDatabind)
 }
-
-/*
- * Test assets
- */
-
-sourceSets.main { resources { exclude("native/**") } }
-
-tasks.processResources {
-    from(layout.projectDirectory.dir("src/main/resources/native")) { into("native") }
-}
-
-tasks.jar {
-    exclude("native/**")
-}

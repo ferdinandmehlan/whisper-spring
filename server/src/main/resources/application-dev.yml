@@ -1,6 +1,6 @@
 whisper:
-  model-path: ../models/ggml-tiny.bin
-  native-library-path: ../whisper.cpp/build/install/lib64
+  model-path: ../build/models/ggml-tiny.bin
+  native-library-path: ../build/native/lib
 
 logging:
   level:
