@@ -25,14 +25,15 @@ public class WhisperTranscriptionModelTest extends BaseIntegrationTest {
 
     @Test
     public void testLoadModel() throws IOException {
-        WhisperNative whisperNative = new WhisperNative("build/resources/test/ggml-tiny.bin");
+        WhisperNative whisperNative = newWhisperNative();
         model.initWhisperNative(whisperNative);
         assertThat(whisperNative).isNotNull();
     }
 
     @Test
     public void testLoadModelNonExistentFile() {
-        assertThatThrownBy(() -> new WhisperNative("src/test/resources/test-models/nonexistent.bin"))
+        assertThatThrownBy(() -> new WhisperNative(
+                        "src/test/resources/test-models/nonexistent.bin", whisperProperties.getNativeLibraryPath()))
                 .isInstanceOf(IOException.class)
                 .hasMessageContaining("Failed to initialize WhisperNative");
     }

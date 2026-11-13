@@ -32,14 +32,13 @@ tasks.jar {
  */
 
 tasks.processTestResources {
-    from("$rootDir/models") {
-        include("ggml-tiny.bin")
-    }
-    dependsOn(":downloadTinyModel")
+    from(project(":test-common").layout.buildDirectory.dir("resources/main"))
+    dependsOn(":test-common:processResources", ":downloadTinyModel")
 }
 
 tasks.test {
     useJUnitPlatform()
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
 }
 
 tasks.javadoc {

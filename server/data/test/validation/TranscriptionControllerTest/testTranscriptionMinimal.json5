@@ -1,19 +1,19 @@
 // HTTP 200 OK
 {
-  "text" : " Whisper spring is a Java library that integrates the Whisper.CPPE speech-to-extendion in\n to spring-based applications.\n It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making\n it easy to use, open AI-DOS Whisper model for audio transcription.\n The project is structured into three modules, a core library, a command line interface, and\n a server component, supporting a range of deployment scenarios.",
+  "text" : " Whisper spring is a Java library that integrates the Whisper.CPPE speech-tox engine in\n to spring-based applications.\n It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making\n it easy to use, open AI-DOS Whisper model for audio transcription.\n The project is structured into three modules, a core library, a command line interface, and\n a server component, supporting a range of deployment scenarios.",
   "segments" : [ {
-    "text" : "Whisper spring is a Java library that integrates the Whisper.CPPE speech-to-extendion in",
+    "text" : "Whisper spring is a Java library that integrates the Whisper.CPPE speech-tox engine in",
     "start" : 0,
-    "end" : 5040,
+    "end" : 5120,
     "tokens" : [ ]
   }, {
     "text" : "to spring-based applications.",
-    "start" : 5040,
-    "end" : 6880,
+    "start" : 5120,
+    "end" : 6920,
     "tokens" : [ ]
   }, {
     "text" : "It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making",
-    "start" : 6880,
+    "start" : 6920,
     "end" : 12220,
     "tokens" : [ ]
   }, {

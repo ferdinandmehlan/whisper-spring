@@ -1,12 +1,12 @@
 // HTTP 200 OK
 event:segment
-data:{"start":0,"end":5040,"text":"Whisper spring is a Java library that integrates the Whisper.CPPE speech-to-extendion in"}
+data:{"start":0,"end":5120,"text":"Whisper spring is a Java library that integrates the Whisper.CPPE speech-tox engine in"}
 
 event:segment
-data:{"start":5040,"end":6880,"text":"to spring-based applications."}
+data:{"start":5120,"end":6920,"text":"to spring-based applications."}
 
 event:segment
-data:{"start":6880,"end":12220,"text":"It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making"}
+data:{"start":6920,"end":12220,"text":"It packages pre-built Linux binaries and Java bindings from the Whisper.CPPE project, making"}
 
 event:segment
 data:{"start":12220,"end":18720,"text":"it easy to use, open AI-DOS Whisper model for audio transcription."}

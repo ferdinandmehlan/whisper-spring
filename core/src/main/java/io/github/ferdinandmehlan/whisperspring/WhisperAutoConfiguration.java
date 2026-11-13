@@ -1,7 +1,7 @@
 package io.github.ferdinandmehlan.whisperspring;
 
 import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
-import io.github.ferdinandmehlan.whisperspring._native.bean.WhisperNativeConfig;
+import io.github.ferdinandmehlan.whisperspring._native.loader.NativeLibrary;
 import java.io.IOException;
 import java.util.Optional;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,21 +33,34 @@ public class WhisperAutoConfiguration {
     }
 
     /**
-     * Creates a {@link WhisperNative} bean when {@code whisper.model-path} is set.
+     * Loads the whisper native library from {@code whisper.native-library-path}.
      *
      * @param properties the whisper configuration properties
+     * @return the loaded native library
+     */
+    @Bean(destroyMethod = "close")
+    @ConditionalOnProperty(prefix = "whisper", name = "native-library-path")
+    @ConditionalOnMissingBean
+    public NativeLibrary whisperNativeLibrary(WhisperProperties properties) {
+        return NativeLibrary.load(properties.getNativeLibraryPath());
+    }
+
+    /**
+     * Creates a {@link WhisperNative} bean when {@code whisper.model-path} and
+     * {@code whisper.native-library-path} are set.
+     *
+     * @param properties the whisper configuration properties
+     * @param nativeLibrary the loaded native library
      * @return a new WhisperNative instance
      * @throws IOException if the model cannot be loaded
      */
     @Bean
-    @ConditionalOnProperty(prefix = "whisper", name = "model-path")
+    @ConditionalOnProperty(
+            prefix = "whisper",
+            name = {"model-path", "native-library-path"})
     @ConditionalOnMissingBean
-    public WhisperNative whisperNative(WhisperProperties properties) throws IOException {
-        WhisperNativeConfig config = new WhisperNativeConfig();
-        config.useGpu = !properties.isNoGpu();
-        config.flashAttn = properties.isFlashAttn();
-        config.gpuDevice = properties.getGpuDevice();
-        return new WhisperNative(properties.getModelPath(), config);
+    public WhisperNative whisperNative(WhisperProperties properties, NativeLibrary nativeLibrary) throws IOException {
+        return new WhisperNative(properties.getModelPath(), nativeLibrary);
     }
 
     /**

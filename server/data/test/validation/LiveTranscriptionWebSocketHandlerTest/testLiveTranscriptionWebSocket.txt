@@ -3,5 +3,5 @@ message:  in dispring based applications.
  It packages prebuilt Linux binaries and Java bindings.
 message:  from the whisper.cpp project, making it easy to use, open AI, dust whisper.
 message:  model for audio transcription.
- The project is structured in the three
+ The project is structured into three
 message:  modules, a core library, a command line interface, and a server component.

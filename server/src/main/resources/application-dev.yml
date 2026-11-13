@@ -1,6 +1,6 @@
 whisper:
-  #model-path: ../models/ggml-large-v3-turbo-q8_0.bin
   model-path: ../models/ggml-tiny.bin
+  native-library-path: ../whisper.cpp/build/install/lib64
 
 logging:
   level:

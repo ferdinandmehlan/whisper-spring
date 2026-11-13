@@ -6,9 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class WhisperProperties {
 
     private String modelPath;
-    private boolean noGpu = false;
-    private boolean flashAttn = true;
-    private int gpuDevice = 0;
+    private String nativeLibraryPath;
 
     public String getModelPath() {
         return modelPath;
@@ -18,27 +16,11 @@ public class WhisperProperties {
         this.modelPath = modelPath;
     }
 
-    public boolean isNoGpu() {
-        return noGpu;
+    public String getNativeLibraryPath() {
+        return nativeLibraryPath;
     }
 
-    public void setNoGpu(boolean noGpu) {
-        this.noGpu = noGpu;
-    }
-
-    public boolean isFlashAttn() {
-        return flashAttn;
-    }
-
-    public void setFlashAttn(boolean flashAttn) {
-        this.flashAttn = flashAttn;
-    }
-
-    public int getGpuDevice() {
-        return gpuDevice;
-    }
-
-    public void setGpuDevice(int gpuDevice) {
-        this.gpuDevice = gpuDevice;
+    public void setNativeLibraryPath(String nativeLibraryPath) {
+        this.nativeLibraryPath = nativeLibraryPath;
     }
 }
