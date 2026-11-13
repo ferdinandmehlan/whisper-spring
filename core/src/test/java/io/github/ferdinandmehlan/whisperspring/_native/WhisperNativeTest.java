@@ -22,14 +22,14 @@ public class WhisperNativeTest extends BaseIntegrationTest {
 
     @Test
     public void testFFMLoadModel() throws IOException {
-        WhisperNative whisperNative = new WhisperNative("build/resources/test/ggml-tiny.bin");
+        WhisperNative whisperNative = newWhisperNative();
         assertThat(whisperNative).isNotNull();
     }
 
     @Test
     public void testTranscribe() throws IOException {
         FileSystemResource audioFile = new FileSystemResource("src/test/resources/audio/sample.wav");
-        WhisperNative ffmWhisper = new WhisperNative("build/resources/test/ggml-tiny.bin");
+        WhisperNative ffmWhisper = newWhisperNative();
         WaveService waveService = new WaveService();
         float[] audioData = waveService.toWaveSamples(audioFile);
 
@@ -40,7 +40,7 @@ public class WhisperNativeTest extends BaseIntegrationTest {
     @Test
     public void testTranscribeWithConfig() throws IOException {
         FileSystemResource audioFile = new FileSystemResource("src/test/resources/audio/sample.wav");
-        WhisperNative whisper = new WhisperNative("build/resources/test/ggml-tiny.bin");
+        WhisperNative whisper = newWhisperNative();
         WaveService waveService = new WaveService();
         float[] audioData = waveService.toWaveSamples(audioFile);
 
@@ -92,7 +92,7 @@ public class WhisperNativeTest extends BaseIntegrationTest {
     @Test
     public void testTranscribeWithNewSegmentCallback() throws IOException {
         FileSystemResource audioFile = new FileSystemResource("src/test/resources/audio/sample.wav");
-        WhisperNative whisper = new WhisperNative("build/resources/test/ggml-tiny.bin");
+        WhisperNative whisper = newWhisperNative();
         WaveService waveService = new WaveService();
         float[] audioData = waveService.toWaveSamples(audioFile);
 
@@ -127,7 +127,7 @@ public class WhisperNativeTest extends BaseIntegrationTest {
     @Test
     public void testTranscribeWithProgressCallback() throws IOException {
         FileSystemResource audioFile = new FileSystemResource("src/test/resources/audio/sample.wav");
-        WhisperNative whisper = new WhisperNative("build/resources/test/ggml-tiny.bin");
+        WhisperNative whisper = newWhisperNative();
         WaveService waveService = new WaveService();
         float[] audioData = waveService.toWaveSamples(audioFile);
 
@@ -147,7 +147,7 @@ public class WhisperNativeTest extends BaseIntegrationTest {
     @Test
     public void testTranscribeWithEncoderBeginCallback() throws IOException {
         FileSystemResource audioFile = new FileSystemResource("src/test/resources/audio/sample.wav");
-        WhisperNative whisper = new WhisperNative("build/resources/test/ggml-tiny.bin");
+        WhisperNative whisper = newWhisperNative();
         WaveService waveService = new WaveService();
         float[] audioData = waveService.toWaveSamples(audioFile);
 

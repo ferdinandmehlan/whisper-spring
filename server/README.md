@@ -1,7 +1,9 @@
 # Whisper Spring Server
 
 The server module provides a REST API for audio transcription using Whisper models.
-It offers an OpenAI-compatible transcription endpoint with comprehensive configuration options and automatic native library management.
+It offers an OpenAI-compatible transcription endpoint with comprehensive configuration options.
+The container images compile whisper.cpp from the vendored submodule and ship the resulting
+Linux binaries, so no native libraries have to be provided at runtime.
 
 ## Features
 
@@ -9,7 +11,7 @@ It offers an OpenAI-compatible transcription endpoint with comprehensive configu
 - **Multiple Output Formats**: Support for JSON, plain text, and SRT subtitle formats
 - **Comprehensive Configuration**: Extensive parameters for fine-tuning transcription
 - **OpenAPI Documentation**: Interactive API docs with Swagger UI
-- **Docker Support**: Ready-to-use Docker image with native libraries
+- **Docker Support**: Ready-to-use Docker images with native libraries compiled for the image
 
 ## Docker Image
 
@@ -19,9 +21,7 @@ The published Docker image includes all necessary native libraries:
 docker run -p 8080:8080 -v ./models:/app/models ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0
 ```
 
-### With CUDA
-
-To enable CUDA acceleration in the Docker container:
+Or run with CUDA
 
 ```bash
 docker run -p 8080:8080 \
@@ -30,12 +30,10 @@ docker run -p 8080:8080 \
   ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0-cuda
 ```
 
-**Note**: Requires NVIDIA Docker runtime and CUDA-compatible GPU.
-
 ## Gradle Tasks
 
-| Command                                             | Description                                                 |
-|-----------------------------------------------------|-------------------------------------------------------------|
+| Command                              | Description                                                 |
+|--------------------------------------|-------------------------------------------------------------|
 | `./gradlew :server:clean`            | Clean build artifacts, caches, and generated files          |
 | `./gradlew :server:check`            | Run all tests and formatting checks                         |
 | `./gradlew :server:build`            | Execute tests and build application artifacts               |
@@ -48,7 +46,22 @@ docker run -p 8080:8080 \
 
 ## Local Development
 
-Build and run the server locally:
+Running the server locally requires a whisper.cpp build for your platform. Build and install the
+shared libraries once:
+
+```sh
+cmake -B whisper.cpp/build -S whisper.cpp \
+  -DBUILD_SHARED_LIBS=ON \
+  -DGGML_NATIVE=OFF \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=whisper.cpp/build/install \
+  -DCMAKE_INSTALL_RPATH='$ORIGIN' \
+  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
+cmake --build whisper.cpp/build --config Release -j
+cmake --install whisper.cpp/build
+```
+
+Then run the server:
 
 ```sh
 ./gradlew :server:bootRun

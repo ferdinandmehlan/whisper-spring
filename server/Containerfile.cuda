@@ -1,18 +1,79 @@
-FROM nvidia/cuda:13.3.1-base-ubuntu26.04@sha256:30f7a2345973fbb584f4c8bc9a7c16c7bae6d0ec08883df4e030387d74756292
+# syntax=docker/dockerfile:1
+
+################################################################################
+# JRE source for the runtime image.
+################################################################################
+FROM eclipse-temurin:25-jre-resolute@sha256:fa681c5833ecc085202c0923e909f9de888d80d22a7f38d6c51268ae5978c1d7 AS jre
+
+################################################################################
+# Build the whisper.cpp shared libraries with CUDA support.
+#
+# The CUDA runtime itself (libcudart, libcublas, ...) and the driver are not
+# shipped by this project. The runtime stage provides the CUDA runtime through
+# the NVIDIA base image and the NVIDIA container toolkit mounts the driver.
+#
+# CMAKE_CUDA_ARCHITECTURES is limited to architectures supported by CUDA 13
+#
+# 61: Pascal (Tesla P40, GTX 1080)
+# 70 : Volta (Tesla V100)
+# 75: Turing (GTX 16xx series, RTX 2000 series)
+# 80: Ampere (A30, A100)
+# 86: Ampere (A40, RTX 3000 series)
+# 89: Ada Lovelace (L4, L40, RTX 4000 series)
+# 90 : Hopper (H100, H200)
+#
+################################################################################
+FROM nvidia/cuda:13.3.1-devel-ubuntu26.04@sha256:d3ef5aa996bda602bdeb1694c96d9bc4cbe1e1250047354650b981f0659c2e2c AS whisper
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cmake \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/*
+
+COPY whisper.cpp /src/whisper.cpp
+
+RUN cmake -S /src/whisper.cpp -B /src/build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=ON \
+    -DGGML_NATIVE=OFF \
+    -DGGML_OPENMP=ON \
+    -DGGML_CUDA=ON \
+    #-DCMAKE_CUDA_ARCHITECTURES='75;80;86;89;90' \
+    -DCMAKE_CUDA_ARCHITECTURES='86' \
+    -DWHISPER_BUILD_TESTS=OFF \
+    -DWHISPER_BUILD_EXAMPLES=OFF \
+    -DWHISPER_BUILD_SERVER=OFF \
+    -DCMAKE_INSTALL_PREFIX=/opt/whisper \
+    -DCMAKE_INSTALL_RPATH='$ORIGIN;/usr/local/cuda/lib64' \
+    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+    && cmake --build /src/build --config Release -j"$(nproc)" \
+    && cmake --install /src/build
+
+################################################################################
+# Runtime image
+################################################################################
+FROM nvidia/cuda:13.5.0-base-ubuntu26.04@sha256:b715ad09e7a18a25e639d77d784c6a8a46555d0569c061c9df3941320b6bc4c0
 
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    libcublas-13-3 \
+    libcublas-13-5 \
     libgomp1 \
-    openjdk-25-jre-headless \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/*
 
+COPY --from=jre /opt/java/openjdk /opt/java/openjdk
+
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH=$JAVA_HOME/bin:$PATH
+
 WORKDIR /app
 
-COPY build/libs/whisper-spring-server-*.jar whisper-spring-server.jar
+COPY --from=whisper /opt/whisper/lib /opt/whisper/lib
+COPY server/build/libs/whisper-spring-server-*.jar whisper-spring-server.jar
+
+ENV WHISPER_NATIVE_LIBRARY_PATH=/opt/whisper/lib
 
 HEALTHCHECK --interval=5s --timeout=2s --start-period=15s --retries=5 \
   CMD curl --fail http://localhost:8080/actuator/health || exit 1

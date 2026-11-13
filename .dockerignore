@@ -1,0 +1,20 @@
+# Version control and local tool state
+.git
+.gitmodules
+.gradle
+.idea
+.editorconfig
+
+# Build outputs, except the boot jar that is copied into the runtime image
+**/build
+!server/build
+!server/build/libs
+!server/build/libs/*.jar
+
+# Models are mounted at runtime, they never belong into an image
+test-common/src/main/resources/models
+
+# Documentation and CI
+.github
+*.md
+!README.md

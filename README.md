@@ -3,6 +3,8 @@
 Whisper Spring integrates whisper transcription into the Spring ecosystem using Java 25's Foreign Function & Memory (FFM) API.  
 The library provides autoconfigured services ready to use Whisper within Spring applications.  
 It also includes a Spring server implementation that provides a ready-to-use Docker image with an OAI-like transcription API.  
+The core library ships no depndent native binaries: one can build their own for their platform.  
+The server images compile whisper.cpp from the vendored submodule to be self-contained.  
 The library leverages FFM for direct, high-performance native interop with whisper.cpp's compiled native libraries.
 
 The project integrates [`whisper.cpp`](https://github.com/ggml-org/whisper.cpp) as a Git submodule, 
@@ -84,15 +86,17 @@ dependencies {
 }
 ```
 
-Configure the model location to automatically load
+Configure the model location and the native library location to automatically load
 
 ```yaml
 whisper:
   model-path: models/ggml-tiny.bin
-  noGpu: false
-  flashAttn: true
-  gpuDevice: 0
+  native-library-path: /opt/whisper/lib
 ```
+
+The core library ships no native binaries: build whisper.cpp with `-DBUILD_SHARED_LIBS=ON` and point
+`native-library-path` at the resulting `libwhisper`/`ggml` libraries (file or directory). CUDA builds
+need the CUDA runtime to be installed separately. See the [core README](core/README.md) for details.
 
 Then use in your service:
 
@@ -149,7 +153,8 @@ Then use as above.
 ## License
 
 This project is licensed under the Apache License 2.0.  
-It bundles binaries built from whisper.cpp, which is MIT licensed.
+The container images contain binaries built from whisper.cpp, which is MIT licensed. The core library
+itself ships no native binaries.
 
 ### Attribution
 

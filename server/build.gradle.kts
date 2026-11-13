@@ -40,12 +40,15 @@ tasks.register<Copy>("copyUIFiles") {
     doFirst {
         delete("$projectDir/build/resources/main/static")
     }
-    from("$rootDir/server-ui/build")
+    from("$rootDir/server-ui/build") {
+        // Spotless keeps its intermediate results in the same build directory.
+        exclude("spotless-clean/**", "spotless-lints/**")
+    }
     into("$projectDir/build/resources/main/static")
 }
 
 listOf("compileTestJava", "resolveMainClassName").forEach {
-    tasks.named(it) { dependsOn("copyUIFiles", ":downloadTinyModel") }
+    tasks.named(it) { dependsOn("copyUIFiles") }
 }
 
 tasks.jar { enabled = false }
@@ -59,6 +62,7 @@ tasks.bootJar {
 
 tasks.bootRun {
     args("--spring.profiles.active=dev")
+    dependsOn(":downloadTinyModel")
 }
 
 /*
@@ -66,14 +70,13 @@ tasks.bootRun {
  */
 
 tasks.processTestResources {
-    from("$rootDir/models") {
-        include("ggml-tiny.bin")
-    }
-    dependsOn(":downloadTinyModel")
+    from(project(":test-common").layout.buildDirectory.dir("resources/main"))
+    dependsOn(":test-common:processResources", ":downloadTinyModel")
 }
 
 tasks.test {
     useJUnitPlatform()
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
     dependsOn("composeBuild")
 }
 

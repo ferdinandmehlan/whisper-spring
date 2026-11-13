@@ -1,4 +1,36 @@
-FROM eclipse-temurin:25-jre@sha256:681c543d6f36c50f45e9b5226930a46203dcfa351d3670e9d0bdf0dabae53539
+# syntax=docker/dockerfile:1
+
+################################################################################
+# Build the whisper.cpp shared libraries.
+################################################################################
+FROM eclipse-temurin:25-jre-resolute@sha256:fa681c5833ecc085202c0923e909f9de888d80d22a7f38d6c51268ae5978c1d7 AS whisper
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/*
+
+COPY whisper.cpp /src/whisper.cpp
+
+RUN cmake -S /src/whisper.cpp -B /src/build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=ON \
+    -DGGML_NATIVE=OFF \
+    -DGGML_OPENMP=ON \
+    -DWHISPER_BUILD_TESTS=OFF \
+    -DWHISPER_BUILD_EXAMPLES=OFF \
+    -DWHISPER_BUILD_SERVER=OFF \
+    -DCMAKE_INSTALL_PREFIX=/opt/whisper \
+    -DCMAKE_INSTALL_RPATH='$ORIGIN' \
+    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+    && cmake --build /src/build --config Release -j"$(nproc)" \
+    && cmake --install /src/build
+
+################################################################################
+# Runtime image
+################################################################################
+FROM eclipse-temurin:25-jre-resolute@sha256:fa681c5833ecc085202c0923e909f9de888d80d22a7f38d6c51268ae5978c1d7
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 libstdc++6 curl && \
@@ -7,7 +39,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY build/libs/whisper-spring-server-*.jar whisper-spring-server.jar
+COPY --from=whisper /opt/whisper/lib /opt/whisper/lib
+COPY server/build/libs/whisper-spring-server-*.jar whisper-spring-server.jar
+
+ENV WHISPER_NATIVE_LIBRARY_PATH=/opt/whisper/lib
 
 HEALTHCHECK --interval=5s --timeout=2s --start-period=15s --retries=5 \
   CMD curl --fail http://localhost:8080/actuator/health || exit 1

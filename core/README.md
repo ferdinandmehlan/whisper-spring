@@ -1,18 +1,18 @@
 # Whisper Spring Core Library
 
 The core library of Whisper Spring provides seamless integration of Whisper transcription capabilities into Spring Boot applications using Java 25's Foreign Function & Memory (FFM) API.  
-It offers autoconfigured services, automatic native library loading via FFM SymbolLookup, and a clean API for audio transcription integrating the optimized C++ implementation from whisper.cpp.
+It offers autoconfigured services, loads the whisper.cpp native library you provide, and exposes a clean API for audio transcription.
 
 ## Features
 
 - **FFM Integration**: Direct native interop using Java 25's Foreign Function & Memory API for high-performance calls
 - **Auto-configuration**: Spring Boot auto-configuration for easy integration
-- **Native Library Management**: Ships with precompiled native libraries for CPU and CUDA inference, 
-  with automatic loading through FFM's `SymbolLookup`. Alternatively, supports providing self-compiled native libraries.
+- **Bring your own binaries**: No native libraries are bundled. Point `whisper.native-library-path` at a
+  whisper.cpp build that matches your platform — CPU or CUDA, Linux, macOS or Windows.
 - **Memory Safety**: Arena-based memory management ensures proper cleanup of native resources
 - **Spring AI Audio Provider**: Ready-to-use Spring AI compatible `WhisperTranscriptionModel` provider for transcription operations
 - **Flexible Configuration**: Extensive parameter customization for transcription
-- **Multi-platform Support**: Supports CPU and CUDA architectures across major platforms
+- **Platform Independent**: Any platform and backend that whisper.cpp can be built for
 - **Spring Integration**: Full integration with Spring's dependency injection and configuration systems
 
 ## Gradle Tasks
@@ -44,18 +44,71 @@ Or for Maven:
 </dependency>
 ```
 
-## Usage
+## Native Library Setup
 
-### Basic Transcription
+The core library does **not** ship native binaries. You provide a whisper.cpp build that is
+compatible with the platform and CPU/GPU of your deployment; the library loads exactly the files you
+point it to. There is no CPU/CUDA auto-detection and no fallback: a CUDA build is used if you point
+at a CUDA build, a CPU build if you point at a CPU build.
 
-Configure the model location to automatically load
+### Building whisper.cpp
+
+```sh
+cmake -B whisper.cpp/build -S whisper.cpp \
+  -DBUILD_SHARED_LIBS=ON \
+  -DGGML_NATIVE=OFF \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=whisper.cpp/build/install \
+  -DCMAKE_INSTALL_RPATH='$ORIGIN' \
+  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
+cmake --build whisper.cpp/build --config Release -j
+cmake --install whisper.cpp/build
+```
+
+### Required files
+
+The following shared libraries have to be placed in the same directory:
+
+| Linux                     | macOS                     | Windows            |
+|---------------------------|---------------------------|--------------------|
+| `libwhisper.so`           | `libwhisper.dylib`        | `whisper.dll`      |
+| `libggml.so`              | `libggml.dylib`           | `ggml.dll`         |
+| `libggml-base.so`         | `libggml-base.dylib`      | `ggml-base.dll`    |
+| `libggml-cpu.so`          | `libggml-cpu.dylib`       | `ggml-cpu.dll`     |
+| `libggml-cuda.so` (CUDA)  | —                         | `ggml-cuda.dll`    |
+
+### Configuration
+
+Set the native library path to either the whisper library file or the directory that contains it:
 
 ```yaml
 whisper:
   model-path: models/ggml-tiny.bin
-  noGpu: false
-  flashAttn: true
-  gpuDevice: 0
+  native-library-path: /opt/whisper/lib
+```
+
+The property can also be set as the system property `whisper.native-library-path` or the environment
+variable `WHISPER_NATIVE_LIBRARY_PATH`:
+
+```sh
+java -Dwhisper.native-library-path=/opt/whisper/lib \
+     --enable-native-access=ALL-UNNAMED \
+     -jar application.jar
+```
+
+The startup log prints the resolved library path, the platform and the version reported by
+`whisper_version()`, so an incompatible library is visible immediately.
+
+## Usage
+
+### Basic Transcription
+
+Configure the model location and the native library location to automatically load
+
+```yaml
+whisper:
+  model-path: models/ggml-tiny.bin
+  native-library-path: /opt/whisper/lib
 ```
 
 Then inject the `WhisperTranscriptionModel` into your Spring components:

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
+import io.github.ferdinandmehlan.whisperspring._native.loader.NativeLibrary;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
@@ -24,6 +25,9 @@ class WhisperAutoConfigurationTest {
         @Autowired
         private WhisperTranscriptionModel whisperTranscriptionModel;
 
+        @Autowired
+        private NativeLibrary nativeLibrary;
+
         @Value("${whisper.model-path}")
         private String modelPath;
 
@@ -33,8 +37,15 @@ class WhisperAutoConfigurationTest {
         }
 
         @Test
+        void testAutoConfiguredNativeLibraryBeanExists() {
+            assertThat(nativeLibrary).isNotNull();
+            assertThat(nativeLibrary.path()).isRegularFile();
+            assertThat(nativeLibrary.version()).isNotBlank();
+        }
+
+        @Test
         void testModelPathIsConfigured() {
-            assertThat(modelPath).isEqualTo("build/resources/test/ggml-tiny.bin");
+            assertThat(modelPath).isEqualTo("../models/ggml-tiny.bin");
         }
 
         @Test
@@ -57,12 +68,20 @@ class WhisperAutoConfigurationTest {
         @Autowired(required = false)
         private WhisperNative whisperNative;
 
+        @Autowired(required = false)
+        private NativeLibrary nativeLibrary;
+
         @Autowired
         private WhisperTranscriptionModel whisperTranscriptionModel;
 
         @Test
         void testWhisperNativeBeanIsNotCreated() {
             assertThat(whisperNative).isNull();
+        }
+
+        @Test
+        void testNativeLibraryBeanIsNotCreated() {
+            assertThat(nativeLibrary).isNull();
         }
 
         @Test

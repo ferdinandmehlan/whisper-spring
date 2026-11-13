@@ -1,7 +1,10 @@
 package io.github.ferdinandmehlan.whisperspring._native.ffm;
 
-import io.github.ferdinandmehlan.whisperspring._native.loader.NativeLoader;
-import java.lang.foreign.*;
+import java.lang.foreign.FunctionDescriptor;
+import java.lang.foreign.Linker;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.SymbolLookup;
+import java.lang.foreign.ValueLayout;
 import java.lang.invoke.MethodHandle;
 
 /**
@@ -10,7 +13,6 @@ import java.lang.invoke.MethodHandle;
  */
 public abstract class WhisperH {
 
-    protected final Arena arena;
     protected final SymbolLookup lookup;
     protected final Linker linker;
 
@@ -31,9 +33,8 @@ public abstract class WhisperH {
     protected MethodHandle mhFullGetTokenId;
     protected MethodHandle mhFullGetTokenP;
 
-    protected WhisperH() {
-        this.arena = Arena.ofShared();
-        this.lookup = SymbolLookup.libraryLookup(NativeLoader.getWhisperLibPath(), arena);
+    protected WhisperH(SymbolLookup lookup) {
+        this.lookup = lookup;
         this.linker = Linker.nativeLinker();
         initMethodHandles();
     }

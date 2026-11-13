@@ -1,4 +1,3 @@
 whisper:
-  model-path: build/resources/test/ggml-tiny.bin
-  noGpu: true
-  flashAttn: false
+  model-path: ../models/ggml-tiny.bin
+  native-library-path: build/resources/test/native
