@@ -10,4 +10,4 @@ services:
     environment:
       WHISPER_MODEL_PATH: "models/ggml-tiny.bin"
     volumes:
-      - ./models:/app/models
+      - ./build/models:/app/models

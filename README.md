@@ -3,7 +3,7 @@
 Whisper Spring integrates whisper transcription into the Spring ecosystem using Java 25's Foreign Function & Memory (FFM) API.  
 The library provides autoconfigured services ready to use Whisper within Spring applications.  
 It also includes a Spring server implementation that provides a ready-to-use Docker image with an OAI-like transcription API.  
-The core library ships no depndent native binaries: one can build their own for their platform.  
+The core library ships no dependent native binaries: one can build their own for their platform.  
 The server images compile whisper.cpp from the vendored submodule to be self-contained.  
 The library leverages FFM for direct, high-performance native interop with whisper.cpp's compiled native libraries.
 
@@ -15,6 +15,7 @@ which is an independent project providing optimized C++ implementations of Whisp
 
 - Java 25
 - Docker
+- CMake and a C/C++ toolchain to compile the whisper.cpp native libraries for your platform
 
 
 ## Quick Start
@@ -61,15 +62,15 @@ All important commands are made available via the Gradle build tool.
 This fully leverages gradle inputs/outputs from compiling the library, downloading a whisper model for testing, to building the docker image.
 Some of the important tasks include:
 
-| Command                      | Description                                                                                                   |
-|------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `./gradlew composeUp`        | Start the whisper-spring-server in containerized setup (open at http://localhost:8080)                        |
-| `./gradlew composeUp -Pcuda` | Start the whisper-spring-server in containerized setup with cuda acceleration (open at http://localhost:8080) |
-| `./gradlew composeDown`      | Stop the container                                                                                            |
-| `./gradlew clean`            | Clean build artifacts, caches, and generated files                                                            |
-| `./gradlew check`            | Run all tests and formatting checks                                                                           |
-| `./gradlew build`            | Execute tests and build application artifacts                                                                 |
-| `./gradlew spotlessApply`    | Apply code formatting to all files                                                                            |
+| Command                          | Description                                                                                                   |
+|----------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `./gradlew composeUp`            | Start the whisper-spring-server in containerized setup (open at http://localhost:8080)                        |
+| `./gradlew composeUp -Pcuda`     | Start the whisper-spring-server in containerized setup with cuda acceleration (open at http://localhost:8080) |
+| `./gradlew composeDown`          | Stop the container                                                                                            |
+| `./gradlew clean`                | Clean build artifacts, caches, and generated files                                                            |
+| `./gradlew check`                | Run all tests and formatting checks                                                                           |
+| `./gradlew build`                | Execute tests and build application artifacts                                                                 |
+| `./gradlew spotlessApply`        | Apply code formatting to all files                                                                            |
 
 
 ## Usage Examples

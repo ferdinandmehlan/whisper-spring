@@ -31,9 +31,6 @@ build/
 ehthumbs.db
 Thumbs.db
 
-# Models
-models/
-
 ### Validation ###
 **/data/test/tmp
 **/data/test/output

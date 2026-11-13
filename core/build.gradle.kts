@@ -23,6 +23,10 @@ dependencies {
     testRuntimeOnly(libs.junitPlatformLauncher)
 }
 
+tasks.processResources {
+    dependsOn(":buildNativeLibraries", ":downloadTinyModel")
+}
+
 tasks.jar {
     archiveBaseName.set("whisper-spring")
 }
@@ -30,11 +34,6 @@ tasks.jar {
 /*
  * Check
  */
-
-tasks.processTestResources {
-    from(project(":test-common").layout.buildDirectory.dir("resources/main"))
-    dependsOn(":test-common:processResources", ":downloadTinyModel")
-}
 
 tasks.test {
     useJUnitPlatform()

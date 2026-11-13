@@ -1,3 +1,3 @@
 whisper:
-  model-path: ../models/ggml-tiny.bin
-  native-library-path: build/resources/test/native
+  model-path: ../build/models/ggml-tiny.bin
+  native-library-path: ../build/native/lib
