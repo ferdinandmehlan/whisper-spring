@@ -64,7 +64,7 @@ tasks.register<Download>("downloadTinyModel") {
 }
 
 /*
- * Version Catalog Update
+ * Dependency Updates
  */
 
 versionCatalogUpdate {
@@ -73,4 +73,12 @@ versionCatalogUpdate {
         keepUnusedVersions.set(true)
     }
     versionSelector(VersionSelectors.STABLE)
+}
+
+tasks.register("updateDependencies") {
+    description = "Updates all gradle and node dependencies"
+    dependsOn(
+        ":server-ui:updateDependencies",
+        "versionCatalogUpdate",
+    )
 }

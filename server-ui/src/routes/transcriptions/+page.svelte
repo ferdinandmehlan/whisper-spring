@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Button from '$lib/ui/Button.svelte';
-  import Icon from '$lib/ui/Icon.svelte';
+  import Button from '#lib/ui/Button.svelte';
+  import Icon from '#lib/ui/Icon.svelte';
   import OptionsSidebar from './OptionsSidebar.svelte';
   import {
     transcribe,
@@ -8,7 +8,7 @@
     loadSettings,
     type TranscriptionRequest,
     type TranscriptionResponse
-  } from '$lib/transcriptions';
+  } from '#lib/transcriptions';
 
   let isDragging = $state(false);
   let fileInput = $state<HTMLInputElement | null>(null);
