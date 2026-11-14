@@ -1,5 +1,7 @@
 package io.github.ferdinandmehlan.whisperspring;
 
+import io.github.ferdinandmehlan.whisperspring.audio.AudioDecoder;
+import io.github.ferdinandmehlan.whisperspring.audio.AudioDecodingException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,42 +10,84 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
 
 /**
  * Service for converting audio resources to wave samples suitable for Whisper transcription.
- * Supports mono, 16kHz, 16-bit little-endian PCM WAV files.
+ *
+ * <p>Whisper requires mono, 16kHz, 16-bit little-endian PCM. The JDK audio support is used first:
+ * files in a natively readable container (WAV, AIFF, AU) are converted to the required format by
+ * {@link AudioSystem}, including sample rate conversion, channel down-mixing and bit-depth
+ * conversion. Everything else (MP3, M4A/AAC, OGG/Opus, FLAC, WebM, video containers, ...) is
+ * delegated to a pluggable {@link AudioDecoder}, by default {@link
+ * io.github.ferdinandmehlan.whisperspring.audio.FfmpegAudioDecoder}.
  */
-@Service
 public class WaveService {
 
+    private static final Logger log = LoggerFactory.getLogger(WaveService.class);
+
+    private static final float WHISPER_SAMPLE_RATE = 16000.0f;
+    private static final int WHISPER_SAMPLE_SIZE_BITS = 16;
+    private static final AudioFormat WHISPER_FORMAT = new AudioFormat(
+            AudioFormat.Encoding.PCM_SIGNED,
+            WHISPER_SAMPLE_RATE,
+            WHISPER_SAMPLE_SIZE_BITS,
+            1,
+            WHISPER_SAMPLE_SIZE_BITS / 8,
+            WHISPER_SAMPLE_RATE,
+            false);
+
+    private static final String UNSUPPORTED_FORMAT_MESSAGE = "Unsupported audio format. Supported natively are "
+            + "WAV, AIFF and AU files in any sample rate, channel count and bit depth. Install ffmpeg or provide "
+            + "an AudioDecoder bean to transcribe MP3, M4A/AAC, OGG/Opus, FLAC, WebM and video files.";
+
+    private final AudioDecoder audioDecoder;
+
     /**
-     * Converts an audio resource to an array of float wave samples.
-     * The audio must be a mono, 16kHz, 16-bit little-endian PCM WAV file.
+     * Creates a service that only uses the JDK audio support.
+     */
+    public WaveService() {
+        this(null);
+    }
+
+    /**
+     * Creates a service.
+     *
+     * @param audioDecoder the decoder used for formats the JDK cannot read, may be {@code null}
+     */
+    public WaveService(AudioDecoder audioDecoder) {
+        this.audioDecoder = audioDecoder;
+    }
+
+    /**
+     * Converts an audio resource to an array of float wave samples, mono and 16kHz.
+     * The audio may be in any container, sample rate, channel layout and bit depth supported by the
+     * configured decoders.
      *
      * @param resource the audio resource to convert
      * @return an array of float samples representing the audio waveform
-     * @throws IllegalArgumentException if the resource is null, does not exist, or is not in the supported format
+     * @throws IllegalArgumentException       if the resource is null or does not exist
+     * @throws AudioDecodingException         if the audio format is not supported or decoding fails
      */
     public float[] toWaveSamples(Resource resource) {
         if (resource == null || !resource.exists()) {
             throw new IllegalArgumentException("Audio file does not exist: " + resource);
         }
 
-        try (BufferedInputStream bis = new BufferedInputStream(resource.getInputStream());
-                AudioInputStream ais = AudioSystem.getAudioInputStream(bis)) {
-
-            AudioFormat format = ais.getFormat();
-            validateFormat(format);
-            byte[] pcmBytes = ais.readAllBytes();
-            return bytesToWaveSamples(pcmBytes);
-
-        } catch (UnsupportedAudioFileException e) {
-            throw new IllegalArgumentException("Unsupported audio file format", e);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Failed to read audio data", e);
+        try {
+            return decodeWithJdk(resource);
+        } catch (BuiltinDecodingUnsupportedException e) {
+            log.debug("JDK audio support cannot decode {}: {}", resource.getFilename(), e.getMessage());
+            if (audioDecoder == null) {
+                throw new AudioDecodingException(
+                        AudioDecodingException.Reason.UNSUPPORTED_FORMAT, UNSUPPORTED_FORMAT_MESSAGE, e);
+            }
         }
+
+        log.debug("Decoding {} with the external audio decoder", resource.getFilename());
+        return bytesToWaveSamples(audioDecoder.decodeToPcm(resource));
     }
 
     /**
@@ -64,27 +108,52 @@ public class WaveService {
         return samples;
     }
 
+    private float[] decodeWithJdk(Resource resource) {
+        try (BufferedInputStream bis = new BufferedInputStream(resource.getInputStream());
+                AudioInputStream ais = AudioSystem.getAudioInputStream(bis)) {
+
+            AudioFormat sourceFormat = ais.getFormat();
+            if (isWhisperCompatible(sourceFormat)) {
+                return bytesToWaveSamples(ais.readAllBytes());
+            }
+            if (!AudioSystem.isConversionSupported(WHISPER_FORMAT, sourceFormat)) {
+                throw new BuiltinDecodingUnsupportedException(
+                        "no conversion from " + sourceFormat + " to " + WHISPER_FORMAT);
+            }
+
+            log.debug("Converting {} to mono 16kHz 16-bit PCM", sourceFormat);
+            try (AudioInputStream converted = AudioSystem.getAudioInputStream(WHISPER_FORMAT, ais)) {
+                return bytesToWaveSamples(converted.readAllBytes());
+            }
+
+        } catch (UnsupportedAudioFileException e) {
+            throw new BuiltinDecodingUnsupportedException("unsupported container or encoding", e);
+        } catch (IOException e) {
+            throw new AudioDecodingException(
+                    AudioDecodingException.Reason.FAILED, "Failed to read the uploaded audio file.", e);
+        }
+    }
+
+    private static boolean isWhisperCompatible(AudioFormat format) {
+        return AudioFormat.Encoding.PCM_SIGNED.equals(format.getEncoding())
+                && format.getChannels() == 1
+                && format.getSampleRate() == WHISPER_SAMPLE_RATE
+                && format.getSampleSizeInBits() == WHISPER_SAMPLE_SIZE_BITS
+                && !format.isBigEndian();
+    }
+
     /**
-     * Validates that the audio format is supported by Whisper (mono, 16kHz, 16-bit little-endian PCM).
-     *
-     * @param format the audio format to validate
-     * @throws IllegalArgumentException if the format is not supported
+     * Signals that the JDK audio support cannot read or convert the given resource, so the
+     * configured external decoder should be tried instead.
      */
-    private void validateFormat(AudioFormat format) {
-        if (!format.getEncoding().equals(AudioFormat.Encoding.PCM_SIGNED)) {
-            throw new IllegalArgumentException("Only PCM WAV supported");
+    private static final class BuiltinDecodingUnsupportedException extends RuntimeException {
+
+        private BuiltinDecodingUnsupportedException(String message) {
+            super(message);
         }
-        if (format.getChannels() != 1) {
-            throw new IllegalArgumentException("Only mono WAV supported");
-        }
-        if (format.getSampleRate() != 16000.0f) {
-            throw new IllegalArgumentException("Expected 16kHz WAV");
-        }
-        if (format.getSampleSizeInBits() != 16) {
-            throw new IllegalArgumentException("Expected 16-bit WAV");
-        }
-        if (format.isBigEndian()) {
-            throw new IllegalArgumentException("Expected little-endian WAV");
+
+        private BuiltinDecodingUnsupportedException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }

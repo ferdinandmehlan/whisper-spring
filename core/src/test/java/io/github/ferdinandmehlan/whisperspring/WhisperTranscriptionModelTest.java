@@ -24,10 +24,8 @@ public class WhisperTranscriptionModelTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void testLoadModel() throws IOException {
-        WhisperNative whisperNative = newWhisperNative();
-        model.initWhisperNative(whisperNative);
-        assertThat(whisperNative).isNotNull();
+    public void testWhisperNativeIsWired() {
+        assertThat(model.getWhisperNative()).isNotNull();
     }
 
     @Test

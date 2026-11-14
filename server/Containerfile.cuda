@@ -58,6 +58,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    ffmpeg  \
     libcublas-13-5 \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/* \
