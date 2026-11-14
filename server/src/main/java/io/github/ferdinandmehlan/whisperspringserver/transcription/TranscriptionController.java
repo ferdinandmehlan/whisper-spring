@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 
 /**
  * REST controller for handling audio transcription requests.
@@ -75,17 +74,6 @@ public class TranscriptionController {
                 request.file().getOriginalFilename());
 
         WhisperTranscriptionOptions config = transcriptionMapper.toWhisperParams(request);
-        Sinks.Many<ServerSentEvent<TranscriptionEvent>> sink = transcriptionService.createSSESink(config);
-
-        Thread.ofVirtual().start(() -> {
-            try {
-                transcriptionService.transcribe(request.file().getResource(), config);
-                sink.tryEmitComplete();
-            } catch (Exception e) {
-                sink.tryEmitError(e);
-            }
-        });
-
-        return sink.asFlux().onTerminateDetach();
+        return transcriptionService.stream(request.file().getResource(), config);
     }
 }

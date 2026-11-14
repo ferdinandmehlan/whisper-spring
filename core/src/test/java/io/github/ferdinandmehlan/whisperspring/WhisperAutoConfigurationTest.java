@@ -1,13 +1,11 @@
 package io.github.ferdinandmehlan.whisperspring;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.ferdinandmehlan.whisperspring._native.WhisperNative;
 import io.github.ferdinandmehlan.whisperspring._native.loader.NativeLibrary;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -71,7 +69,7 @@ class WhisperAutoConfigurationTest {
         @Autowired(required = false)
         private NativeLibrary nativeLibrary;
 
-        @Autowired
+        @Autowired(required = false)
         private WhisperTranscriptionModel whisperTranscriptionModel;
 
         @Test
@@ -85,18 +83,8 @@ class WhisperAutoConfigurationTest {
         }
 
         @Test
-        void testWhisperTranscriptionModelBeanExists() {
-            assertThat(whisperTranscriptionModel).isNotNull();
-        }
-
-        @Test
-        void testTranscribeThrowsWhenNativeNotConfigured() {
-            FileSystemResource audioFile = new FileSystemResource("src/test/resources/audio/sample.wav");
-            AudioTranscriptionPrompt prompt = new AudioTranscriptionPrompt(audioFile);
-
-            assertThatThrownBy(() -> whisperTranscriptionModel.call(prompt))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("WhisperNative has not been initialized");
+        void testWhisperTranscriptionModelBeanIsNotCreated() {
+            assertThat(whisperTranscriptionModel).isNull();
         }
     }
 }

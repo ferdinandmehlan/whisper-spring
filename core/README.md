@@ -189,13 +189,27 @@ options.encoderBeginCallback = new WhisperEncoderBeginCallback() {
 
 ## Audio Requirements
 
-The library and the underlying whisper models expect audio in the following format:
-- **Format**: WAV (16-bit PCM)
+The underlying whisper models expect audio in the following format:
 - **Channels**: Mono (1 channel)
 - **Sample Rate**: 16 kHz
-- **Bit Depth**: 16-bit
+- **Bit Depth**: 16-bit PCM (little-endian)
 
-The `WaveService` checks for format compatibility.
+`WaveService` converts uploads to that format before transcription:
+
+- **WAV, AIFF and AU** are read and converted by the JDK (`javax.sound.sampled`), including sample
+  rate conversion, down-mixing to mono and bit depth conversion. No external process is started.
+- **Everything else** (MP3, M4A/AAC, OGG/Opus, FLAC, WebM, MP4 and other video containers, ...) is
+  decoded by invoking the `ffmpeg` executable. ffmpeg is started as a separate process, it is not
+  linked into the JVM and it is not a build dependency. If ffmpeg is not installed, only the JDK
+  formats are supported and other files are rejected with an `AudioDecodingException`.
+
+```java
+@Bean
+AudioDecoder audioDecoder() {
+    return new FfmpegAudioDecoder(
+            List.of("/opt/ffmpeg/bin/ffmpeg"), Duration.ofMinutes(1), Duration.ofMinutes(30), null);
+}
+```
 
 ## Foreign Function & Memory API
 

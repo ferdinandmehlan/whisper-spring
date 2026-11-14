@@ -33,9 +33,12 @@ RUN cmake -S /src/whisper.cpp -B /src/build \
 FROM eclipse-temurin:25-jre-resolute@sha256:fa681c5833ecc085202c0923e909f9de888d80d22a7f38d6c51268ae5978c1d7
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgomp1 libstdc++6 curl && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm -rf /tmp/*
+    curl  \
+    ffmpeg  \
+    libgomp1  \
+    libstdc++6  \
+    && rm -rf /var/lib/apt/lists/*  \
+    && rm -rf /tmp/*
 
 WORKDIR /app
 

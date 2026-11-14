@@ -54,5 +54,3 @@ whisper_init_state: compute buffer (decode) =   95.91 MB
 [TIMESTAMP]  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 [TIMESTAMP]  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
 [TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Started WhisperSpringServerApplication in [TIME] seconds (process running for [TIME])
-[TIMESTAMP]  WARN 1 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
-[TIMESTAMP]  WARN 1 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
