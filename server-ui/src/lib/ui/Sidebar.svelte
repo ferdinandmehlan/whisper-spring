@@ -1,57 +1,94 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { twMerge } from 'tailwind-merge';
   import Button from './Button.svelte';
 
   type SidebarProps = {
     open: boolean;
     onClose: () => void;
     title?: string;
-    class?: string;
     children?: Snippet;
   };
 
-  let { open, onClose, title, class: className = '', children }: SidebarProps = $props();
+  let { open, onClose, title, children }: SidebarProps = $props();
 
+  let dialog: HTMLDialogElement | undefined = $state();
+  const titleId = $props.id();
+
+  // A native <dialog> in modal mode provides the focus trap, Esc handling, the
+  // inert background and top-layer stacking, so none of that is hand-rolled.
+  $effect(() => {
+    if (!dialog) return;
+
+    if (open && !dialog.open) {
+      dialog.showModal();
+    } else if (!open && dialog.open) {
+      dialog.close();
+    }
+  });
+
+  // showModal() makes the background inert but still scrollable with the wheel.
   $effect(() => {
     if (!open) return;
 
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    }
+    const { style } = document.body;
+    const previous = style.overflow;
+    style.overflow = 'hidden';
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      style.overflow = previous;
+    };
   });
 </script>
 
-{#if open}
-  <div
-    class="fixed inset-0 z-50 flex items-center justify-end bg-black/30"
-    onclick={onClose}
-    role="presentation"
-    tabindex="-1"
-  >
-    <div
-      class={twMerge('h-full w-80 overflow-y-auto bg-surface p-4 shadow-lg', className)}
-      role="dialog"
-      aria-modal="true"
-      tabindex="0"
-      onclick={(e) => e.stopPropagation()}
-      onkeydown={(e) => e.stopPropagation()}
-    >
-      {#if title}
-        <div class="mb-4 flex items-center justify-between">
-          <h3 class="text-lg font-semibold">{title}</h3>
-          <Button onclick={onClose} aria-label="Close" icon="close" variant="text" />
-        </div>
-      {/if}
-
-      {#if children}
-        {@render children()}
-      {/if}
+<dialog
+  bind:this={dialog}
+  class="panel"
+  aria-labelledby={title ? titleId : undefined}
+  onclose={onClose}
+  onclick={(event) => {
+    // Clicks on the panel itself mean the backdrop was hit
+    if (event.target === dialog) onClose();
+  }}
+>
+  {#if title}
+    <div class="header">
+      <h3 class="title" id={titleId}>{title}</h3>
+      <Button onclick={onClose} aria-label="Close" icon="close" variant="text" />
     </div>
-  </div>
-{/if}
+  {/if}
+
+  {#if children}
+    {@render children()}
+  {/if}
+</dialog>
+
+<style>
+  .panel {
+    width: var(--panel-width);
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0 0 0 auto;
+    padding: var(--space-4);
+    overflow-y: auto;
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .panel::backdrop {
+    background-color: rgb(0 0 0 / 0.3);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+  }
+
+  .title {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+    font-weight: var(--weight-semibold);
+  }
+</style>

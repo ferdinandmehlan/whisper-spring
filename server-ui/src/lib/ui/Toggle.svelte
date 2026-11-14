@@ -1,39 +1,78 @@
 <script lang="ts">
-  import { twMerge } from 'tailwind-merge';
-
   type ToggleProps = {
     checked?: boolean;
     label?: string;
     disabled?: boolean;
     onchange?: (checked: boolean) => void;
-    class?: string;
   };
 
-  let {
-    checked = $bindable(false),
-    label,
-    disabled = $bindable(false),
-    onchange,
-    class: className = ''
-  }: ToggleProps = $props();
+  let { checked = $bindable(false), label, disabled = false, onchange }: ToggleProps = $props();
 
   function handleChange(event: Event) {
     const target = event.target as HTMLInputElement;
     checked = target.checked;
     onchange?.(checked);
   }
-
-  const baseClasses = 'inline-flex cursor-pointer items-center gap-3';
-  const disabledClasses = disabled ? 'cursor-not-allowed opacity-50' : '';
-  let mergedClasses = $derived(twMerge(baseClasses, disabledClasses, className));
 </script>
 
-<label class={mergedClasses}>
-  <input type="checkbox" bind:checked {disabled} onchange={handleChange} class="peer sr-only" />
-  <div
-    class="relative h-6 w-11 rounded-full bg-secondary/30 transition-colors peer-checked:bg-primary peer-focus:ring-2 peer-focus:ring-primary/50 peer-disabled:cursor-not-allowed after:absolute after:start-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-background after:transition-all peer-checked:after:translate-x-full"
-  ></div>
+<label class="toggle" class:disabled>
+  <input type="checkbox" bind:checked {disabled} onchange={handleChange} class="visually-hidden" />
+  <span class="track"></span>
   {#if label}
-    <span class="text-sm font-medium">{label}</span>
+    <span class="field-label">{label}</span>
   {/if}
 </label>
+
+<style>
+  .toggle {
+    /* Positioned so the visually hidden input stays inside the label */
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    cursor: pointer;
+  }
+
+  .toggle.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .track {
+    --switch-inset: calc((var(--size-switch-height) - var(--size-switch-knob)) / 2);
+
+    position: relative;
+    width: var(--size-switch-width);
+    height: var(--size-switch-height);
+    border-radius: var(--radius-full);
+    background-color: color-mix(in oklab, var(--color-secondary) 30%, transparent);
+    transition: background-color var(--duration-short);
+  }
+
+  .track::after {
+    content: '';
+    position: absolute;
+    top: var(--switch-inset);
+    inset-inline-start: var(--switch-inset);
+    width: var(--size-switch-knob);
+    height: var(--size-switch-knob);
+    border-radius: var(--radius-full);
+    background-color: var(--color-background);
+    transition: translate var(--duration-short);
+  }
+
+  .toggle input:checked + .track {
+    background-color: var(--color-primary);
+  }
+
+  /* Travel equals the knob width because the insets are symmetric */
+  .toggle input:checked + .track::after {
+    translate: 100% 0;
+  }
+
+  /* The input itself is visually hidden, so the track has to show focus */
+  .toggle input:focus-visible + .track {
+    outline: 2px solid var(--color-primary-text);
+    outline-offset: 2px;
+  }
+</style>

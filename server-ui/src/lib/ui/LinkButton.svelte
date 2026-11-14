@@ -2,30 +2,52 @@
   import { resolve } from '$app/paths';
   import type { RouteId } from '$app/types';
   import type { Snippet } from 'svelte';
-  import { twMerge } from 'tailwind-merge';
   import Icon from './Icon.svelte';
 
   type LinkButtonProps = {
     href: RouteId;
     icon?: string;
     children?: Snippet;
-    class?: string;
   };
 
-  let { href, icon, children, class: className = '' }: LinkButtonProps = $props();
+  let { href, icon, children }: LinkButtonProps = $props();
 </script>
 
-<a
-  href={resolve(href)}
-  class={twMerge(
-    'group ripple flex items-center gap-3 rounded-xl px-4 py-3 text-secondary transition-all hover:bg-secondary/10 hover:text-foreground',
-    className
-  )}
->
+<a href={resolve(href)} class="link-button ripple">
   {#if icon}
     <Icon {icon} />
   {/if}
   {#if children}
-    <span class="font-medium">{@render children()}</span>
+    <span class="label rail-label">{@render children()}</span>
   {/if}
 </a>
+
+<style>
+  .link-button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-secondary);
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-short),
+      color var(--duration-short);
+  }
+
+  .link-button:hover {
+    color: var(--color-foreground);
+    background-color: color-mix(in oklab, var(--color-secondary) 10%, transparent);
+  }
+
+  .label {
+    font-weight: var(--weight-medium);
+  }
+
+  /* Matches the rail breakpoint in +layout.svelte. */
+  @media (max-width: 60rem) {
+    .link-button {
+      justify-content: center;
+    }
+  }
+</style>

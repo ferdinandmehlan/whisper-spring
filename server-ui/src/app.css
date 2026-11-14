@@ -1,108 +1,13 @@
-@import 'tailwindcss';
-@plugin '@tailwindcss/forms';
-@plugin '@tailwindcss/typography';
+/*
+ * Global stylesheet.
+ *
+ * The layer order is declared here so the cascade is explicit and independent
+ * of import order: `reset` is weakest, `base` strongest. Component <style>
+ * blocks are unlayered, so they always win over all three without needing
+ * !important or specificity games.
+ */
+@layer reset, tokens, base;
 
-@theme {
-  --color-background: var(--color-slate-100);
-  --color-foreground: var(--color-slate-900);
-  --color-primary: var(--color-teal-500);
-  --color-primary-hover: var(--color-teal-600);
-  --color-primary-light: var(--color-teal-400);
-  --color-secondary: #64748b;
-  --color-secondary-hover: #475569;
-  --color-accent: #a855f7;
-  --color-accent-hover: #9333ea;
-  --color-accent-light: #faf5ff;
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-surface: var(--color-slate-200);
-  --color-border: var(--color-slate-400);
-  --color-text-muted: #94a3b8;
-  --color-text-muted-hover: #64748b;
-  --transition-short: 200ms;
-  --transition-base: 400ms;
-  --transition-long: 800ms;
-}
-
-.dark {
-  --color-background: var(--color-zinc-900);
-  --color-foreground: var(--color-zinc-100);
-  --color-primary: var(--color-teal-600);
-  --color-primary-hover: var(--color-teal-700);
-  --color-primary-light: var(--color-teal-500);
-  --color-secondary: #94a3b8;
-  --color-secondary-hover: #cbd5e1;
-  --color-accent: #c084fc;
-  --color-accent-hover: #a855f7;
-  --color-accent-light: #581c87;
-  --color-success: #4ade80;
-  --color-warning: #fbbf24;
-  --color-error: #f87171;
-  --color-surface: var(--color-zinc-800);
-  --color-border: var(--color-zinc-600);
-  --color-text-muted: #64748b;
-  --color-text-muted-hover: #94a3b8;
-}
-
-@utility ripple {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    background-color: currentColor;
-    pointer-events: none;
-
-    /* Base State */
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(2.2);
-
-    /* Release Phase */
-    transition: opacity 400ms ease-out;
-    will-change: transform, opacity;
-  }
-
-  /* Pressed State */
-  &:not(:disabled):active::before {
-    opacity: 0.18;
-    transform: translate(-50%, -50%) scale(2.2);
-    transition:
-      transform 350ms cubic-bezier(0.05, 0.7, 0.1, 1),
-      opacity 80ms ease-in;
-  }
-}
-
-@layer base {
-  body {
-    font-family: 'Open Sans', sans-serif;
-  }
-
-  h1 {
-    @apply text-2xl font-bold;
-  }
-
-  h2 {
-    @apply text-xl;
-  }
-}
-
-.without-ring {
-  @apply focus:ring-0 focus:ring-offset-0;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
+@import './lib/styles/tokens.css';
+@import './lib/styles/reset.css';
+@import './lib/styles/base.css';

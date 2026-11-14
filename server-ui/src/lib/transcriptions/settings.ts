@@ -29,11 +29,3 @@ export function resetSettings(): TranscriptionSettings {
   saveSettings(defaults);
   return defaults;
 }
-
-export function hasModifiedSettings(settings: TranscriptionSettings): boolean {
-  return Object.keys(DEFAULT_SETTINGS).some(
-    (key) =>
-      settings[key as keyof TranscriptionSettings] !==
-      DEFAULT_SETTINGS[key as keyof TranscriptionSettings]
-  );
-}

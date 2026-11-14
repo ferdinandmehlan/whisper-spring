@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { twMerge } from 'tailwind-merge';
-
   type SliderProps = {
     id: string;
     label: string;
@@ -10,7 +8,6 @@
     step?: number;
     formatValue?: (value: number) => string;
     oninput?: () => void;
-    class?: string;
   };
 
   let {
@@ -21,16 +18,15 @@
     max = 100,
     step = 1,
     formatValue,
-    oninput,
-    class: className = ''
+    oninput
   }: SliderProps = $props();
 </script>
 
-<div class="flex flex-col gap-1">
-  <label for={id} class="text-sm font-medium">
+<div class="field">
+  <label class="field-label" for={id}>
     {label}
     {#if formatValue}
-      <span class="text-secondary">{formatValue(value)}</span>
+      <span class="field-value">{formatValue(value)}</span>
     {/if}
   </label>
   <input
@@ -43,6 +39,14 @@
     oninput={() => {
       oninput?.();
     }}
-    class={twMerge('w-full', className)}
+    class="range"
   />
 </div>
+
+<style>
+  /* A range input is not a `.control`: it has no box, padding or border. */
+  .range {
+    width: 100%;
+    accent-color: var(--color-primary);
+  }
+</style>
