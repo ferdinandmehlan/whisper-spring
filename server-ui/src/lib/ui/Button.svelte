@@ -1,51 +1,54 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { twMerge } from 'tailwind-merge';
   import Icon from './Icon.svelte';
 
   type ButtonVariant = 'filled' | 'outlined' | 'text';
+  type ButtonTone = 'default' | 'secondary' | 'error';
 
   type ButtonProps = {
     variant?: ButtonVariant;
+    tone?: ButtonTone;
     icon?: string;
     children?: Snippet;
     disabled?: boolean;
     onclick?: (event: MouseEvent) => void;
     type?: 'button' | 'submit' | 'reset';
-    class?: string;
+    flush?: boolean;
     'aria-label'?: string;
   };
 
   let {
     variant = 'filled',
+    tone = 'default',
     icon,
     children,
     disabled = false,
     onclick,
     type = 'button',
-    class: className = '',
+    flush = false,
     'aria-label': ariaLabel
   }: ButtonProps = $props();
 
-  const baseClasses =
-    'ripple relative inline-flex items-center justify-center gap-2 p-2 font-medium transition-colors overflow-hidden disabled:cursor-not-allowed disabled:opacity-50';
-
-  const roundedClasses = $derived(!children && icon ? 'rounded-full' : 'rounded-lg');
-
-  const variantClasses: Record<ButtonVariant, string> = {
-    filled: 'bg-primary text-foreground enabled:hover:bg-primary-hover',
-    outlined: 'border border-primary text-primary enabled:hover:bg-primary/10',
-    text: 'text-foreground enabled:hover:bg-primary/10'
-  };
-
-  let mergedClasses = $derived(
-    twMerge(baseClasses, roundedClasses, variantClasses[variant], className)
+  // The visual definition lives in base.css (.btn primitives) so the same
+  // look can be reused on an <a>; this component only selects the modifiers.
+  const classes = $derived(
+    [
+      'btn',
+      `btn--${variant}`,
+      'ripple',
+      !children && icon && 'btn--round',
+      flush && 'btn--flush',
+      tone === 'secondary' && 'btn--secondary',
+      tone === 'error' && 'btn--error'
+    ]
+      .filter(Boolean)
+      .join(' ')
   );
 </script>
 
-<button {type} {disabled} {onclick} aria-label={ariaLabel} class={mergedClasses}>
+<button {type} {disabled} {onclick} aria-label={ariaLabel} class={classes}>
   {#if icon}
-    <Icon {icon} class="m-1" />
+    <Icon {icon} />
   {/if}
   {#if children}
     {@render children()}

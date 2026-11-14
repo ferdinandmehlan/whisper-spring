@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { twMerge } from 'tailwind-merge';
-
   type InputProps = {
     id: string;
     label: string;
@@ -9,7 +7,6 @@
     min?: number;
     formatValue?: (value: string | number) => string;
     onchange?: () => void;
-    class?: string;
   };
 
   let {
@@ -19,19 +16,15 @@
     type = 'text',
     min,
     formatValue,
-    onchange,
-    class: className = ''
+    onchange
   }: InputProps = $props();
-
-  const baseClasses = 'rounded-lg border border-border bg-background px-3 py-2 text-sm';
-  let mergedClasses = $derived(twMerge(baseClasses, className));
 </script>
 
-<div class="flex flex-col gap-1">
-  <label for={id} class="text-sm font-medium">
+<div class="field">
+  <label class="field-label" for={id}>
     {label}
     {#if formatValue}
-      <span class="text-secondary">{formatValue(value)}</span>
+      <span class="field-value">{formatValue(value)}</span>
     {/if}
   </label>
   <input
@@ -41,7 +34,7 @@
     onchange={() => {
       onchange?.();
     }}
-    class={mergedClasses}
+    class="control"
     {min}
   />
 </div>

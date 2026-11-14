@@ -20,6 +20,12 @@
     saveSettings(settings);
   }
 
+  function handleReset() {
+    // resetSettings() persists the defaults *and* returns them; without
+    // assigning the result the panel would keep showing the old values.
+    settings = resetSettings();
+  }
+
   const LANGUAGES: { value: string; label: string }[] = [
     { value: 'auto', label: 'Auto-detect' },
     { value: 'en', label: 'English' },
@@ -45,7 +51,7 @@
 </script>
 
 <Sidebar open={showSettings} {onClose} title="Settings">
-  <div class="flex flex-col gap-4">
+  <div class="settings">
     <Select
       id="language"
       label="Language"
@@ -62,7 +68,7 @@
       onchange={persistSettings}
     />
 
-    <hr class="border-border" />
+    <hr class="separator" />
 
     <Slider
       id="maxLen"
@@ -98,7 +104,7 @@
       onchange={persistSettings}
     />
 
-    <hr class="border-border" />
+    <hr class="separator" />
 
     <Slider
       id="temperature"
@@ -137,7 +143,7 @@
       onchange={persistSettings}
     />
 
-    <hr class="border-border" />
+    <hr class="separator" />
 
     <Input
       id="offsetTMs"
@@ -167,7 +173,7 @@
       onchange={persistSettings}
     />
 
-    <hr class="border-border" />
+    <hr class="separator" />
 
     <Input
       id="maxContext"
@@ -189,7 +195,7 @@
       onchange={persistSettings}
     />
 
-    <hr class="border-border" />
+    <hr class="separator" />
 
     <Slider
       id="wordThreshold"
@@ -224,13 +230,20 @@
       oninput={persistSettings}
     />
 
-    <Button
-      onclick={resetSettings}
-      aria-label="Reset settings"
-      icon="restart_alt"
-      variant="outlined"
-    >
+    <Button onclick={handleReset} aria-label="Reset settings" icon="restart_alt" variant="outlined">
       Reset
     </Button>
   </div>
 </Sidebar>
+
+<style>
+  .settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .separator {
+    border-top: 1px solid var(--color-border);
+  }
+</style>

@@ -33,7 +33,10 @@ fun Project.inputFiles() =
     listOf(
         fileTree("$projectDir/e2e") { include("**/*") },
         fileTree("$projectDir/src") { include("**/*") },
+        fileTree("$projectDir/static") { include("**/*") },
         file("$projectDir/eslint.config.js"),
+        file("$projectDir/.prettierrc"),
+        file("$projectDir/.prettierignore"),
         file("$projectDir/package.json"),
         file("$projectDir/playwright.config.ts"),
         file("$projectDir/pnpm-lock.yaml"),

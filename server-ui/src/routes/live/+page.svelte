@@ -160,32 +160,27 @@
   onDestroy(cleanup);
 </script>
 
-<div class="flex min-h-0 flex-1 flex-col items-center p-6">
+<div class="page live-page">
   <h2>Live</h2>
 
-  <div
-    class="mt-4 flex w-full max-w-2xl flex-1 flex-col items-center rounded-2xl bg-surface p-8 shadow-md"
-  >
+  <div class="card stage-card">
     <button
       onclick={toggleRecording}
       disabled={isConnecting}
-      class="flex h-24 w-24 items-center justify-center rounded-full transition-all
-        {isRecording
-        ? 'scale-110 animate-pulse bg-error text-white shadow-lg shadow-error/50'
-        : 'bg-primary text-foreground enabled:hover:scale-105 enabled:hover:bg-primary-hover'}
-        disabled:cursor-not-allowed disabled:opacity-50"
+      class="record"
+      class:recording={isRecording}
       aria-label={isRecording ? 'Stop recording' : 'Start recording'}
     >
       {#if isConnecting}
-        <Icon icon="pending" class="text-4xl!" />
+        <Icon icon="pending" size="lg" />
       {:else if isRecording}
-        <Icon icon="stop" class="text-4xl!" />
+        <Icon icon="stop" size="lg" />
       {:else}
-        <Icon icon="mic" class="text-4xl!" />
+        <Icon icon="mic" size="lg" />
       {/if}
     </button>
 
-    <p class="mt-4 text-secondary">
+    <p class="status">
       {#if isConnecting}
         Connecting...
       {:else if isRecording}
@@ -199,30 +194,118 @@
 
     <div
       bind:this={transcriptEl}
-      class="scrollbar-hide mt-6 w-full flex-1 overflow-y-auto rounded-xl bg-background p-4 whitespace-pre-wrap"
-      class:border={!transcript && !error}
-      class:border-dashed={!transcript && !error}
-      class:border-border={!transcript && !error}
+      class="transcript scrollbar-hide"
+      class:empty-state={!transcript && !error}
     >
       {#if transcript}
         <p>{transcript}</p>
       {:else if error}
-        <p class="text-error">{error}</p>
+        <p class="error-text">{error}</p>
       {:else}
-        <p class="text-center text-secondary">Transcribed text will appear here...</p>
+        <p class="placeholder">Transcribed text will appear here...</p>
       {/if}
     </div>
 
     {#if transcript}
-      <div class="mt-4 flex w-full justify-end">
+      <div class="copy-row">
         <Button
           onclick={copyTranscript}
           icon="content_copy"
           variant="text"
+          tone="secondary"
           aria-label="Copy transcript"
-          class="text-secondary"
         />
       </div>
     {/if}
   </div>
 </div>
+
+<style>
+  /* The `.page` primitive only handles the page column; this page centres it */
+  .live-page {
+    align-items: center;
+  }
+
+  /* `.card` supplies the surface, shadow and radius; this adds the layout and
+     the larger radius this page uses. */
+  .stage-card {
+    display: flex;
+    width: 100%;
+    max-width: var(--width-2xl);
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    margin-top: var(--space-4);
+    padding: var(--space-8);
+    border-radius: var(--radius-xl);
+  }
+
+  .record {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--size-hero);
+    height: var(--size-hero);
+    color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition:
+      transform var(--duration-short),
+      background-color var(--duration-short);
+  }
+
+  .record:not(.recording):hover:not(:disabled) {
+    transform: scale(1.05);
+    background-color: var(--color-primary-hover);
+  }
+
+  .record:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .record.recording {
+    color: var(--color-on-error);
+    background-color: var(--color-error);
+    box-shadow: var(--shadow-error);
+    transform: scale(1.1);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .status {
+    margin-top: var(--space-4);
+    color: var(--color-secondary);
+  }
+
+  .transcript {
+    flex: 1;
+    width: 100%;
+    margin-top: var(--space-6);
+    padding: var(--space-4);
+    overflow-y: auto;
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    white-space: pre-wrap;
+  }
+
+  .transcript.empty-state {
+    border: 1px dashed var(--color-border);
+  }
+
+  .error-text {
+    color: var(--color-error);
+  }
+
+  .placeholder {
+    color: var(--color-secondary);
+    text-align: center;
+  }
+
+  .copy-row {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: var(--space-4);
+  }
+</style>

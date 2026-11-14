@@ -1,13 +1,10 @@
 <script lang="ts">
-  import { twMerge } from 'tailwind-merge';
-
   type SelectProps = {
     id: string;
     label?: string;
     value?: string | number;
     options: { value: string | number; label: string }[];
     disabled?: boolean;
-    class?: string;
     onchange?: () => void;
   };
 
@@ -17,19 +14,13 @@
     value = $bindable(),
     options,
     disabled = false,
-    class: className = '',
     onchange
   }: SelectProps = $props();
-
-  const baseClasses = 'rounded-lg border border-border bg-background px-3 py-2 text-sm';
-  let mergedClasses = $derived(
-    twMerge(baseClasses, disabled ? 'cursor-not-allowed opacity-50' : '', className)
-  );
 </script>
 
-<div class="flex flex-col gap-1">
+<div class="field">
   {#if label}
-    <label for={id} class="text-sm font-medium">{label}</label>
+    <label class="field-label" for={id}>{label}</label>
   {/if}
   <select
     {id}
@@ -38,10 +29,22 @@
     onchange={() => {
       onchange?.();
     }}
-    class={mergedClasses}
+    class="control select"
   >
     {#each options as opt (opt.value)}
       <option value={opt.value}>{opt.label}</option>
     {/each}
   </select>
 </div>
+
+<style>
+  /* A native <select> cannot host a pseudo-element chevron and data URIs
+     cannot use currentColor, so the icon comes from --select-chevron. */
+  .select {
+    padding-right: var(--space-8);
+    background-image: var(--select-chevron);
+    background-repeat: no-repeat;
+    background-position: right var(--space-2) center;
+    background-size: 1.5em 1.5em;
+  }
+</style>
