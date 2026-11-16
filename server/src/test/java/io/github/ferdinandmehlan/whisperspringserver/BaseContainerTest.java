@@ -1,7 +1,5 @@
 package io.github.ferdinandmehlan.whisperspringserver;
 
-import de.cronn.assertions.validationfile.normalization.SimpleRegexReplacement;
-import de.cronn.assertions.validationfile.normalization.ValidationNormalizer;
 import io.github.ferdinandmehlan.whisperspringserver.transcription.api.TranscriptionResponse;
 import io.github.ferdinandmehlan.whisperspringtestcommon.BaseTest;
 import java.nio.file.Path;

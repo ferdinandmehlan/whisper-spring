@@ -1,6 +1,5 @@
 /*
- * Global element defaults and the shared primitives that more than one
- * component needs.
+ * The islands stage, the panes and the primitives more than one pane needs.
  *
  * This file is the project's small design system. Everything here is scoped to
  * the `base` layer, which means component <style> blocks - which are unlayered
@@ -9,292 +8,474 @@
  * in that component instead.
  *
  * Primitives
- *   .btn / .btn--{filled,outlined,text} / .btn--{round,flush,secondary,error}
- *   .page          full-height page column
- *   .card          elevated surface
- *   .field         label + form control stack
- *   .control       text-like form control (input, select, textarea)
- *   .ripple        press feedback
- *   .visually-hidden / .scrollbar-hide / .material-symbols-outlined
+ *   .app           the glass-on-black stage that carries the whole shell
+ *   .app-glass     light pools + grain, the only blurred or noisy layer
+ *   .app-panes     the three-track grid and its responsive ladder
+ *   .app-pane      a flat island: hairline frame, radius, no shadow
+ *   .app-scroll    thin-scrollbar overflow area
+ *   .app-eyebrow   mono caps heading over a group of controls; a block that
+ *                  starts with one is a group, a block that starts with a
+ *                  field label is one field (see .app-block below)
+ *   .app-mono      mono stack with tabular figures
+ *   .app-chip (+ --solid) / .app-dot / .app-hr / ::selection / focus ring
+ *
+ * Controls (Button, IconButton, Switch, Segmented, Select, Input, Slider,
+ * TextArea in src/lib/components) used to live here as class rules; as
+ * components they now carry their own styles next to their markup.
+ *
+ * Two inspirations, two separate jobs:
+ *
+ *   1. Background  - rough, glassy, slightly out-of-focus. Large greyscale
+ *                    light pools plus a grain overlay. This is the only layer
+ *                    that is blurred or noisy.
+ *   2. Panes       - flat, opaque, hard-edged. No gradients, no shadows, no
+ *                    glass. They read as cut-outs laid on top of the glow.
+ *
+ * That contrast (soft stage, hard panes) is what makes the islands read as
+ * islands. Keep it: if a pane starts to look translucent, it stops working.
  */
 @layer base {
-  body {
-    font-family: var(--font-sans);
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-  }
+  /* ---------------------------------------------------------------------------
+   * Stage
+   * ------------------------------------------------------------------------- */
 
-  h1 {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-    font-weight: var(--weight-bold);
-  }
-
-  h2 {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  /* One focus ring for the whole application. Components must not remove it
-     without providing a replacement of at least equal visibility. */
-  :focus-visible {
-    outline: 2px solid var(--color-primary-text);
-    outline-offset: 2px;
-  }
-
-  /* Material Symbols ligature font, loaded in app.html */
-  .material-symbols-outlined {
-    display: inline-block;
-    line-height: 1;
-    user-select: none;
-  }
-
-  /*
-   * Buttons
-   *
-   * Shared by <button> (Button.svelte) and <a> (+error.svelte), so the visual
-   * definition exists once. Tones come after variants so they win on equal
-   * specificity; the two `filled` + tone combinations are spelled out so no
-   * combination can produce unreadable text.
-   */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    min-height: var(--size-touch);
-    padding: var(--space-2);
-    font-weight: var(--weight-medium);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition:
-      background-color var(--duration-short),
-      border-color var(--duration-short),
-      color var(--duration-short);
-  }
-
-  .btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  .btn--filled {
-    color: var(--color-on-primary);
-    background-color: var(--color-primary);
-  }
-
-  .btn--filled:hover:not(:disabled) {
-    background-color: var(--color-primary-hover);
-  }
-
-  .btn--outlined {
-    color: var(--color-primary-text);
-    border: 1px solid currentColor;
-  }
-
-  .btn--outlined:hover:not(:disabled) {
-    background-color: color-mix(in oklab, var(--color-primary) 12%, transparent);
-  }
-
-  .btn--text {
-    color: var(--color-foreground);
-  }
-
-  .btn--text:hover:not(:disabled) {
-    background-color: color-mix(in oklab, var(--color-primary) 12%, transparent);
-  }
-
-  .btn--secondary {
-    color: var(--color-secondary);
-  }
-
-  .btn--error {
-    color: var(--color-error);
-    border-color: var(--color-error);
-  }
-
-  /* filled + tone: the tone owns the fill and therefore the text colour too */
-  .btn--filled.btn--secondary {
-    color: var(--color-background); /* 6.9:1 light / 5.8:1 dark */
-    background-color: var(--color-secondary);
-  }
-
-  .btn--filled.btn--error {
-    color: var(--color-on-error);
-    background-color: var(--color-error);
-  }
-
-  .btn--filled.btn--secondary:hover:not(:disabled) {
-    background-color: color-mix(in oklab, var(--color-secondary) 85%, black);
-  }
-
-  .btn--filled.btn--error:hover:not(:disabled) {
-    background-color: color-mix(in oklab, var(--color-error) 85%, black);
-  }
-
-  .btn--round {
-    min-width: var(--size-touch);
-    border-radius: var(--radius-full);
-  }
-
-  .btn--flush {
-    padding: 0;
-  }
-
-  /* Optical padding: the ligature glyph fills less than its em box */
-  .btn .icon {
-    margin: var(--space-1);
-  }
-
-  /* Layout */
-  .page {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    min-height: 0;
-    padding: var(--space-6);
-  }
-
-  .card {
-    background-color: var(--color-surface);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-  }
-
-  /* Form primitives */
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .field-label {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    font-weight: var(--weight-medium);
-  }
-
-  .field-value {
-    color: var(--color-secondary);
-  }
-
-  .control {
-    min-height: var(--size-control);
-    padding: var(--space-2) var(--space-3);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    color: var(--color-foreground);
-    background-color: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    appearance: none;
-  }
-
-  .control:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  /*
-   * Ripple on press, shared by Button and LinkButton.
-   * The fill is painted by ::before, content always stays on top.
-   */
-  .ripple {
+  .app {
     position: relative;
-    overflow: hidden;
     isolation: isolate;
+    display: grid;
+    height: 100dvh;
+    overflow: hidden;
+    font-family: var(--app-font);
+    font-size: var(--app-fs-lg);
+    line-height: 1.45;
+    color: var(--app-text);
+    background: var(--app-canvas);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  .ripple::before {
+  .app-glass {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Light pools. Overscaled and blurred so the pane edges never catch a hard
+     gradient stop - the glow must read as out-of-focus, not as a mesh. */
+  .app-glass::before {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: var(--radius-full);
-    background-color: currentColor;
-    pointer-events: none;
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(2.2);
-    transition: opacity var(--duration-base) ease-out;
-    will-change: transform, opacity;
+    inset: -30%;
+    background:
+      radial-gradient(34% 30% at 16% 8%, rgb(255 255 255 / 26%), transparent 72%),
+      radial-gradient(30% 26% at 86% 16%, rgb(255 255 255 / 14%), transparent 74%),
+      radial-gradient(44% 38% at 58% 102%, rgb(255 255 255 / 10%), transparent 72%),
+      radial-gradient(24% 22% at 40% 60%, rgb(255 255 255 / 5%), transparent 70%);
+    filter: blur(52px);
   }
 
-  .ripple:not(:disabled):active::before {
-    opacity: 0.18;
-    transform: translate(-50%, -50%) scale(2.2);
-    transition:
-      transform 350ms cubic-bezier(0.05, 0.7, 0.1, 1),
-      opacity 80ms ease-in;
+  /* Light stage: a white glare where the dark mode has a light pool, plus a
+     faint dark vignette so the stage still has depth without turning grey mush.
+     Same blur, so the "out of focus" character survives the mode change. */
+  :root[data-theme='light'] .app-glass::before {
+    background:
+      radial-gradient(36% 32% at 14% 6%, rgb(255 255 255 / 72%), transparent 70%),
+      radial-gradient(30% 26% at 88% 14%, rgb(0 0 0 / 7%), transparent 74%),
+      radial-gradient(46% 40% at 60% 104%, rgb(0 0 0 / 11%), transparent 72%),
+      radial-gradient(26% 24% at 42% 62%, rgb(0 0 0 / 4%), transparent 70%);
   }
 
-  /* Visually hidden but still reachable by keyboard and screen readers */
-  .visually-hidden {
+  /* Grain. "Rough" comes from here - low-frequency light plus a fine overlay
+     noise reads as fogged glass rather than as a clean gradient. */
+  .app-glass::after {
+    content: '';
     position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
+    inset: 0;
+    opacity: 0.3;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+
+  /* Overlay grain brightens a dark stage and does almost nothing to a light one,
+     so light mode multiplies instead - same grain, opposite direction. */
+  :root[data-theme='light'] .app-glass::after {
+    opacity: 0.16;
+    mix-blend-mode: multiply;
+  }
+
+  /* ---------------------------------------------------------------------------
+   * Panes
+   * ------------------------------------------------------------------------- */
+
+  .app-panes {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: var(--app-left-w) minmax(0, 1fr) var(--app-right-w);
+    gap: var(--app-gap);
+    height: 100dvh;
+    padding: var(--app-gap);
+    /* The tracks are the animation: collapsing swaps the token, and the grid
+       interpolates between the two lengths. The centre pane takes up the slack
+       because it is the only `1fr` column. */
+    transition: grid-template-columns 240ms var(--app-ease);
+  }
+
+  /* Flat panes: no shadow, only the hairline. Anything stronger starts faking
+     depth and the panes stop sitting *in* the surface. */
+  .app-pane {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
     overflow: hidden;
+    background: var(--app-pane);
+    border: 1px solid var(--app-line);
+    border-radius: var(--app-radius);
+  }
+
+  /* Side panes stack their content in one cell so the outgoing pane body and the
+     incoming stripe overlap while they cross-fade instead of queueing up in the
+     flex column. */
+  .app-pane--left,
+  .app-pane--right {
+    display: grid;
+    grid-template: 1fr / 1fr;
+  }
+
+  .pane-slot {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    grid-area: 1 / 1;
+  }
+
+  /* Collapsed pane: the track shrinks to a stripe, the pane does not disappear.
+     Keeping the hairline + radius means the frame still reads as three islands
+     instead of two islands and a gap. The attribute selector out-specifies the
+     `.app` rules in the ladder below, so collapse survives every breakpoint. */
+  .app[data-left='collapsed'] {
+    --app-left-w: var(--app-collapsed-w);
+  }
+
+  .app[data-right='collapsed'] {
+    --app-right-w: var(--app-collapsed-w);
+  }
+
+  /* Responsive ladder. The side panes grow with the viewport: at 252/316 a rail
+     still truncates filenames on a 1440p screen, and the inspector has slack. */
+  @media (max-width: 1180px) {
+    .app {
+      --app-left-w: 232px;
+      --app-right-w: 268px;
+      --app-pad: 18px;
+    }
+  }
+
+  @media (min-width: 1500px) {
+    .app {
+      --app-left-w: 280px;
+      --app-right-w: 352px;
+    }
+  }
+
+  /* Past ~1800px the frame gets room to breathe as well, so the panes widen
+     without the islands drifting apart from their content. */
+  @media (min-width: 1800px) {
+    .app {
+      --app-left-w: 308px;
+      --app-right-w: 386px;
+      --app-gap: 20px;
+      --app-pad: 26px;
+    }
+  }
+
+  @media (min-width: 2200px) {
+    .app {
+      --app-left-w: 336px;
+      --app-right-w: 420px;
+    }
+  }
+
+  /* Below 1024 the grid drops to two tracks and the inspector leaves the stage;
+     the rail keeps its 64px icon-only form (see NavRail). Collapse is a desktop
+     affordance, so it is not offered here. */
+  @media (max-width: 1024px) {
+    .app {
+      --app-left-w: 64px;
+    }
+
+    .app-panes {
+      grid-template-columns: var(--app-left-w) minmax(0, 1fr);
+    }
+
+    .app-pane--right {
+      display: none;
+    }
+  }
+
+  /* ---------------------------------------------------------------------------
+   * Shared primitives used by the panes
+   * ------------------------------------------------------------------------- */
+
+  .app-scroll {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--app-line-strong) transparent;
+  }
+
+  .app-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .app-scroll::-webkit-scrollbar-thumb {
+    background: var(--app-line-strong);
+    border-radius: 99px;
+  }
+
+  /* Small caps label - the workhorse of the mono UI */
+  .app-eyebrow {
+    font-family: var(--app-mono);
+    font-size: var(--app-fs-2xs);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--app-text-3);
+  }
+
+  .app-mono {
+    font-family: var(--app-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 19px;
+    padding: 0 6px;
+    font-family: var(--app-mono);
+    font-size: var(--app-fs-2xs);
+    letter-spacing: 0.04em;
+    color: var(--app-text-2);
+    border: 1px solid var(--app-line);
+    border-radius: 4px;
     white-space: nowrap;
-    border-width: 0;
-    clip-path: inset(50%);
   }
 
-  /* Hides a text node visually below the rail breakpoint while keeping it in the
-     accessibility tree: an icon-only control still needs its name. */
-  @media (max-width: 60rem) {
-    .rail-label {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      margin: -1px;
-      padding: 0;
-      overflow: hidden;
-      white-space: nowrap;
-      border-width: 0;
-      clip-path: inset(50%);
+  .app-chip--solid {
+    color: var(--app-on-fill);
+    background: var(--app-fill);
+    border-color: var(--app-fill);
+  }
+
+  .app-dot {
+    width: 5px;
+    height: 5px;
+    flex: none;
+    background: currentColor;
+    border-radius: 50%;
+  }
+
+  .app-hr {
+    height: 1px;
+    background: var(--app-line);
+  }
+
+  /* ---------------------------------------------------------------------------
+   * Pane sections
+   *
+   * Every inspector section and every settings section is one of a handful of
+   * shapes. They used to be copy-pasted into each component (eight copies of
+   * `.kv-row` at one point); these are the shapes, so a pane only styles what
+   * is genuinely its own.
+   * ------------------------------------------------------------------------- */
+
+  /* Block in the inspector. Children are one rhythm apart; whether the block
+     is a group or a single field is decided by its heading (see below). */
+  .app-block {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  /* A block whose heading is an eyebrow groups several controls. That is the
+     only thing the mono caps mean: "there is more than one thing under me".
+     A block headed by a field label (`.app-sub`) is a single field and gets
+     no heading treatment. Two consequences follow, and they are what makes
+     the grouping readable rather than just decorative:
+       - the heading sits further from its first child than the children sit
+         from each other, instead of sharing their 9px rhythm;
+       - a rule separates it from the block above, so a group boundary is a
+         visible change of level. A rule above a *peer* (a toggle, a field)
+         would encode nothing - that one was removed on purpose. */
+  .app-block:has(> .app-eyebrow):not(:first-child) {
+    padding-top: 12px;
+    border-top: 1px solid var(--app-line);
+  }
+
+  .app-block > .app-eyebrow {
+    padding-bottom: 6px;
+  }
+
+  /* Addressable section on a full page (#server, #appearance, ...). */
+  .app-group {
+    display: flex;
+    flex-direction: column;
+    /* Fragment links from the inspector must not land under the title bar. */
+    scroll-margin-top: 10px;
+  }
+
+  .app-group > .app-eyebrow {
+    padding-bottom: 10px;
+  }
+
+  /* definition list: label left, mono value right */
+  .app-kv {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* No rule between rows. Every one of these lists sits inside a group whose
+     heading already carries a rule above it, so a second line 15px under that
+     heading reads as a strikethrough rather than a table edge. The rows are
+     held apart by their own 6px padding instead - the same rhythm the fields in
+     the transcription inspector use. */
+  .app-kv-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: var(--app-fs-sm);
+  }
+
+  .app-kv-row dt {
+    color: var(--app-text-3);
+  }
+
+  .app-kv-row dd {
+    font-size: var(--app-fs-xs);
+    color: var(--app-text-2);
+  }
+
+  /* label + control, stacked */
+  .app-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .app-field-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .app-sub {
+    font-size: var(--app-fs-sm);
+    color: var(--app-text-2);
+  }
+
+  .app-value {
+    /* Same size as its label: the mono face and tabular figures already make
+       it read as the value, and a readout should not be the smallest text in
+       a row you are watching while dragging a slider. */
+    font-size: var(--app-fs-sm);
+    color: var(--app-text-2);
+  }
+
+  /* one-line label/switch pair. The label is a field label, not body copy, so
+     it takes the `.app-sub` size - inside a group it must not outrank the
+     fields above and below it. No rule: the block's rhythm separates it. */
+  .app-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    font-size: var(--app-fs-sm);
+    color: var(--app-text-2);
+  }
+
+  /* explanatory copy under a control */
+  .app-hint {
+    font-size: var(--app-fs-sm);
+    line-height: 1.55;
+    color: var(--app-text-3);
+  }
+
+  /* Full-width settings row: label block left, control right. */
+  .app-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 24px;
+    padding: 12px 2px;
+    border-top: 1px solid var(--app-line);
+  }
+
+  .app-row-label {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .app-row-title {
+    font-size: var(--app-fs-lg);
+    letter-spacing: -0.01em;
+  }
+
+  .app-row-desc {
+    font-size: var(--app-fs-sm);
+    line-height: 1.45;
+    color: var(--app-text-3);
+  }
+
+  .app-row-control {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  @media (max-width: 760px) {
+    .app-row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .app-row-control {
+      justify-content: flex-start;
     }
   }
 
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  .app :focus-visible {
+    outline: 2px solid var(--app-fill);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  /* Selection uses the same inversion as the primary action, so it reads in both
+     modes without a third colour. */
+  .app ::selection {
+    color: var(--app-on-fill);
+    background: var(--app-fill);
   }
 
-  @keyframes pulse {
-    50% {
-      opacity: 0.5;
-    }
-  }
-
-  @keyframes bounce {
-    0%,
-    100% {
-      transform: translateY(-25%);
-      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-    }
-
-    50% {
-      transform: none;
-      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-    }
-  }
-
-  /* Respect the OS preference: keep the end state, drop the motion. */
   @media (prefers-reduced-motion: reduce) {
-    *,
-    ::before,
-    ::after {
+    .app *,
+    .app *::before,
+    .app *::after {
       animation-duration: 1ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 1ms !important;
-      scroll-behavior: auto !important;
     }
   }
 }

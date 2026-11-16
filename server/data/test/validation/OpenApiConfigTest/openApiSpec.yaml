@@ -26,6 +26,18 @@ paths:
                 - type: array
                   items:
                     $ref: "#/components/schemas/ServerSentEventTranscriptionEvent"
+  /api/models:
+    get:
+      tags:
+      - model-controller
+      operationId: models
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ModelListResponse"
 components:
   schemas:
     TranscriptionRequest:
@@ -180,3 +192,35 @@ components:
         probability:
           type: number
           format: float
+    ModelInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Stable identifier of the model, derived from the model file\
+            \ name"
+          example: tiny
+        name:
+          type: string
+          description: "Display name of the model, the model file name without its\
+            \ extension"
+          example: ggml-tiny
+        sizeBytes:
+          type: integer
+          format: int64
+          description: "Size of the model file in bytes, null if the file cannot be\
+            \ read"
+          example: 77691713
+    ModelListResponse:
+      type: object
+      properties:
+        active:
+          type: string
+          description: "Identifier of the model currently loaded into memory, null\
+            \ if no model is loaded"
+          example: tiny
+        models:
+          type: array
+          description: "Models available to the server, empty if no model is loaded"
+          items:
+            $ref: "#/components/schemas/ModelInfo"
