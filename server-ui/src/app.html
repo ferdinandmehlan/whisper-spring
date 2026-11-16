@@ -22,6 +22,16 @@
           ? stored === 'dark'
           : window.matchMedia('(prefers-color-scheme: dark)').matches;
         document.documentElement.classList.toggle('dark', dark);
+
+        // v2 has its own palette and its own key: the islands theme is not the
+        // v1 slate/teal theme, so switching one must not restyle the other.
+        // The attribute lands on <html> because the .v2 root does not exist yet;
+        // theme.css resolves :root[data-v2-mode] down to .v2 for this reason.
+        const v2Stored = localStorage.getItem('v2-mode');
+        const v2Light = v2Stored
+          ? v2Stored === 'light'
+          : !window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.dataset.v2Mode = v2Light ? 'light' : 'dark';
       } catch {
         // Storage can be unavailable (private mode, blocked cookies): fall back
         // to the stylesheet default instead of failing the page.

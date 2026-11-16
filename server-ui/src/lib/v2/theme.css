@@ -1,0 +1,466 @@
+/*
+ * v2 "islands" theme.
+ *
+ * Two inspirations, two separate jobs:
+ *
+ *   1. Background  - rough, glassy, slightly out-of-focus. Large greyscale
+ *                    light pools plus a grain overlay. This is the only layer
+ *                    that is blurred or noisy.
+ *   2. Panes       - flat, opaque, hard-edged. No gradients, no shadows, no
+ *                    glass. They read as cut-outs laid on top of the glow.
+ *
+ * That contrast (soft stage, hard panes) is what makes the islands read as
+ * islands. Keep it: if a pane starts to look translucent, it stops working.
+ *
+ * Colour is monochrome on purpose (Grok-ish): pure black / pure white, with
+ * *hierarchy carried by opacity*, not by hue. Only `--v2-danger` is coloured,
+ * because "this failed" must survive the mono palette.
+ *
+ * Both modes are designed, not inverted: dark is black stage + near-black
+ * panes, light is grey stage + white panes. What flips is *which side of the
+ * ramp the pane sits on* - the pane is always the cleaner, brighter surface
+ * and the stage always carries the light pools. Inverting a mono ramp
+ * mechanically would make the light stage a flat grey field, and the islands
+ * would stop reading at all.
+ *
+ * Everything is scoped to `.v2` so the existing app keeps its teal/slate theme
+ * untouched while both live in the same build.
+ *
+ * Mode is applied twice on purpose:
+ *   `.v2[data-mode]`          - the live, Svelte-owned state
+ *   `:root[data-v2-mode] .v2` - the pre-hydration value, set by the inline
+ *                               script in app.html, so light users never see a
+ *                               dark flash on first paint
+ */
+
+.v2 {
+  color-scheme: dark;
+
+  /* Stage */
+  --v2-canvas: #000;
+
+  /* Islands */
+  --v2-pane: #0a0a0a;
+  --v2-pane-alt: #101010;
+
+  /* Hairlines - the whole layout is drawn with these */
+  --v2-line: rgb(255 255 255 / 8%);
+  --v2-line-strong: rgb(255 255 255 / 18%);
+
+  /* Type */
+  --v2-text: #fff;
+  --v2-text-2: rgb(255 255 255 / 62%);
+  --v2-text-3: rgb(255 255 255 / 34%);
+
+  /* Inverted control: white fill, black glyph */
+  --v2-fill: #fff;
+  --v2-on-fill: #0a0a0a;
+
+  /* States */
+  --v2-hover: rgb(255 255 255 / 6%);
+  --v2-active: rgb(255 255 255 / 12%);
+  --v2-danger: #ff453a;
+
+  /* Geometry
+     Two knobs define the island rhythm:
+       --v2-gap  space *between* panes, and the stage inset around them
+                 (one token so the frame stays even: 16px all round)
+       --v2-pad  padding *inside* a pane, applied by the pane chrome
+                 (WorkArea header/body, Inspector, status bars) */
+  --v2-radius: 14px;
+  --v2-radius-sm: 7px;
+  --v2-gap: 16px;
+  --v2-pad: 22px;
+
+  /* Type stacks - system only, so the mock has no webfont dependency */
+  --v2-font:
+    'Inter Tight', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', sans-serif;
+  --v2-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  --v2-dur: 140ms;
+  --v2-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Native <select> chevron. It cannot use currentColor, so it is a token -
+     one per mode, otherwise it disappears in one of them. */
+  --v2-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='.45' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Light: grey stage, white panes. The pane is still the brightest surface, and
+   the hairlines get *darker* rather than lighter - black at 10% reads as an
+   edge on white, white at 10% does not. */
+.v2[data-mode='light'],
+:root[data-v2-mode='light'] .v2 {
+  color-scheme: light;
+
+  --v2-canvas: #e7e7e7;
+  --v2-pane: #fff;
+  --v2-pane-alt: #f4f4f4;
+
+  --v2-line: rgb(0 0 0 / 10%);
+  --v2-line-strong: rgb(0 0 0 / 20%);
+
+  --v2-text: #0a0a0a;
+  --v2-text-2: rgb(10 10 10 / 66%);
+  --v2-text-3: rgb(10 10 10 / 46%);
+
+  --v2-fill: #0a0a0a;
+  --v2-on-fill: #fff;
+
+  --v2-hover: rgb(0 0 0 / 4%);
+  --v2-active: rgb(0 0 0 / 8%);
+  --v2-danger: #d70015;
+
+  --v2-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-opacity='.45' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------------------
+ * Stage
+ * ------------------------------------------------------------------------- */
+
+.v2 {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--v2-canvas);
+  color: var(--v2-text);
+  font-family: var(--v2-font);
+  font-size: 13px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.v2 *,
+.v2 *::before,
+.v2 *::after {
+  box-sizing: border-box;
+}
+
+.v2-glass {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Light pools. Overscaled and blurred so the pane edges never catch a hard
+   gradient stop - the glow must read as out-of-focus, not as a mesh. */
+.v2-glass::before {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(34% 30% at 16% 8%, rgb(255 255 255 / 26%), transparent 72%),
+    radial-gradient(30% 26% at 86% 16%, rgb(255 255 255 / 14%), transparent 74%),
+    radial-gradient(44% 38% at 58% 102%, rgb(255 255 255 / 10%), transparent 72%),
+    radial-gradient(24% 22% at 40% 60%, rgb(255 255 255 / 5%), transparent 70%);
+  filter: blur(52px);
+}
+
+/* Light stage: a white glare where the dark mode has a light pool, plus a
+   faint dark vignette so the stage still has depth without turning grey mush.
+   Same blur, so the "out of focus" character survives the mode change. */
+.v2[data-mode='light'] .v2-glass::before,
+:root[data-v2-mode='light'] .v2 .v2-glass::before {
+  background:
+    radial-gradient(36% 32% at 14% 6%, rgb(255 255 255 / 72%), transparent 70%),
+    radial-gradient(30% 26% at 88% 14%, rgb(0 0 0 / 7%), transparent 74%),
+    radial-gradient(46% 40% at 60% 104%, rgb(0 0 0 / 11%), transparent 72%),
+    radial-gradient(26% 24% at 42% 62%, rgb(0 0 0 / 4%), transparent 70%);
+}
+
+/* Grain. "Rough" comes from here - low-frequency light plus a fine overlay
+   noise reads as fogged glass rather than as a clean gradient. */
+.v2-glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Overlay grain brightens a dark stage and does almost nothing to a light one,
+   so light mode multiplies instead - same grain, opposite direction. */
+.v2[data-mode='light'] .v2-glass::after,
+:root[data-v2-mode='light'] .v2 .v2-glass::after {
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+}
+
+/* ---------------------------------------------------------------------------
+ * Panes
+ * ------------------------------------------------------------------------- */
+
+.v2-panes {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 252px minmax(0, 1fr) 316px;
+  gap: var(--v2-gap);
+  height: 100dvh;
+  padding: var(--v2-gap);
+}
+
+.v2-pane {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--v2-pane);
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-radius);
+}
+
+/* Flat panes: no shadow, only the hairline. Anything stronger starts faking
+   depth and the panes stop sitting *in* the surface. */
+@media (max-width: 1180px) {
+  .v2-panes {
+    grid-template-columns: 232px minmax(0, 1fr) 268px;
+  }
+
+  .v2 {
+    --v2-pad: 18px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .v2-panes {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .v2-pane--right {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Shared primitives used by the panes
+ * ------------------------------------------------------------------------- */
+
+.v2-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--v2-line-strong) transparent;
+}
+
+.v2-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.v2-scroll::-webkit-scrollbar-thumb {
+  background: var(--v2-line-strong);
+  border-radius: 99px;
+}
+
+/* Small caps label - the workhorse of the mono UI */
+.v2-eyebrow {
+  font-family: var(--v2-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--v2-text-3);
+}
+
+.v2-mono {
+  font-family: var(--v2-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.v2-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  color: var(--v2-text-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--v2-radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--v2-dur) var(--v2-ease),
+    color var(--v2-dur) var(--v2-ease),
+    border-color var(--v2-dur) var(--v2-ease);
+}
+
+.v2-icon-btn:hover {
+  color: var(--v2-text);
+  background: var(--v2-hover);
+  border-color: var(--v2-line);
+}
+
+.v2-icon-btn[aria-pressed='true'] {
+  color: var(--v2-on-fill);
+  background: var(--v2-fill);
+}
+
+.v2-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--v2-text);
+  background: transparent;
+  border: 1px solid var(--v2-line-strong);
+  border-radius: var(--v2-radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--v2-dur) var(--v2-ease),
+    color var(--v2-dur) var(--v2-ease),
+    border-color var(--v2-dur) var(--v2-ease);
+}
+
+.v2-btn:hover {
+  background: var(--v2-hover);
+}
+
+.v2-btn--primary {
+  color: var(--v2-on-fill);
+  background: var(--v2-fill);
+  border-color: var(--v2-fill);
+}
+
+.v2-btn--primary:hover {
+  background: var(--v2-fill);
+  opacity: 0.88;
+}
+
+.v2-btn--ghost {
+  border-color: transparent;
+  color: var(--v2-text-2);
+}
+
+.v2-btn--ghost:hover {
+  color: var(--v2-text);
+}
+
+.v2-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 19px;
+  padding: 0 6px;
+  font-family: var(--v2-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--v2-text-2);
+  border: 1px solid var(--v2-line);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.v2-chip--solid {
+  color: var(--v2-on-fill);
+  background: var(--v2-fill);
+  border-color: var(--v2-fill);
+}
+
+.v2-dot {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+.v2-hr {
+  height: 1px;
+  background: var(--v2-line);
+}
+
+.v2 :focus-visible {
+  outline: 2px solid var(--v2-fill);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Selection uses the same inversion as the primary action, so it reads in both
+   modes without a third colour. */
+.v2 ::selection {
+  color: var(--v2-on-fill);
+  background: var(--v2-fill);
+}
+
+/* Native controls, restyled to match the hairline language */
+.v2 select,
+.v2 input[type='text'],
+.v2 input[type='number'] {
+  height: 28px;
+  padding: 0 8px;
+  font-family: var(--v2-font);
+  font-size: 12px;
+  color: var(--v2-text);
+  background: var(--v2-pane-alt);
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-radius-sm);
+  appearance: none;
+}
+
+.v2 select {
+  padding-right: 26px;
+  background-image: var(--v2-chevron);
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.v2 input[type='range'] {
+  width: 100%;
+  height: 18px;
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+}
+
+.v2 input[type='range']::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--v2-line-strong);
+}
+
+.v2 input[type='range']::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  margin-top: -4px;
+  background: var(--v2-fill);
+  border: 0;
+  border-radius: 50%;
+  appearance: none;
+}
+
+.v2 input[type='range']::-moz-range-track {
+  height: 2px;
+  background: var(--v2-line-strong);
+}
+
+.v2 input[type='range']::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  background: var(--v2-fill);
+  border: 0;
+  border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v2 *,
+  .v2 *::before,
+  .v2 *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

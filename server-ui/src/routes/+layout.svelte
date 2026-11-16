@@ -1,49 +1,59 @@
 <script lang="ts">
   import '../app.css';
+  import { page } from '$app/state';
   import favicon from '#lib/assets/favicon.svg';
   import LinkButton from '#lib/ui/LinkButton.svelte';
   import Button from '#lib/ui/Button.svelte';
   import ThemeToggle from '#lib/components/ThemeToggle.svelte';
 
   let { children } = $props();
+
+  // /v2 is a parallel shell with its own three-pane layout. It must not be
+  // nested inside the v1 sidebar/topbar while both versions ship together.
+  // Once v2 replaces v1 this branch (and this layout) goes away.
+  const isV2 = $derived(page.url.pathname.startsWith('/v2'));
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-<div class="shell">
-  <aside class="sidebar">
-    <div class="brand">
-      <h1 class="brand-title rail-label">Whisper Spring</h1>
-    </div>
-    <nav class="nav">
-      <div class="nav-main">
-        <LinkButton href="/transcriptions" icon="speech_to_text">Transcriptions</LinkButton>
-        <LinkButton href="/live" icon="mic">Live</LinkButton>
-        <LinkButton href="/models" icon="imagesmode">Models</LinkButton>
+{#if isV2}
+  {@render children()}
+{:else}
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1 class="brand-title rail-label">Whisper Spring</h1>
       </div>
-
-      <div class="nav-footer">
-        <LinkButton href="/settings" icon="settings">Settings</LinkButton>
-      </div>
-    </nav>
-  </aside>
-
-  <div id="scroll" class="scroll-area scrollbar-hide">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-actions">
-          <Button variant="text" icon="notifications" aria-label="Notifications" />
-          <Button variant="text" icon="help" aria-label="Help" />
-          <ThemeToggle />
+      <nav class="nav">
+        <div class="nav-main">
+          <LinkButton href="/transcriptions" icon="speech_to_text">Transcriptions</LinkButton>
+          <LinkButton href="/live" icon="mic">Live</LinkButton>
+          <LinkButton href="/models" icon="imagesmode">Models</LinkButton>
         </div>
-      </div>
-    </header>
 
-    <main class="content">
-      {@render children()}
-    </main>
+        <div class="nav-footer">
+          <LinkButton href="/settings" icon="settings">Settings</LinkButton>
+        </div>
+      </nav>
+    </aside>
+
+    <div id="scroll" class="scroll-area scrollbar-hide">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <div class="topbar-actions">
+            <Button variant="text" icon="notifications" aria-label="Notifications" />
+            <Button variant="text" icon="help" aria-label="Help" />
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        {@render children()}
+      </main>
+    </div>
   </div>
-</div>
+{/if}
 
 <style>
   .shell {
