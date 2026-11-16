@@ -1,10 +1,10 @@
 /*
  * Global stylesheet.
  *
- * The layer order is declared here so the cascade is explicit and independent
- * of import order: `reset` is weakest, `base` strongest. Component <style>
- * blocks are unlayered, so they always win over all three without needing
- * !important or specificity games.
+ * The theme is split by job, the way the old v1 sheet was:
+ *   tokens.css  the design tokens, primitive and semantic
+ *   reset.css   the page reset: box model, UA defaults off
+ *   base.css    the stage, the panes and the primitives shared across panes
  */
 @layer reset, tokens, base;
 

@@ -8,5 +8,8 @@
 
     <!-- Cronn Validation file plugin -->
     <plugin id="de.cronn.validation-files-diff" />
+
+    <!-- Svelte plugin -->
+    <plugin id="dev.blachut.svelte.lang" />
   </component>
 </project>
