@@ -3,7 +3,7 @@
 ################################################################################
 # Build the whisper.cpp shared libraries.
 ################################################################################
-FROM eclipse-temurin:25-jre-resolute@sha256:fa681c5833ecc085202c0923e909f9de888d80d22a7f38d6c51268ae5978c1d7 AS whisper
+FROM eclipse-temurin:25-jre-resolute@sha256:4ba7de2d5d53f8e2faad1f04e08b96719bd085c4b65fad0182b9f1a2cf94d259 AS whisper
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -30,7 +30,7 @@ RUN cmake -S /src/whisper.cpp -B /src/build \
 ################################################################################
 # Runtime image
 ################################################################################
-FROM eclipse-temurin:25-jre-resolute@sha256:fa681c5833ecc085202c0923e909f9de888d80d22a7f38d6c51268ae5978c1d7
+FROM eclipse-temurin:25-jre-resolute@sha256:4ba7de2d5d53f8e2faad1f04e08b96719bd085c4b65fad0182b9f1a2cf94d259
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl  \

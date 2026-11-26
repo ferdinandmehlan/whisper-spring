@@ -1,1 +1,1 @@
-{"detail":"Unsupported audio format. The audio could not be decoded.","instance":"/api/transcription","status":415,"title":"Unsupported Media Type"}
+{"detail":"Unsupported audio format. The audio could not be decoded.","status":415,"title":"Unsupported Media Type"}

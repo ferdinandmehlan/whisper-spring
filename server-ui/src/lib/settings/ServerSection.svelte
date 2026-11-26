@@ -16,9 +16,9 @@
   <div class="app-row">
     <div class="app-row-label">
       <span class="app-row-title">Endpoint</span>
-      <span class="app-row-desc"
-        >This UI is served by the transcription server, so the origin is fixed.</span
-      >
+      <span class="app-row-desc">
+        This UI is served by the transcription server, so the origin is fixed.
+      </span>
     </div>
     <div class="app-row-control">
       <span class="endpoint app-mono">{origin || '…'}</span>
@@ -44,9 +44,9 @@
   <div class="app-row">
     <div class="app-row-label">
       <span class="app-row-title">Model</span>
-      <span class="app-row-desc"
-        >Loaded at startup, {formatBytes(models.loaded?.sizeBytes ?? null)}.</span
-      >
+      <span class="app-row-desc">
+        Loaded at startup, {formatBytes(models.loaded?.sizeBytes ?? null)}.
+      </span>
     </div>
     <div class="app-row-control">
       <span class="endpoint app-mono">{models.loaded?.name ?? '—'}</span>

@@ -99,9 +99,9 @@
   <div class="app-field">
     <div class="app-field-head">
       <span class="app-sub">max segment length</span>
-      <span class="app-mono app-value"
-        >{options.settings.maxLen === 0 ? 'unlimited' : `${options.settings.maxLen} chars`}</span
-      >
+      <span class="app-mono app-value">
+        {options.settings.maxLen === 0 ? 'unlimited' : `${options.settings.maxLen} chars`}
+      </span>
     </div>
     <Slider
       min="0"
@@ -152,9 +152,9 @@
     <div class="app-field-head">
       <span class="app-sub">max context tokens</span>
       <!-- -1 is the sentinel, so the readout says what it means. -->
-      <span class="app-mono app-value"
-        >{options.settings.maxContext === -1 ? 'unlimited' : options.settings.maxContext}</span
-      >
+      <span class="app-mono app-value">
+        {options.settings.maxContext === -1 ? 'unlimited' : options.settings.maxContext}
+      </span>
     </div>
     <Input
       type="number"
@@ -255,9 +255,9 @@
     <div class="app-field-head">
       <span class="app-sub">duration (ms)</span>
       <!-- 0 means "to the end", same as `unlimited` above. -->
-      <span class="app-mono app-value"
-        >{options.settings.durationMs === 0 ? 'all' : options.settings.durationMs}</span
-      >
+      <span class="app-mono app-value">
+        {options.settings.durationMs === 0 ? 'all' : options.settings.durationMs}
+      </span>
     </div>
     <Input
       type="number"

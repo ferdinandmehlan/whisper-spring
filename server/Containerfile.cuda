@@ -3,7 +3,7 @@
 ################################################################################
 # JRE source for the runtime image.
 ################################################################################
-FROM eclipse-temurin:25-jre-resolute@sha256:fa681c5833ecc085202c0923e909f9de888d80d22a7f38d6c51268ae5978c1d7 AS jre
+FROM eclipse-temurin:25-jre-resolute@sha256:4ba7de2d5d53f8e2faad1f04e08b96719bd085c4b65fad0182b9f1a2cf94d259 AS jre
 
 ################################################################################
 # Build the whisper.cpp shared libraries with CUDA support.
@@ -23,7 +23,7 @@ FROM eclipse-temurin:25-jre-resolute@sha256:fa681c5833ecc085202c0923e909f9de888d
 # 90 : Hopper (H100, H200)
 #
 ################################################################################
-FROM nvidia/cuda:13.3.1-devel-ubuntu26.04@sha256:d3ef5aa996bda602bdeb1694c96d9bc4cbe1e1250047354650b981f0659c2e2c AS whisper
+FROM nvidia/cuda:13.5.0-devel-ubuntu26.04@sha256:d3ef5aa996bda602bdeb1694c96d9bc4cbe1e1250047354650b981f0659c2e2c AS whisper
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
