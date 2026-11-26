@@ -3,7 +3,7 @@
 ################################################################################
 # JRE source for the runtime image.
 ################################################################################
-FROM eclipse-temurin:25-jre-resolute@sha256:4ba7de2d5d53f8e2faad1f04e08b96719bd085c4b65fad0182b9f1a2cf94d259 AS jre
+FROM eclipse-temurin:25-jre-resolute@sha256:a0862ac8790c648f6b5db8a113b9990d24fbe8e65f3c4ba8d68b0302d270c1e6 AS jre
 
 ################################################################################
 # Build the whisper.cpp shared libraries with CUDA support.

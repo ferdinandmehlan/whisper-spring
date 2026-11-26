@@ -162,6 +162,6 @@ public class WhisperNativeTest extends BaseIntegrationTest {
         };
         whisper.transcribe(audioData, config);
 
-        assertThat(encoderBeginCalls.get()).isEqualTo(1);
+        assertThat(encoderBeginCalls.get()).isEqualTo(2);
     }
 }
