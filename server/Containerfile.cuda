@@ -23,7 +23,7 @@ FROM eclipse-temurin:25-jre-resolute@sha256:4ba7de2d5d53f8e2faad1f04e08b96719bd0
 # 90 : Hopper (H100, H200)
 #
 ################################################################################
-FROM nvidia/cuda:13.5.0-devel-ubuntu26.04@sha256:d3ef5aa996bda602bdeb1694c96d9bc4cbe1e1250047354650b981f0659c2e2c AS whisper
+FROM nvidia/cuda:13.5.0-devel-ubuntu26.04@sha256:cafb2ca8fcffb6669cd80b929830de884bd12bb6eb364b474e8fe99108249d1e AS whisper
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
@@ -52,7 +52,7 @@ RUN cmake -S /src/whisper.cpp -B /src/build \
 ################################################################################
 # Runtime image
 ################################################################################
-FROM nvidia/cuda:13.5.0-base-ubuntu26.04@sha256:b715ad09e7a18a25e639d77d784c6a8a46555d0569c061c9df3941320b6bc4c0
+FROM nvidia/cuda:13.5.0-base-ubuntu26.04@sha256:2b8fc7b402eb045b809c3bb6296853e7d6e99a5acaded62b28f9494b357fbb4f
 
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
