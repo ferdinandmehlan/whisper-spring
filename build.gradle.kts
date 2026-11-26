@@ -7,11 +7,6 @@ plugins {
     alias(libs.plugins.versionCatalogUpdate)
 }
 
-tasks.wrapper {
-    gradleVersion = libs.versions.gradle.get()
-    distributionType = Wrapper.DistributionType.ALL
-}
-
 val projectVersion: String = libs.versions.project.get()
 
 allprojects {
