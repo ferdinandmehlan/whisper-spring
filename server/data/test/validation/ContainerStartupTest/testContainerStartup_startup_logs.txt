@@ -16,7 +16,7 @@ spring-boot 4.2.0
 [TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
 [TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.27]
 [TIMESTAMP]  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in [TIME] ms
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.loader.NativeLibrary     : Loaded whisper native library /opt/whisper/lib/libwhisper.so (version 1.8.2, platform linux/x64)
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w._native.loader.NativeLibrary     : Loaded whisper native library /opt/whisper/lib/libwhisper.so (version 1.9.6-dev, platform linux/x64)
 whisper_init_from_file_with_params_no_state: loading model from '/app/models/ggml-tiny.bin'
 whisper_init_with_params_no_state: use gpu    = 1
 whisper_init_with_params_no_state: flash attn = 1
@@ -42,6 +42,7 @@ whisper_model_load: adding 1608 extra tokens
 whisper_model_load: n_langs       = 99
 whisper_model_load:          CPU total size =    77.11 MB
 whisper_model_load: model size    =   77.11 MB
+whisper_backend_init_gpu: device 0: CPU (type: 0)
 whisper_backend_init_gpu: no GPU found
 whisper_init_state: kv self size  =    3.15 MB
 whisper_init_state: kv cross size =    9.44 MB
