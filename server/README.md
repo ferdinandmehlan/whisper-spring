@@ -18,7 +18,7 @@ Linux binaries, so no native libraries have to be provided at runtime.
 The published Docker image includes all necessary native libraries:
 
 ```bash
-docker run -p 8080:8080 -v ./models:/app/models ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0
+docker run -p 8080:8080 -v ./models:/app/models ghcr.io/ferdinandmehlan/whisper-spring-server:0.2.0
 ```
 
 Or run with CUDA
@@ -27,7 +27,7 @@ Or run with CUDA
 docker run -p 8080:8080 \
   -v ./models:/app/models \
   --gpus all \
-  ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0-cuda
+  ghcr.io/ferdinandmehlan/whisper-spring-server:0.2.0-cuda
 ```
 
 ## Gradle Tasks
