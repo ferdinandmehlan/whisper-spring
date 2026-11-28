@@ -1,0 +1,140 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-26.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out sources including the whisper.cpp submodule
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      - name: Verify tag matches the version in the version catalog
+        run: |
+          VERSION=$(grep -oP '^project = "\K[^"]+' gradle/libs.versions.toml)
+          if [ "${GITHUB_REF_NAME#v}" != "$VERSION" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match project version ${VERSION} in gradle/libs.versions.toml"
+            exit 1
+          fi
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle with dependency and wrapper caching
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          dependency-graph: generate-and-submit
+
+      - name: Cache node, pnpm and Playwright installations
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .gradle/nodejs
+            .gradle/pnpm
+            .gradle/playwright
+            server-ui/node_modules
+          key: node-toolchain-${{ runner.os }}-${{ hashFiles('server-ui/pnpm-lock.yaml') }}
+          restore-keys: |
+            node-toolchain-${{ runner.os }}-
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Build and test
+        run: ./gradlew build
+
+      - name: Upload JARs
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-jars
+          if-no-files-found: error
+          path: |
+            core/build/libs/*.jar
+            server/build/libs/*.jar
+
+  docker:
+    name: Build and push ${{ matrix.flavor || 'cpu' }} image
+    needs: build
+    runs-on: ubuntu-26.04
+    timeout-minutes: 90
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: ["", "-cuda"]
+
+    steps:
+      - name: Check out sources including the whisper.cpp submodule
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      - name: Download JARs
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-jars
+
+      - name: Determine version
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >>"$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: ${{ matrix.flavor == '-cuda' && 'server/Containerfile.cuda' || 'server/Containerfile' }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/whisper-spring-server:${{ steps.version.outputs.version }}${{ matrix.flavor }}
+            ghcr.io/${{ github.repository_owner }}/whisper-spring-server:latest${{ matrix.flavor }}
+          cache-from: type=gha,scope=${{ matrix.flavor || 'cpu' }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.flavor || 'cpu' }}
+
+  release:
+    name: Create GitHub release
+    needs: [build, docker]
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Download JARs
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-jars
+
+      - name: Create release and attach JARs
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          generate_release_notes: true
+          files: |
+            core/build/libs/*.jar
+            server/build/libs/*.jar
