@@ -7,10 +7,10 @@ _    _ _     _                       _____            _
                    | |                     | |                  __/ |
                    |_|                     |_|                 |___/
 
-whisper-spring-server 0.1.1
+whisper-spring-server 0.2.0
 spring-boot 4.2.0
 
-[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Starting WhisperSpringServerApplication v0.1.1 using Java 25.0.5.1 with PID 1 (/app/whisper-spring-server.jar started by root in /app)
+[TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : Starting WhisperSpringServerApplication v0.2.0 using Java 25.0.5.1 with PID 1 (/app/whisper-spring-server.jar started by root in /app)
 [TIMESTAMP]  INFO 1 --- [           main] i.g.f.w.WhisperSpringServerApplication   : No active profile set, falling back to 1 default profile: "default"
 [TIMESTAMP]  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
 [TIMESTAMP]  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]

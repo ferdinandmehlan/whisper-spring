@@ -83,7 +83,7 @@ To use whisper-spring with a spring application add the dependency:
 
 ```gradle
 dependencies {
-    implementation("io.github.ferdinandmehlan:whisper-spring:0.1.0")
+    implementation("io.github.ferdinandmehlan:whisper-spring:0.2.0")
 }
 ```
 
@@ -138,7 +138,7 @@ Or use the Web-UI at http://localhost:8080/
 Alternatively the published docker image can be used like this:
 
 ```sh
-  docker run -p 8080:8080 -v ./models:/app/models ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0
+  docker run -p 8080:8080 -v ./models:/app/models ghcr.io/ferdinandmehlan/whisper-spring-server:0.2.0
 ```
 
 Alternatively with CUDA acceleration :
@@ -147,7 +147,7 @@ Alternatively with CUDA acceleration :
 docker run -p 8080:8080 \
   -v ./models:/app/models \
   --gpus all \
-  ghcr.io/ferdinandmehlan/whisper-spring-server:0.1.0-cuda
+  ghcr.io/ferdinandmehlan/whisper-spring-server:0.2.0-cuda
 ```
 Then use as above.
 
